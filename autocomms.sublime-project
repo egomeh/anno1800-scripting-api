@@ -1,0 +1,21 @@
+{
+    "folders":
+    [
+        {
+            "file_include_patterns":
+            [
+				"comms.yaml",
+				"enums.yaml",
+                "commsgen.py",
+				"autocomms.h",
+				"autocomms.cpp",
+				"autocomms_native.h",
+				"AutoComms.cs",
+            ],
+			"path": "."
+        }
+    ],
+    "settings":
+    {
+    }
+}

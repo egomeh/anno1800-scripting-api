@@ -1,0 +1,16 @@
+﻿TomCruise/x64
+x64
+TomCruise/TomCruise.vcxproj.user
+*.user
+monocle/monocle_demo/obj/Debug
+monocle/monocle_demo/obj
+monocle/monocle_demo/bin
+monocle/monocle/bin
+monocle/monocle/obj
+monocle/monocle/.vs
+annoscripting/annoscripting.egg-info
+annoscripting/annoscripting/__pycache__
+annoscripting
+.vs
+autocomms.sublime-workspace
+*.sublime-workspace
