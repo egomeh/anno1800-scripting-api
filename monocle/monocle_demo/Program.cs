@@ -18,7 +18,7 @@ namespace monocle_demo
             Program program = new Program();
             // program.Run(args);
 
-            // program.Demo();
+            program.Demo();
         }
 
         void Demo()
@@ -39,6 +39,25 @@ namespace monocle_demo
 
             foreach (var building in buildings)
             {
+                if (building.buidlingType == monocle.Building.SmallTradingPost)
+                {
+                    for (ulong i = 0; i < 2048; ++i)
+                    {
+                        ulong compAddress = 0;
+
+                        telegraph.GetBuildingComponentAddress(islandData.First().id, building.id, i, out compAddress);
+
+                        if (compAddress != 0)
+                        {
+                            string sAddress = compAddress.ToString("X");
+                            string sI = i.ToString();
+
+                            Console.WriteLine(string.Format("{0} {1}", sI, sAddress));
+                        }
+                    }
+                }
+
+
                 monocle.ProductionNode productionNode;
 
                 if (!telegraph.GetBuildingProduction(island.id, building.id, out productionNode))
@@ -77,6 +96,10 @@ namespace monocle_demo
 
             if (!telegraph.ShipDumpCargo(ids.First(), 1))
                 return;
+
+            ulong address = 0;
+
+            telegraph.GetShipComponentAddress(ids.First(), 253, out address);
         }
 
         bool SendShipToPosition(monocle.Telegraph telegraph)

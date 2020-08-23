@@ -245,7 +245,7 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     hooks.push_back(shipContextSetup);
 
     Hook shipListIteration;
-    PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0x8A1880, HookScripts::ShipListIteration, regions, nRegions);
+    PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0x8A4C70, HookScripts::ShipListIteration, regions, nRegions);
     hooks.push_back(shipListIteration);
 
     Hook regionIteration;
@@ -253,7 +253,7 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     hooks.push_back(regionIteration);
 
     Hook islandConsumptionIteration;
-    PrepareAndLocateHook(&islandConsumptionIteration, "Island consumption", (uint64_t)IslandConsumptionIteration, moduleBase, moduleBase + 0x666D3D, HookScripts::IslandConsumptionIteration, regions, nRegions);
+    PrepareAndLocateHook(&islandConsumptionIteration, "Island consumption", (uint64_t)IslandConsumptionIteration, moduleBase, moduleBase + 0x66A32D, HookScripts::IslandConsumptionIteration, regions, nRegions);
     hooks.push_back(islandConsumptionIteration);
 
     NativeCallSetup virtualShipGetComponent;
