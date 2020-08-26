@@ -273,7 +273,7 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     nativeCalls.push_back(transferIslandToShipSetup);
 
     NativeCallSetup transferShipToIslandSetup;
-    PrepareAndSetupNativeCall(&transferShipToIslandSetup, "Resource Island <- Ship", NativeCallSetups::LoadCargoFromShipToIsland, NativeCallSetups::LoadCargoFromShipToIslandPreCall, (uint64_t*)&TransferShipToIslandPreCode, moduleBase, moduleBase + 0xD644E0, regions, nRegions);
+    PrepareAndSetupNativeCall(&transferShipToIslandSetup, "Resource Island <- Ship", NativeCallSetups::LoadCargoFromShipToIsland, NativeCallSetups::LoadCargoFromShipToIslandPreCall, (uint64_t*)&TransferShipToIslandPreCode, moduleBase, moduleBase + 0xD67500, regions, nRegions);
     nativeCalls.push_back(transferShipToIslandSetup);
 
     NativeCallSetup shipDumpSetup;
