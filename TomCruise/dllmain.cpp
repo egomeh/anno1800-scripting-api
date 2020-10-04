@@ -307,7 +307,7 @@ DWORD TargetMain(HANDLE thread)
         NULL);                  // no attr. template
 
     constexpr int bufferSize = 5000;
-    constexpr const char* defaultPort = "27015";
+    constexpr const char* defaultPort = "30010";
 
     SOCKET ConnectSocket = INVALID_SOCKET;
     struct addrinfo* result = NULL, * ptr = NULL, hints;

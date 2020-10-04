@@ -188,7 +188,7 @@ DWORD HandleIncommingMessage(void* arg)
 int main()
 {
     constexpr int bufferSize = 4096;
-    constexpr const char* defaultPort = "27015";
+    constexpr const char* defaultPort = "30010";
 
     WSADATA wsaData;
     int iResult;
