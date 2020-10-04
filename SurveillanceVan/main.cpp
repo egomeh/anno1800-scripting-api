@@ -293,7 +293,7 @@ int main()
     char ok;
     int ready = recv(g_TargetCallSocket, &ok, 1, 0);
 
-    std::cout << "Done setting up, waiting for scirpting..." << std::endl;
+    std::cout << "Done setting up, waiting for scripting..." << std::endl;
 
     while (true)
     {

@@ -235,6 +235,16 @@ bool AutoComms::TargetCall_GetIslandsByName(const std::string& name, std::vector
     return true;
 }
 
+bool AutoComms::TargetCall_GetAllIslands(std::vector<IslandData>* islands)
+{
+    islands->clear();
+
+    if (!GetAllIslands(islands)) 
+        return false;
+
+    return true;
+}
+
 bool AutoComms::TargetCall_GetIslandResources(const uint64_t& islandID, std::vector<IslandResourceRecord>* resources)
 {
     resources->clear();
