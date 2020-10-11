@@ -353,14 +353,14 @@ namespace monocle_demo
 
         readonly Resource[] ConstructionMaterials =
         {
-            monocle.Resource.Timber,
-            monocle.Resource.Bricks,
-            monocle.Resource.Beams,
-            monocle.Resource.Window,
-            monocle.Resource.Sailcloth,
-            monocle.Resource.Weapons,
-            monocle.Resource.AdvancedWeapons,
-            monocle.Resource.Concrete,
+            Resource.Timber,
+            Resource.Bricks,
+            Resource.SteelBeams,
+            Resource.Windows,
+            Resource.Sails,
+            Resource.Weapons,
+            Resource.AdvancedWeapons,
+            Resource.ReinforcedConcrete,
         };
 
         void Run(string[] args)
@@ -531,7 +531,7 @@ namespace monocle_demo
                             }
                         }
 
-                        if (r != monocle.Resource.Oil && r != monocle.Resource.StoneCoal)
+                        if (r != Resource.Oil && r != Resource.Coal)
                         {
                             if (ownRate < 0.0 && (capacity - virtualAmount) > 50)
                             {

@@ -20,7 +20,6 @@ def get_assets(filepath, text_by_id):
 
 def make_buildings_enum_values_string(buildings_by_id):
     buildings_enum = ['Invalid = 0']
-    print(buildings_by_id.values())
     unique_buildings = sorted(set(map(lambda x: x['identifier_name'], buildings_by_id.values())))
     for idx, short_name in enumerate(unique_buildings):
         print(f'{short_name} = {idx}')
@@ -31,11 +30,38 @@ def make_buildings_enum_values_string(buildings_by_id):
 
 def make_id_to_building_cases_string(buildings_by_id):
     id_to_building_cases = []
-    for id, building in buildings_by_id.items():
+    for id, building in sorted(buildings_by_id.items()):
         id_to_building_cases.append(f"case {id}: return AutoComms::Building::{building['identifier_name']}")
     id_to_building_cases.append('default: return AutoComms::Building::Invalid;')
     return ";\n    ".join(id_to_building_cases)
 
+
+def make_resource_enum_values_string(resources_by_id):
+    resources_enum = ['Invalid = 0']
+    unique_resources = sorted(set(map(lambda x: x['identifier_name'], resources_by_id.values())))
+    for idx, short_name in enumerate(unique_resources):
+        print(f'{short_name} = {idx}')
+        resources_enum.append(f'{short_name} = {idx + 1}')
+
+    return ",\n    ".join(resources_enum)
+
+
+def make_id_to_resource_cases_string(resources_by_id):
+    id_to_resource_cases = []
+    for id, resource in resources_by_id.items():
+        id_to_resource_cases.append(f"case {id}: return AutoComms::Resource::{resource['identifier_name']}")
+    id_to_resource_cases.append('default: return AutoComms::Resource::Invalid;')
+    return ";\n    ".join(id_to_resource_cases)
+
+
+def make_resource_to_id_cases_string(resources_by_id):
+    id_to_resource_cases = []
+    # TODO: find a way to distinguish between same type of resources? (e.g., double coal/electricity/fuel)
+    unique_resources = dict([(v['identifier_name'], k) for (k,v) in resources_by_id.items()])
+    for resource, id in unique_resources.items():
+        id_to_resource_cases.append(f"case AutoComms::Resource::{resource}: return {id}")
+    id_to_resource_cases.append('default: return -1;')
+    return ";\n    ".join(id_to_resource_cases)
 
 
 def main():
@@ -51,9 +77,15 @@ def main():
         for asset in get_assets(f"rda-modified/{file}.xml", text_by_id):
             buildings_by_id[asset['id']] = asset
 
+    resources_by_id = {}
+    for asset in get_assets(f"rda-modified/Assets_Product.xml", text_by_id):
+        resources_by_id[asset['id']] = asset
 
     buildings_enum_string = make_buildings_enum_values_string(buildings_by_id)
     id_to_building_cases_string = make_id_to_building_cases_string(buildings_by_id)
+    resources_enum_string = make_resource_enum_values_string(resources_by_id)
+    id_to_resource_cases_string = make_id_to_resource_cases_string(resources_by_id)
+    resource_to_id_cases_string = make_resource_to_id_cases_string(resources_by_id)
 
     with open('Q/rda.h', 'w+') as f:
         f.write(f'''// AUTO-GENERATED FILE
@@ -64,9 +96,17 @@ namespace AutoComms {{
 enum class Building : uint64_t {{
     {buildings_enum_string}
 }};
+
+enum class Resource : uint64_t {{
+    {resources_enum_string}
+}};
 }}
 
+uint64_t ResourceToID(AutoComms::Resource resource);
+
 AutoComms::Building IDToBuildingType(uint64_t buildingID);
+AutoComms::Resource IDToResourceType(uint64_t resourceId);
+
 ''')
 
     with open('Q/rda.cpp', 'w+') as f:
@@ -74,9 +114,27 @@ AutoComms::Building IDToBuildingType(uint64_t buildingID);
 #include "pch.h"
 #include "rda.h"
 
-AutoComms::Building IDToBuildingType(uint64_t buildingID) {{
-    switch(buildingID) {{
+AutoComms::Building IDToBuildingType(uint64_t buildingID)
+{{
+    switch(buildingID)
+    {{
     {id_to_building_cases_string}
+    }}
+}}
+
+AutoComms::Resource IDToResourceType(uint64_t resourceId)
+{{
+    switch (resourceId)
+    {{
+    {id_to_resource_cases_string}
+    }}
+}}
+
+uint64_t ResourceToID(AutoComms::Resource resource)
+{{
+    switch (resource)
+    {{
+    {resource_to_id_cases_string}
     }}
 }}
 ''')
@@ -92,7 +150,7 @@ public enum Building : ulong {{
     {buildings_enum_string}
 }}
 
-public enum Building : ulong {{
+public enum Resource : ulong {{
     {resources_enum_string}
 }}
 

@@ -74,11 +74,7 @@ SOCKET WaitForScriptingSocket();
 
 bool ReadMessageFromSocket(SOCKET socket, std::vector<uint8_t>& buffer);
 
-
 uint64_t AreaToAreaID(AutoComms::Area area);
-uint64_t ResourceToID(AutoComms::Resource resource);
 
 AutoComms::ShipType IDToShipType(uint64_t shipTypeId);
-
-AutoComms::Resource IDToResourceType(uint64_t resourceId);
 
