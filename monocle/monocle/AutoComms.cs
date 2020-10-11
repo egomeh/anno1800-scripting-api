@@ -127,29 +127,6 @@ namespace monocle
         Gas = 96,
     };
 
-    public enum Building : ulong
-    {
-        Invalid = 0,
-        SmallTradingPost = 1,
-        MediumTradingPost = 2,
-        LargeTradingPost = 3,
-        FarmerResidence = 4,
-        WorkerResidence = 5,
-        ArtisanResidence = 6,
-        Marketplace = 7,
-        LumberjacksHut = 8,
-        Brewery = 9,
-        ArtisanalKitchen = 10,
-        Cannery = 11,
-        HopFarm = 12,
-        GrainFarm = 13,
-        GrainField = 14,
-        FlourMill = 15,
-        Bakery = 16,
-        ClayPit = 17,
-        IronMine = 18,
-    };
-
     public struct GameTime
     {
         public UInt64 time;

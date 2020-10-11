@@ -39,6 +39,9 @@
     <ClInclude Include="autocomms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="rda.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tools.cpp">
@@ -57,6 +60,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="autocomms.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rda.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

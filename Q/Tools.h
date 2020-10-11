@@ -82,4 +82,3 @@ AutoComms::ShipType IDToShipType(uint64_t shipTypeId);
 
 AutoComms::Resource IDToResourceType(uint64_t resourceId);
 
-AutoComms::Building IDToBuildingType(uint64_t buildingID);

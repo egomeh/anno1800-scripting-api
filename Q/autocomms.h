@@ -2,6 +2,7 @@
 #include <inttypes.h>
 #include <vector>
 #include <string>
+#include "rda.h"
 
 namespace AutoComms
 {
@@ -128,29 +129,6 @@ enum class Resource : uint64_t
     SledFrames = 94,
     Sleds = 95,
     Gas = 96,
-};
-
-enum class Building : uint64_t
-{
-    Invalid = 0,
-    SmallTradingPost = 1,
-    MediumTradingPost = 2,
-    LargeTradingPost = 3,
-    FarmerResidence = 4,
-    WorkerResidence = 5,
-    ArtisanResidence = 6,
-    Marketplace = 7,
-    LumberjacksHut = 8,
-    Brewery = 9,
-    ArtisanalKitchen = 10,
-    Cannery = 11,
-    HopFarm = 12,
-    GrainFarm = 13,
-    GrainField = 14,
-    FlourMill = 15,
-    Bakery = 16,
-    ClayPit = 17,
-    IronMine = 18,
 };
 
 struct GameTime
