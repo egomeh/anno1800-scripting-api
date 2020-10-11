@@ -19,6 +19,56 @@ namespace monocle_demo
             // program.Run(args);
 
             program.Demo();
+            // program.DemoAllIslands();
+        }
+
+        void DemoAllIslands()
+        {
+            Telegraph telegraph = new Telegraph();
+
+            if (!telegraph.GetAllIslands(out var allIslands))
+            {
+                Console.WriteLine("Couldn't find any islands");
+                return;
+            }
+
+
+            Console.WriteLine(allIslands.Count);
+            allIslands = allIslands.Where(island => island.name.Length > 0 && island.name.Length < 20).ToList();
+
+            foreach (var island in allIslands)
+            {
+                Console.WriteLine($"\n\nFound island {island.name} - {island.id}");
+
+                if (!telegraph.GetIslandConsumption(island.id, out var consumption))
+                    continue;
+
+                // foreach(var con in consumption)
+                // {
+                //     Console.WriteLine($"{con.resourceType.ToString()} - {con.rate}");
+                // }
+
+                if (!telegraph.GetIslandBuildings(island.id, out var buildings))
+                    continue;
+
+                foreach (var building in buildings)
+                {
+                    Console.WriteLine($"{building.id} - {building.buidlingType} - {building.rawBuildingTypeID}");
+                }
+                var validBuildings = buildings.Where(b => b.buidlingType != Building.Invalid).ToList();
+                var productionBuildingsIds = new[] { Building.Bakery, Building.GrainFarm };
+                var productionBuildings = validBuildings.Where(b => productionBuildingsIds.Contains(b.buidlingType)).ToList();
+                Console.WriteLine($"{buildings.Count} buildings ({validBuildings.Count} valid, {productionBuildings.Count} production)");
+
+                foreach (var building in productionBuildings)
+                {
+                    Console.WriteLine($"Building {building.id} - {building.buidlingType.ToString()}");
+
+                    if (!telegraph.GetBuildingProduction(island.id, building.id, out var productionNode))
+                         continue;
+                    Console.WriteLine($"{productionNode.rate} {productionNode.output}");
+                }
+            }
         }
 
         void Demo()
