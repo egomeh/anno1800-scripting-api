@@ -7,6 +7,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using monocle;
 using System.Collections;
 using System.Net;
+using System.Security.Principal;
 using System.Xml.Schema;
 
 namespace monocle_demo
@@ -18,8 +19,8 @@ namespace monocle_demo
             Program program = new Program();
             // program.Run(args);
 
-            program.Demo();
-            // program.DemoAllIslands();
+            // program.Demo();
+            program.DemoAllIslands();
         }
 
         void DemoAllIslands()
@@ -43,30 +44,28 @@ namespace monocle_demo
                 if (!telegraph.GetIslandConsumption(island.id, out var consumption))
                     continue;
 
-                // foreach(var con in consumption)
-                // {
-                //     Console.WriteLine($"{con.resourceType.ToString()} - {con.rate}");
-                // }
+                foreach(var con in consumption)
+                {
+                    Console.WriteLine($"{con.resourceType.ToString()} - {con.rate}");
+                }
 
                 if (!telegraph.GetIslandBuildings(island.id, out var buildings))
                     continue;
 
-                foreach (var building in buildings)
-                {
-                    Console.WriteLine($"{building.id} - {building.buidlingType} - {building.rawBuildingTypeID}");
-                }
+                // foreach (var building in buildings)
+                // {
+                //     Console.WriteLine($"{building.id} - {building.buidlingType} - {building.rawBuildingTypeID}");
+                // }
+
                 var validBuildings = buildings.Where(b => b.buidlingType != Building.Invalid).ToList();
-                var productionBuildingsIds = new[] { Building.Bakery, Building.GrainFarm };
-                var productionBuildings = validBuildings.Where(b => productionBuildingsIds.Contains(b.buidlingType)).ToList();
+                var productionBuildings = validBuildings.Where(b => RDAHelper.GetProductionBuildings().Contains(b.buidlingType)).ToList();
                 Console.WriteLine($"{buildings.Count} buildings ({validBuildings.Count} valid, {productionBuildings.Count} production)");
 
                 foreach (var building in productionBuildings)
                 {
-                    Console.WriteLine($"Building {building.id} - {building.buidlingType.ToString()}");
-
                     if (!telegraph.GetBuildingProduction(island.id, building.id, out var productionNode))
                          continue;
-                    Console.WriteLine($"{productionNode.rate} {productionNode.output}");
+                    Console.WriteLine($"Building {building.id} - {building.buidlingType.ToString()} - {productionNode.rate} {productionNode.output}");
                 }
             }
         }

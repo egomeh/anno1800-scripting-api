@@ -440,10 +440,10 @@ inline bool HandleScriptCall(SOCKET socket)
 
     int bytesSent = send(socket, (char*)finalBuffer.data(), (int)finalBuffer.size(), 0);
 
-    if (bytesSent == SOCKET_ERROR)
-        return false;
+    bool isScriptCallSuccessful = bytesSent != SOCKET_ERROR;
 
-    return true;
+
+    return isScriptCallSuccessful;
 }
 
 }
