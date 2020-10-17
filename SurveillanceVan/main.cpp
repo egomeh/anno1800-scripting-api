@@ -188,7 +188,7 @@ DWORD HandleIncommingMessage(void* arg)
 int main()
 {
     constexpr int bufferSize = 4096;
-    constexpr const char* defaultPort = "27015";
+    constexpr const char* defaultPort = "30010";
 
     WSADATA wsaData;
     int iResult;
@@ -293,7 +293,7 @@ int main()
     char ok;
     int ready = recv(g_TargetCallSocket, &ok, 1, 0);
 
-    std::cout << "Done setting up, waiting for scirpting..." << std::endl;
+    std::cout << "Done setting up, waiting for scripting..." << std::endl;
 
     while (true)
     {

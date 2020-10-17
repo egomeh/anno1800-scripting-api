@@ -236,6 +236,8 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
 
     SendMessageToHost("Done finding all memory regions");
 
+    bool isUplayBinary = false;
+
     Hook timeHook;
     PrepareAndLocateHook(&timeHook, "time hook", (uint64_t)NativeCallbackUpdateTime, moduleBase, moduleBase + 0x1115BC9, HookScripts::TimeAndFrame, regions, nRegions);
     hooks.push_back(timeHook);
@@ -252,8 +254,10 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     PrepareAndLocateHook(&regionIteration, "Region iteration", (uint64_t)RegionIteration, moduleBase, moduleBase + 0x2ccaac, HookScripts::RegionIteration, regions, nRegions);
     hooks.push_back(regionIteration);
 
+    uint64_t islandConsumptionOffset = isUplayBinary ? 0x6685BD : 0x66A32D;
+
     Hook islandConsumptionIteration;
-    PrepareAndLocateHook(&islandConsumptionIteration, "Island consumption", (uint64_t)IslandConsumptionIteration, moduleBase, moduleBase + 0x66A32D, HookScripts::IslandConsumptionIteration, regions, nRegions);
+    PrepareAndLocateHook(&islandConsumptionIteration, "Island consumption", (uint64_t)IslandConsumptionIteration, moduleBase, moduleBase + islandConsumptionOffset, HookScripts::IslandConsumptionIteration, regions, nRegions);
     hooks.push_back(islandConsumptionIteration);
 
     NativeCallSetup virtualShipGetComponent;
@@ -307,7 +311,7 @@ DWORD TargetMain(HANDLE thread)
         NULL);                  // no attr. template
 
     constexpr int bufferSize = 5000;
-    constexpr const char* defaultPort = "27015";
+    constexpr const char* defaultPort = "30010";
 
     SOCKET ConnectSocket = INVALID_SOCKET;
     struct addrinfo* result = NULL, * ptr = NULL, hints;

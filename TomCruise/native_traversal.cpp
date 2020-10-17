@@ -35,7 +35,7 @@ std::string GetStringFromAnnoString(uint64_t stringAddress)
         stringLocation = (wchar_t*)ReadU64(stringAddress);
 
     if (!IsReadable((void*)(stringLocation), length))
-        return "[Could not read pointet to stirng]";
+        return "[Could not read pointer to string]";
 
     wmemset(buffer, 0, _countof(buffer));
     wmemcpy(buffer, stringLocation, length);
@@ -163,6 +163,72 @@ bool GetIslandIDsByName(const std::string& name, std::vector<uint64_t>* ids)
                     continue;
 
                 ids->push_back(islandId);
+                SEND_FORMATTED("Found '%s' with at address %llx", islandName.c_str(), islandBase);
+            }
+        }
+    }
+
+    return true;
+}
+
+bool GetAllIslands(std::vector<AutoComms::IslandData>* islands)
+{
+    islands->clear();
+    std::vector<uint64_t> alreadyFoundIds;
+
+    for (uint64_t regionBaseAddress : regionBases)
+    {
+        uint64_t listSizePtr = regionBaseAddress + 0x88;
+        uint64_t regionIslandList = regionBaseAddress + 0x90;
+
+        if (!IsReadable((void*)listSizePtr, 8))
+            continue;
+
+        if (!IsReadable((void*)regionBaseAddress, 8))
+            continue;
+
+        uint64_t listSize = ReadU64(listSizePtr);
+        uint64_t listBase = ReadU64(regionIslandList);
+
+        if (!listBase)
+            continue;
+
+        if (!listSize)
+            continue;
+
+        for (uint64_t i = 0; i <= listSize; ++i)
+        {
+            uint64_t islandPtr = listBase + i * 8;
+
+            if (!IsReadable((void*)islandPtr, 8))
+                continue;
+
+            uint64_t islandBase = ReadU64(islandPtr);
+
+            // Follow linked list pointers
+            for (; islandBase; islandBase = ReadU64(islandBase))
+            {
+                uint64_t nameAddress = islandBase + 0x138;
+                std::string islandName = GetStringFromAnnoString(nameAddress);
+
+                uint64_t islandIdAddress = islandBase + 0x10;
+
+                if (!IsReadable((void*)islandIdAddress, 8))
+                    continue;
+
+                uint64_t islandId = ReadU64(islandIdAddress);
+
+                // I suspect that the ID is really only a 32-bit value
+                islandId &= 0x00000000FFFFFFFF;
+
+                if (std::find(alreadyFoundIds.begin(), alreadyFoundIds.end(), islandId) != alreadyFoundIds.end())
+                    continue;
+
+                AutoComms::IslandData island;
+                island.id = islandId;
+                island.name = islandName;
+                alreadyFoundIds.push_back(islandId);
+                islands->push_back(island);
                 SEND_FORMATTED("Found '%s' with at address %llx", islandName.c_str(), islandBase);
             }
         }

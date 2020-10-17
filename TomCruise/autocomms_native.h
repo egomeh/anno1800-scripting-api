@@ -19,6 +19,7 @@ bool TargetCall_GetAllShips(const Area& area, std::vector<ShipData>* ships);
 bool TargetCall_GetShipAddress(const uint64_t& shipID, uint64_t* address);
 bool TargetCall_GetShipCargo(const uint64_t& shipID, std::vector<ShipCargoSlot>* cargo);
 bool TargetCall_AddWaypoint(const std::vector<uint64_t>& IDs, const Coordinate& waypoint);
+bool TargetCall_GetAllIslands(std::vector<IslandData>* islands);
 bool TargetCall_GetIslandsByName(const std::string& name, std::vector<IslandData>* islands);
 bool TargetCall_GetIslandResources(const uint64_t& islandID, std::vector<IslandResourceRecord>* resources);
 bool TargetCall_GetIslandBuildings(const uint64_t& islandID, std::vector<BuildingData>* buildings);
@@ -409,6 +410,18 @@ inline bool HandleScriptCall(SOCKET socket)
             break;
         }
 
+        case 21: // GetAllIslands
+        {
+            std::vector<IslandData> islands;
+
+            success = TargetCall_GetAllIslands(&islands);
+
+            if (!AutoComms::Serialize(islands, outputBuffer))
+                return false;
+
+            break;
+        }
+
     default:
         break;
     }
@@ -427,10 +440,10 @@ inline bool HandleScriptCall(SOCKET socket)
 
     int bytesSent = send(socket, (char*)finalBuffer.data(), (int)finalBuffer.size(), 0);
 
-    if (bytesSent == SOCKET_ERROR)
-        return false;
+    bool isScriptCallSuccessful = bytesSent != SOCKET_ERROR;
 
-    return true;
+
+    return isScriptCallSuccessful;
 }
 
 }
