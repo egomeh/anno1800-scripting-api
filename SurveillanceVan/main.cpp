@@ -255,17 +255,12 @@ int main()
         FAIL("Could not find anno process");
 
     char nameBuffer[1024];
-#if _DEBUG
-    GetFullPathNameA("..\\x64\\Debug\\TomCruise.dll",
+    GetFullPathNameA("TomCruise.dll",
         sizeof(nameBuffer),
         nameBuffer,
         NULL);
-#else
-    GetFullPathNameA("..\\x64\\Release\\TomCruise.dll",
-        sizeof(nameBuffer),
-        nameBuffer,
-        NULL);
-#endif
+    if (strlen(nameBuffer) == 0)
+        FAIL("Couldn't find 'TomCruise.dll' in the current working directory");
 
     block.listenSocket = ListenSocket;
 
