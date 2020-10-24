@@ -56,8 +56,6 @@ bool makingCallInSelf = false;
 // Ship context setting callback, this needs a serious tidy-up...
 void ShipContextSet(uint64_t pointerValue)
 {
-    return;
-
     if (makingCallInSelf)
         return;
 
@@ -73,15 +71,19 @@ void ShipContextSet(uint64_t pointerValue)
 
     uint64_t pointerValue1 = ReadU64(pointerValue);
 
-    if (!IsReadable((void*)(pointerValue1 + 0x48), 8))
+    uint64_t areaOffset = 0x9DE4 + 0x18;
+
+    if (!IsReadable((void*)(pointerValue1 + areaOffset), 8))
         return;
 
-    uint64_t pointerValue2 = ReadU64(pointerValue1 + 0x48);
+    uint64_t areaID = (ReadU64(pointerValue1 + areaOffset) >> 0x30) & 0xFFFF;
 
-    if (!IsReadable((void*)(pointerValue2 + 0x8), 8))
-        return;
+    uint64_t idValue = 0;
 
-    uint64_t idValue = (ReadU64(pointerValue2 + 0x8) & 0xffff000000) >> 0x20;
+    if (areaID == 0xBF37)
+        idValue = 2;
+    else if (areaID == 0xBF39)
+        idValue = 3;
  
     switch (callType)
     {
