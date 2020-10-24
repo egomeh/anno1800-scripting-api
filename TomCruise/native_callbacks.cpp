@@ -56,6 +56,8 @@ bool makingCallInSelf = false;
 // Ship context setting callback, this needs a serious tidy-up...
 void ShipContextSet(uint64_t pointerValue)
 {
+    return;
+
     if (makingCallInSelf)
         return;
 

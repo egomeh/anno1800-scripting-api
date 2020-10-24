@@ -104,26 +104,30 @@ C3                              // ret
 const char* ShipListIteration =
 R"(
 -pattern:
+48 89 5c 24 20                      // mov    QWORD PTR [rsp+0x20],rbx
 48 89 4c 24 08                      // mov    QWORD PTR [rsp+0x8],rcx
 55                                  // push   rbp
-53                                  // push   rbx
 56                                  // push   rsi
 57                                  // push   rdi
 41 54                               // push   r12
 41 55                               // push   r13
+41 56                               // push   r14
+41 57                               // push   r15
 
 -replacement:
 48 b8 [detourAddress : 8]           // movabs rax, detourAddress
 ff e0                               // jmp    rax
 
 -detour:
+48 89 5c 24 20                      // mov    QWORD PTR [rsp+0x20],rbx
 48 89 4c 24 08                      // mov    QWORD PTR [rsp+0x8],rcx
 55                                  // push   rbp
-53                                  // push   rbx
 56                                  // push   rsi
 57                                  // push   rdi
 41 54                               // push   r12
 41 55                               // push   r13
+41 56                               // push   r14
+41 57                               // push   r15
 [push volatile]
 48 b8 [targetAddress : 8]           // movabs rax, targetAddress
 ff d0                               // call   rax
@@ -138,8 +142,8 @@ R"(
 48 c1 e1 10                         // shl    rcx,0x10
 41 0f b7 c4                         // movzx  eax,r12w
 48 0b c8                            // or     rcx,rax
-48 89 0a                            // mov    QWORD PTR [rdx],rcx
-4c 89 4c 24 40                      // mov    QWORD PTR [rsp+0x40],r9
+4a 89 0c 2a                         // mov    QWORD PTR [rdx+r13*1],rcx
+4c 89 44 24 40                      // mov    QWORD PTR [rsp+0x40],r8
 
 -replacement:
 50                                  // push   rax
@@ -147,15 +151,14 @@ R"(
 ff e0                               // jmp    rax
 90
 returnLocation
-58                                  // pop    rax
 
 -detour:
 58                                  // pop    rax
 48 c1 e1 10                         // shl    rcx,0x10
 41 0f b7 c4                         // movzx  eax,r12w
 48 0b c8                            // or     rcx,rax
-48 89 0a                            // mov    QWORD PTR [rdx],rcx
-4c 89 4c 24 40                      // mov    QWORD PTR [rsp+0x40],r9
+4a 89 0c 2a                         // mov    QWORD PTR [rdx+r13*1],rcx
+4c 89 44 24 40                      // mov    QWORD PTR [rsp+0x40],r8
 
 [push volatile]
 48 83 ec 20                         // sub    rsp,0x20
@@ -164,8 +167,9 @@ returnLocation
 ff d0                               // call   rax
 48 83 c4 20                         // add    rsp,0x20
 [pop volatile]
-48 b8 [returnAddress : 8]           // movabs rax, returnAddress
-ff d0                               // call   rax
+
+48 ba [returnAddress : 8]           // movabs rdx, returnAddress
+ff e2                               // jmp    rdx
 )";
 
 const char* RegionIteration =

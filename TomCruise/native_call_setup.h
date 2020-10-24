@@ -6,7 +6,8 @@ namespace NativeCallSetups
 
 const char* ShipDispatch =
 R"(
-40 55                               // rex push rbp
+48 89 4c 24 08                      // mov    QWORD PTR [rsp+0x8],rcx
+55                                  // push   rbp
 53                                  // push   rbx
 56                                  // push   rsi
 57                                  // push   rdi
@@ -14,13 +15,11 @@ R"(
 41 55                               // push   r13
 41 56                               // push   r14
 41 57                               // push   r15
-48 8d ac 24 a8 fd ff                // lea    rbp,[rsp-0x258]
-ff                                  // 
-48 81 ec 58 03 00 00                // sub    rsp,0x358
+48 8d ac 24 98 fd ff ff             // lea    rbp,[rsp-0x268]
+48 81 ec 68 03 00 00                // sub    rsp,0x368
 48 8b f1                            // mov    rsi,rcx
 33 db                               // xor    ebx,ebx
-4c 8b 01                            // mov    r8,QWORD PTR [rcx]
-41 38 58 18                         // cmp    BYTE PTR [r8+0x18],bl
+4c 8b 09                            // mov    r9,QWORD PTR [rcx]
 )";
 
 const char* ShipDispatchPreCall =

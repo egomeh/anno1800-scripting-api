@@ -120,7 +120,7 @@ bool AutoComms::TargetCall_GetAllShips(const Area& area, std::vector<ShipData>* 
         std::string name;
 
         if (!GetShipName(shipId, &name))
-            return false;
+            return false; 
 
         uint64_t address = 0;
 

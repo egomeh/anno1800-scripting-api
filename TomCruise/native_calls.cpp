@@ -244,11 +244,19 @@ bool GetShipName(uint64_t shipId, std::string* name)
 
         for (uint64_t i = 0; i < size; ++i)
         {
-            uint64_t id = ReadU64(listPtr + i * 0x20);
-            uint64_t shipPtr = ReadU64(listPtr + i * 0x20 + 0x8);
+            uint64_t id = ReadU64(listPtr + i * 0x18);
+            uint64_t shipPtr = ReadU64(listPtr + i * 0x18 + 0x8);
 
             if (id != shipId)
                 continue;
+
+            //for (uint64_t componentId = 0; componentId < 2048; ++componentId)
+            //{
+            //    uint64_t componentAddress = VirtualShipGetComponent(shipPtr, componentId);
+
+            //    if (componentAddress)
+            //        SEND_FORMATTED("%llx : %lld", componentAddress, componentId);
+            //}
 
             // Name
             uint64_t nameComponentAddress = VirtualShipGetComponent(shipPtr, ComponentIdName);
@@ -303,11 +311,13 @@ bool GetAllShipsInWorld(const uint64_t& worldId, std::vector<uint64_t>* shipList
 
         for (uint64_t i = 0; i < size; ++i)
         {
-            uint64_t id = ReadU64(listPtr + i * 0x20);
-            uint64_t shipPtr = ReadU64(listPtr + i * 0x20 + 0x8);
+            uint64_t id = ReadU64(listPtr + i * 0x18);
+            uint64_t shipPtr = ReadU64(listPtr + i * 0x18 + 0x8);
 
             if (((id & 0xFFFFFFFF000000) >> 0x20) == worldId)
+            {
                 shipList->push_back(id);
+            }
         }
     }
     LeaveCriticalSection(&shipServiceLock);
@@ -327,8 +337,8 @@ bool GetShipAddress(uint64_t shipId, uint64_t* result)
 
         for (uint64_t i = 0; i < size && !found; ++i)
         {
-            uint64_t id = ReadU64(listPtr + i * 0x20);
-            uint64_t shipPtr = ReadU64(listPtr + i * 0x20 + 0x8);
+            uint64_t id = ReadU64(listPtr + i * 0x18);
+            uint64_t shipPtr = ReadU64(listPtr + i * 0x18 + 0x8);
 
             if (shipId == id)   
             {

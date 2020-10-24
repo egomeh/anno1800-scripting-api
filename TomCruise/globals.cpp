@@ -42,7 +42,7 @@ void SendMessageToHostNoLabel(const char* message)
         NULL);            // no overlapped structure
 }
 
-uint64_t ComponentIdName = 274;
+uint64_t ComponentIdName = 289;
 uint64_t ComponentIdCargo = 589;
 uint64_t ComponentIdMoveData = 253;
 
