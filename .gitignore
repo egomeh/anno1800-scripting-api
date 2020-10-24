@@ -14,3 +14,6 @@ annoscripting
 .vs
 autocomms.sublime-workspace
 *.sublime-workspace
+
+Debug/
+Release/
