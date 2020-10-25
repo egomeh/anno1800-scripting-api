@@ -43,8 +43,8 @@ void SendMessageToHostNoLabel(const char* message)
 }
 
 uint64_t ComponentIdName = 289;
-uint64_t ComponentIdCargo = 589;
-uint64_t ComponentIdMoveData = 253;
+uint64_t ComponentIdCargo = 618;
+uint64_t ComponentIdMoveData = 268;
 
 uint64_t ComponentIdBuildingProduction = 613;
 uint64_t ComponentIdBuildingProductionNoOuput = 609;
