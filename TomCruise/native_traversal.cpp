@@ -143,7 +143,7 @@ bool GetIslandIDsByName(const std::string& name, std::vector<uint64_t>* ids)
             // Follow linked list pointers
             for (; islandBase; islandBase = ReadU64(islandBase))
             {
-                uint64_t nameAddress = islandBase + 0x138;
+                uint64_t nameAddress = islandBase + 0x168;
                 std::string islandName = GetStringFromAnnoString(nameAddress);
 
                 if (name.compare(islandName) != 0)
@@ -208,7 +208,7 @@ bool GetAllIslands(std::vector<AutoComms::IslandData>* islands)
             // Follow linked list pointers
             for (; islandBase; islandBase = ReadU64(islandBase))
             {
-                uint64_t nameAddress = islandBase + 0x138;
+                uint64_t nameAddress = islandBase + 0x168;
                 std::string islandName = GetStringFromAnnoString(nameAddress);
 
                 uint64_t islandIdAddress = islandBase + 0x10;
