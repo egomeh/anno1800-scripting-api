@@ -10,10 +10,16 @@
     sprintf_s(__my_line_, format, ##__VA_ARGS__); \
     SendMessageToHost(__my_line_); \
 }
+#define FAIL_MESSAGE(format, ...) { \
+    char __my_line_[512]; \
+    sprintf_s(__my_line_, format, ##__VA_ARGS__); \
+    SendMessageToHost(__my_line_); \
+    return false; \
+}
 #else
 #define SEND_FORMATTED(format, ...)
+#define FAIL_MESSAGE { return false; }
 #endif
-
 
 extern bool KeepGoing;
 extern HANDLE g_logFile;

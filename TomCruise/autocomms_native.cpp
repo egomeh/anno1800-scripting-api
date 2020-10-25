@@ -105,10 +105,10 @@ bool AutoComms::TargetCall_GetAllShips(const Area& area, std::vector<ShipData>* 
     uint64_t areaId = AreaToAreaID(area);
 
     if (areaId == -1)
-        return false;
+        FAIL_MESSAGE("Invalid area id");
 
     if (!GetAllShipsInWorld(areaId, &shipIds))
-        return false;
+        FAIL_MESSAGE("Could not get all messages");
 
     for (uint64_t shipId : shipIds)
     {
@@ -120,12 +120,12 @@ bool AutoComms::TargetCall_GetAllShips(const Area& area, std::vector<ShipData>* 
         std::string name;
 
         if (!GetShipName(shipId, &name))
-            return false; 
+            FAIL_MESSAGE("Failed to get name from ship with id %lld", shipId);
 
         uint64_t address = 0;
 
         if (!GetShipAddress(shipId, &address))
-            return false;
+            FAIL_MESSAGE("Failed to get address from ship with id %lld", shipId);
 
         uint64_t shipTypeId = *((uint64_t*)(address) + 1);
 
@@ -376,7 +376,7 @@ bool AutoComms::TargetCall_GetBuildingProduction(const uint64_t& islandID, const
 
     uint64_t consumptionPtr = ReadU64(productionComponentAddress + 0x130);
     uint64_t consumptionSize = ReadU64(productionComponentAddress + 0x138) & 0xFF;
-    uint64_t productionType = ReadU32(productionComponentAddress + 0x148);
+    uint64_t productionType = ReadU32(productionComponentAddress + 0x148) & 0xFFFFFFFF;
 
     uint64_t baseProcessTime = ReadU32(productionComponentAddress + 0x1b0);
     float processingModifier = ReadF32(productionComponentAddress + 0x1a8);
