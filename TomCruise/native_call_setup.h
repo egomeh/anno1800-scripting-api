@@ -108,7 +108,7 @@ R"(
 48 83 ec 60                         // sub    rsp,0x60
 4c 8b f1                            // mov    r14,rcx
 4c 8b 01                            // mov    r8,QWORD PTR [rcx]
-bf 1c 00 00 00                      // mov    edi,0x1c
+bf e4 9d 00 00                      // mov    edi,0x9de4
 41 80 78 18 00                      // cmp    BYTE PTR [r8+0x18],0x0
 )";
 
@@ -139,7 +139,7 @@ R"(
 48 83 ec 50                         // sub    rsp,0x50
 4c 8b f1                            // mov    r14,rcx
 4c 8b 01                            // mov    r8,QWORD PTR [rcx]
-bf 1c 00 00 00                      // mov    edi,0x1c
+bf e4 9d 00 00                      // mov    edi,0x9de4
 41 80 78 18 00                      // cmp    BYTE PTR [r8+0x18],0x0
 )";
 

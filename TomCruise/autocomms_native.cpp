@@ -69,12 +69,12 @@ bool AutoComms::TargetCall_GetShipMoveData(const uint64_t& id, ShipMoveData* mov
     SCOPE_LOCK(&shipServiceLock);
 
     if (!GetShipById(id, &shipAddress))
-        return false;
+        FAIL_MESSAGE("Failed to get ship address from id %llx", id);
 
     uint64_t component = VirtualShipGetComponent(shipAddress, ComponentIdMoveData);
 
     if (!component)
-        return false;
+        FAIL_MESSAGE("Failed to get movedata component from ship id %llx address %llx", id, shipAddress);
 
     moveData->moving = ReadU32(component + 0x28);
     moveData->position.x = ReadF32(component + 0x34);
@@ -254,15 +254,15 @@ bool AutoComms::TargetCall_GetIslandResources(const uint64_t& islandID, std::vec
     if (!GetIslandById(islandID, &islandBaseAddress))
         return false;
 
-    uint64_t resourceStructPtr = islandBaseAddress + 0x1A8;
+    uint64_t resourceStructPtr = islandBaseAddress + 0x1D0;
 
     if (!IsReadable((void*)resourceStructPtr, 8))
         return false;
 
     uint64_t resourceStructBase = ReadU64(resourceStructPtr);
 
-    uint64_t resourceTableSizePtr = resourceStructBase + 0x60;
-    uint64_t resourceTableBasePtr = resourceStructBase + 0x68;
+    uint64_t resourceTableSizePtr = resourceStructBase + 0x50;
+    uint64_t resourceTableBasePtr = resourceStructBase + 0x58;
 
     if (!IsReadable((void*)resourceTableSizePtr, 8))
         return false;

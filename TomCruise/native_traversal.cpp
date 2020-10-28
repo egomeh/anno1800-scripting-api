@@ -283,15 +283,15 @@ bool GetIslandResource(const IslandResourceRecordRequst& request, IslandResource
 
                 if (islandId == request.islandId)
                 {
-                    uint64_t resourceStructPtr = islandBase + 0x1A8;
+                    uint64_t resourceStructPtr = islandBase + 0x1D0;
 
                     if (!IsReadable((void*)resourceStructPtr, 8))
                         return false;
 
                     uint64_t resourceStructBase = ReadU64(resourceStructPtr);
 
-                    uint64_t resourceTableSizePtr = resourceStructBase + 0x60;
-                    uint64_t resourceTableBasePtr = resourceStructBase + 0x68;
+                    uint64_t resourceTableSizePtr = resourceStructBase + 0x50;
+                    uint64_t resourceTableBasePtr = resourceStructBase + 0x58;
 
                     if (!IsReadable((void*)resourceTableSizePtr, 8))
                         return false;
