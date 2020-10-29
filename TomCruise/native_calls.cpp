@@ -280,8 +280,8 @@ bool GetShipsByName(const std::string& name, std::vector<uint64_t>* shipList)
 
         for (uint64_t i = 0; i < size; ++i)
         {
-            uint64_t id = ReadU64(listPtr + i * 0x20);
-            uint64_t shipPtr = ReadU64(listPtr + i * 0x20 + 0x8);
+            uint64_t id = ReadU64(listPtr + i * 0x18);
+            uint64_t shipPtr = ReadU64(listPtr + i * 0x18 + 0x8);
 
             // Name
             uint64_t nameComponentAddress = VirtualShipGetComponent(shipPtr, 266);
@@ -348,6 +348,15 @@ bool GetShipAddress(uint64_t shipId, uint64_t* result)
         }
     }
     LeaveCriticalSection(&shipServiceLock);
+
+    if (!found)
+    {
+        SEND_FORMATTED("Could not find address for ship with address %llx", shipId);
+        SEND_FORMATTED("Ther are %lld ship lists", shipLists.size());
+        
+        for (uint64_t address : shipLists)
+            SEND_FORMATTED("%llx", address);
+    }
 
     return found;
 }

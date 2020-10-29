@@ -351,8 +351,8 @@ bool GetShipById(const uint64_t id, uint64_t* shipBaseAddress)
 
         for (uint64_t i = 0; i < size; ++i)
         {
-            uint64_t shipId = ReadU64(listPtr + i * 0x20);
-            uint64_t shipPtr = ReadU64(listPtr + i * 0x20 + 0x8);
+            uint64_t shipId = ReadU64(listPtr + i * 0x18);
+            uint64_t shipPtr = ReadU64(listPtr + i * 0x18 + 0x8);
 
             if (id == shipId)
             {
