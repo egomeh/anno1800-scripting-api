@@ -238,7 +238,7 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     bool isUplayBinary = false;
 
     Hook timeHook;
-    PrepareAndLocateHook(&timeHook, "time hook", (uint64_t)NativeCallbackUpdateTime, moduleBase, moduleBase + 0x122d0f1, HookScripts::TimeAndFrame, regions, nRegions);
+    PrepareAndLocateHook(&timeHook, "time hook", (uint64_t)NativeCallbackUpdateTime, moduleBase, moduleBase + 0x122eff1, HookScripts::TimeAndFrame, regions, nRegions);
     hooks.push_back(timeHook);
 
     //Hook shipContextSetup;
