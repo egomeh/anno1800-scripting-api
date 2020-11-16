@@ -148,6 +148,7 @@ bool EnableHook(Hook* hook, HANDLE processHandle)
     FlushInstructionCache(processHandle, (LPVOID)hook->region.baseAddress, (SIZE_T)hook->region.size);
 
     hook->enabled = true;
+    return true;
 }
 
 bool DisableHook(Hook* hook, HANDLE processHandle, std::string& error)

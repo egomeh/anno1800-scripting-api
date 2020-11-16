@@ -251,6 +251,8 @@ bool Serialize(const ShipCargoResult& data, std::vector<uint8_t>& stream)
         if (!Serialize(slot, stream))
             return false;
     }
+
+    return true;
 }
 
 bool Deserialize(ShipCargoResult* data, std::vector<uint8_t>& stream, size_t* offset)

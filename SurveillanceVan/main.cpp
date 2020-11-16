@@ -20,7 +20,7 @@ std::mutex g_printlock;
 
 #define LOCKED_PRINT(command) {g_printlock.lock(); command; g_printlock.unlock();}
 
-#define FAIL(message) { LOCKED_PRINT(printf(message)); return 1; }
+#define FAIL_MESSAGE(message) { LOCKED_PRINT(printf(message)); return 1; }
 
 struct Context
 {
@@ -45,17 +45,17 @@ bool InjectDLL(HANDLE process, const char* dllPath)
     SCOPE_GUARD(if (dllPathAddress) { VirtualFreeEx(process, dllPathAddress, strlen(dllPath), MEM_RELEASE); });
 
     if (dllPathAddress == 0)
-        FAIL("Could not allocate memory in process");
+        FAIL_MESSAGE("Could not allocate memory in process");
 
     if (!WriteProcessMemory(process, dllPathAddress, dllPath, strlen(dllPath), NULL))
-        FAIL("Could not write to process memory");
+        FAIL_MESSAGE("Could not write to process memory");
 
     loadLibraryAddrress = GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "LoadLibraryA");
 
     remoteThread = CreateRemoteThread(process, NULL, 0, (LPTHREAD_START_ROUTINE)loadLibraryAddrress, dllPathAddress, 0, NULL);
 
     if (!remoteThread)
-        FAIL("Failed to start thread in the target process");
+        FAIL_MESSAGE("Failed to start thread in the target process");
 
     WaitForSingleObject(remoteThread, INFINITE);
 
@@ -73,81 +73,6 @@ DWORD WaitOnSocketAccept(void *socketParameter)
     WaitOnSocket &block = *(WaitOnSocket*)socketParameter;
     block.clientSocket = accept(block.listenSocket, NULL, NULL);
     return 0;
-}
-
-bool HandleOutgoingMessages(Context &context)
-{
-    Message message;
-    std::string command;
-    getline(std::cin, command);
-
-    LOCKED_PRINT(command.c_str());
-
-    memset(message.payload, 0, sizeof(message.payload));
-
-    if (command.rfind("exit", 0) == 0)
-    {
-        message.type = MessageType::Exit;
-    }
-    else if (command.rfind("python", 0) == 0)
-    {
-        message.type = MessageType::PytonExec;
-        memset(message.payload, 0, sizeof(message.payload));
-
-        command.erase(0, 7);
-
-        if (command.size() > sizeof(message.payload) - 1)
-        {
-            LOCKED_PRINT("Command too long");
-            return true;
-        }
-
-        memcpy(message.payload, command.c_str(), command.size());
-        message.payload[sizeof(message.payload) - 1] = 0;
-    }
-    else if (command.rfind("print", 0) == 0)
-    {
-        message.type = MessageType::Print;
-
-        size_t printlength = strlen("print ");
-        size_t argumentLenght = command.size() - printlength;
-        size_t payloadLength = sizeof(Message::payload);
-
-        if (command.size() > strlen("print "))
-            memcpy(message.payload, command.c_str() + printlength, min(argumentLenght, payloadLength));
-    }
-    else if (command.rfind("rir", 0) == 0)
-    {
-        // Register Island resorce
-        message.type = MessageType::RegisterIslandResources;
-
-        size_t printlength = strlen("rir ");
-        size_t argumentLenght = command.size() - printlength;
-        size_t payloadLength = sizeof(Message::payload);
-
-        if (command.size() > strlen("rir "))
-            memcpy(message.payload, command.c_str() + printlength, min(argumentLenght, payloadLength));
-    }
-    else if (command.rfind("plot", 0) == 0)
-    {
-        // Open window to render
-    }
-    else if (command.rfind("move", 0) == 0)
-    {
-        message.type = MessageType::MoveShip;
-
-        size_t printlength = strlen("move ");
-        size_t argumentLenght = command.size() - printlength;
-        size_t payloadLength = sizeof(Message::payload);
-
-        if (command.size() > strlen("move "))
-            memcpy(message.payload, command.c_str() + printlength, min(argumentLenght, payloadLength));
-    }
-
-    if (!HackSendMessage(context.socket, &message))
-        return false;
-
-    return true;
 }
 
 DWORD HandleIncommingMessage(void* arg)
@@ -212,7 +137,7 @@ int main()
     // Initialize Winsock
     iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (iResult != 0)
-        FAIL("Failed to startup winsocket!");
+        FAIL_MESSAGE("Failed to startup winsocket!");
 
     SCOPE_GUARD(WSACleanup());
 
@@ -225,34 +150,34 @@ int main()
     // Resolve the server address and port
     iResult = getaddrinfo(NULL, defaultPort, &hints, &result);
     if (iResult != 0)
-        FAIL("Get AddrInfo failed");
+        FAIL_MESSAGE("Get AddrInfo failed");
 
     SCOPE_GUARD(if (result != NULL) freeaddrinfo(result));
 
     // Create a SOCKET for connecting to server
     ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
     if (ListenSocket == INVALID_SOCKET)
-        FAIL("Could not create listening socket");
+        FAIL_MESSAGE("Could not create listening socket");
 
     SCOPE_GUARD(closesocket(ListenSocket));
 
     // Setup the TCP listening socket
     iResult = bind(ListenSocket, result->ai_addr, (int)result->ai_addrlen);
     if (iResult == SOCKET_ERROR)
-        FAIL("bind socket failed");
+        FAIL_MESSAGE("bind socket failed");
 
     freeaddrinfo(result);
     result = NULL;
 
     iResult = listen(ListenSocket, SOMAXCONN);
     if (iResult == SOCKET_ERROR)
-        FAIL("Failed to listen on socket");
+        FAIL_MESSAGE("Failed to listen on socket");
 
     SCOPE_GUARD(closesocket(block.clientSocket));
 
     HANDLE annoProcess;
     if (!GetProcessByName("Anno1800.exe", &annoProcess))
-        FAIL("Could not find anno process");
+        FAIL_MESSAGE("Could not find anno process");
 
     char nameBuffer[1024];
     GetFullPathNameA("TomCruise.dll",
@@ -260,7 +185,7 @@ int main()
         nameBuffer,
         NULL);
     if (strlen(nameBuffer) == 0)
-        FAIL("Couldn't find 'TomCruise.dll' in the current working directory");
+        FAIL_MESSAGE("Couldn't find 'TomCruise.dll' in the current working directory");
 
     block.listenSocket = ListenSocket;
 
@@ -269,12 +194,12 @@ int main()
     Sleep(500);
 
     if (!InjectDLL(annoProcess, nameBuffer))
-        FAIL("Could not inject DLL");
+        FAIL_MESSAGE("Could not inject DLL");
 
     WaitForSingleObject(socketWaitThread, 10000);
 
     if (block.clientSocket == INVALID_SOCKET)
-        FAIL("Could not connect to socket");
+        FAIL_MESSAGE("Could not connect to socket");
 
     // No longer need server socket
     closesocket(ListenSocket);
@@ -302,4 +227,3 @@ int main()
 
     return 0;
 }
-

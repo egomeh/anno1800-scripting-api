@@ -19,8 +19,8 @@ namespace monocle_demo
             Program program = new Program();
             // program.Run(args);
 
-            // program.Demo();
-            program.DemoAllIslands();
+            program.Demo();
+            // program.DemoAllIslands();
         }
 
         void DemoAllIslands()
@@ -73,6 +73,11 @@ namespace monocle_demo
         void Demo()
         {
             monocle.Telegraph telegraph = new monocle.Telegraph();
+
+            List<ShipData> testShips;
+            telegraph.GetAllShips(Area.OldWorld, out testShips);
+
+            return;
 
             List<monocle.IslandData> islandData = new List<monocle.IslandData>();
 

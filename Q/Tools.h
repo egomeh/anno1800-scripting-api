@@ -52,16 +52,8 @@ float ReadF32(uint64_t address);
 std::string resourceIDToString(uint32_t id);
 uint32_t stringToResourceID(const char* name);
 
-bool GetAssumedFunctions(const char* filename, const char* section, AssumedFunction** functions, uint64_t &entries);
-
-bool WriteToPipeBlocking(HANDLE pipe, const char* message);
-
 bool HackSendMessage(SOCKET socket, Message* message);
 bool HackReceiveMessage(SOCKET socket, Message *message);
-
-uint64_t FindAddressByPointerList(const uint64_t* addresses, uint32_t n, const uint64_t address, bool followFirst, bool followLast);
-
-bool PlotAsterisk(size_t width, size_t height, float* data, std::vector<std::string>& output);
 
 bool shipname(const char*& string, std::string& name);
 bool number(const char*& string, float& value);

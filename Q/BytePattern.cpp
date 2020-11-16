@@ -314,7 +314,6 @@ bool ReadByteSequence(Cursor* cursor, ByteSequence* sequence)
     if (!ParseNextSubsequence(&cursorAfter, sequence))
         return false;
 
-    uint8_t byte;
     while (true)
     {
         *cursor = cursorAfter;

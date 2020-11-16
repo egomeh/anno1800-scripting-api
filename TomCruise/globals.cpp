@@ -10,7 +10,7 @@ void SendMessageToHost(const char* message)
     WriteFile(
         g_logFile,           // open file handle
         message,      // start of data to write
-        strlen(message),  // number of bytes to write
+        (DWORD)strlen(message),  // number of bytes to write
         &bytesWritten, // number of bytes that were written
         NULL);            // no overlapped structure
 

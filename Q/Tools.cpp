@@ -84,13 +84,13 @@ bool GetProcessModules(const HANDLE& processHandle, HMODULE** moduleList, uint64
 
 bool EndsWith(const char* string, const char* check)
 {
-    int stringLength = strlen(string);
-    int checkLength = strlen(check);
+    size_t stringLength = strlen(string);
+    size_t checkLength = strlen(check);
 
     if (stringLength < checkLength)
         return false;
 
-    for (int i = 0; i < checkLength; ++i)
+    for (size_t i = 0; i < checkLength; ++i)
     {
         if (string[stringLength - i - 1] != check[checkLength - i - 1])
             return false;
@@ -516,48 +516,6 @@ uint32_t stringToResourceID(const char* name)
     return -1;
 }
 
-bool GetAssumedFunctions(const char* filename, const char* section, AssumedFunction** functions, uint64_t &entries)
-{
-    LPVOID data = NULL;
-    
-    HANDLE hFile = CreateFileA(filename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    
-    if (hFile == INVALID_HANDLE_VALUE)
-        return false;
-
-    DWORD fileSize = GetFileSize(hFile, &fileSize);
-
-    data = (LPVOID)(new char[fileSize]);
-
-    DWORD read = -1;
-    if (!ReadFile(hFile, data, fileSize, &read, NULL))
-        return false;
-
-    char* text = (char*)data;
-
-    size_t numberOfLines = 0;
-    for (int i = 0; i < fileSize; ++i)
-    {
-        if (text[i] == '\n')
-            ++numberOfLines;
-    }
-
-    CloseHandle(hFile);
-
-    return true;
-}
-
-bool WriteToPipeBlocking(HANDLE pipe, const char* message)
-{
-    DWORD bytesWritten = 0;
-    BOOL wrote = WriteFile(pipe, message, strlen(message) + 1, &bytesWritten, NULL);
-
-    if (!wrote)
-        return false;
-
-    return true;
-}
-
 bool HackSendMessage(SOCKET socket, Message* message)
 {
     int result = send(socket, (char*)message, sizeof(Message), 0);
@@ -577,72 +535,6 @@ bool HackReceiveMessage(SOCKET socket, Message *message)
 
     return true;
 }
-
-uint64_t FindAddressByPointerList(const uint64_t* offsets, uint32_t n, const uint64_t address, bool followFirst, bool followLast)
-{
-    uint64_t finalAddress = address;
-
-    if (!IsReadable((void*)finalAddress, sizeof(void*)))
-        return 0;
-
-    if (followFirst)
-    {
-        finalAddress = *(uint64_t*)(finalAddress);
-
-        if (!IsReadable((void*)finalAddress, sizeof(void*)))
-            return 0;
-    }
-
-    for (int i = 0; i < n - 1; ++i)
-    {
-        finalAddress += offsets[i];
-
-        if (!IsReadable((void*)finalAddress, sizeof(void*)))
-            return 0;
-
-        finalAddress = *(uint64_t*)(finalAddress);
-
-        if (!IsReadable((void*)finalAddress, sizeof(void*)))
-            return 0;
-    }
-
-    finalAddress += offsets[n - 1];
-
-    if (!IsReadable((void*)finalAddress, sizeof(void*)))
-        return false;
-
-    if (followLast)
-    {
-        finalAddress = *(uint64_t*)(finalAddress);
-
-        if (!IsReadable((void*)finalAddress, sizeof(void*)))
-            return 0;
-    }
-
-    return finalAddress;
-}
-
-bool PlotAsterisk(size_t width, size_t height, float* data, std::vector<std::string>& output)
-{
-    output.clear();
-
-    output = std::vector<std::string>();
-
-    for (int i = 0; i < height; ++i)
-    {
-        output.push_back(std::string(width, ' '));
-    }
-
-    for (size_t x = 0; x < width; ++x)
-    {
-        float sample = data[x];
-        int sampleOnScale = max(0, (sample * (float)height) - 1);
-        output[height - sampleOnScale - 1][x] = '*';
-    }
-
-    return true;
-}
-
 
 void whitespace(const char*& string)
 {
@@ -682,7 +574,7 @@ bool shipname(const char*& string, std::string& name)
 
     const char* stringEnd = cursor - 1;
 
-    int size = stringEnd - stringBegin + 1;
+    int size = (int)(stringEnd - stringBegin + 1);
     char* buffer = new char[size + 1];
     memset(buffer, 0, size + 1);
     memcpy(buffer, stringBegin, size);
@@ -723,7 +615,7 @@ bool number(const char*& string, float& result)
     }
 
     // If there is a '.' the the result is a real number.
-    double decimal_part = 0.;
+    float decimal_part = 0.;
 
     if (*cursor == '.')
     {
@@ -731,15 +623,15 @@ bool number(const char*& string, float& result)
         is_integer = false;
     }
 
-    double decimal_place = .1;
+    float decimal_place = 0.1f;
     while (isdigit(*cursor))
     {
-        decimal_part += static_cast<double>(*cursor - '0') * decimal_place;
-        decimal_place *= .1;
+        decimal_part += static_cast<float>(*cursor - '0') * decimal_place;
+        decimal_place *= 0.1f;
         ++cursor;
     }
 
-    result = static_cast<double>(number);
+    result = static_cast<float>(number);
     result += decimal_part;
 
     string = cursor;
@@ -875,7 +767,7 @@ bool ReadMessageFromSocket(SOCKET socket, std::vector<uint8_t>& buffer)
 {
     buffer.clear();
     buffer.resize(0x100);
-    int bytesRead = recv(socket, (char*)buffer.data(), buffer.size(), 0);
+    int bytesRead = recv(socket, (char*)buffer.data(), static_cast<int>(buffer.size()), 0);
 
     if (bytesRead == SOCKET_ERROR)
         return false;
@@ -892,7 +784,7 @@ bool ReadMessageFromSocket(SOCKET socket, std::vector<uint8_t>& buffer)
     {
         std::vector<uint8_t> tempBuffer(0x100);
 
-        int extraBytes = recv(socket, (char*)tempBuffer.data(), tempBuffer.size(), 0);
+        int extraBytes = recv(socket, (char*)tempBuffer.data(), static_cast<int>(tempBuffer.size()), 0);
 
         if (extraBytes == SOCKET_ERROR)
             return false;

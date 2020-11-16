@@ -322,7 +322,7 @@ bool GetIslandResource(const IslandResourceRecordRequst& request, IslandResource
                             if (type != (uint32_t)request.resourceType)
                                 continue;
 
-                            SEND_FORMATTED("Found resource %llx at island base address %llx Region %llx", type, islandBase, regionBaseAddress);
+                            SEND_FORMATTED("Found resource %" PRIX32 " at island base address %" PRIX64 " Region %" PRIX64, type, islandBase, regionBaseAddress);
 
                             result->amount = amount;
                             result->capacity = capacity;
@@ -464,7 +464,7 @@ bool GetIslandBuildings(const uint64_t islandID, std::vector<AutoComms::Building
 
                 if (!IsReadablePointer(baseAddressPtr))
                 {
-                    SEND_FORMATTED("could not read at address %lls", baseAddressPtr);
+                    SEND_FORMATTED("could not read at address %lls", (wchar_t*)baseAddressPtr);
                     continue;
                 }
 

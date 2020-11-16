@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <string>
-#include <optional>
 
 #include "structs.h"
 
@@ -59,7 +58,7 @@ struct HookSequences
     ByteSequence pattern;
     ByteSequence replacement;
     ByteSequence detour;
-    uint32_t nopPadding;
+    size_t nopPadding;
 };
 
 std::string ByteSequencesToString(const ByteSequence& sequence);

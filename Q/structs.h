@@ -151,8 +151,8 @@ struct BuildingCache
 #define PP_CAT_I(a, b) PP_CAT_II(~, a ## b)
 #define PP_CAT_II(p, res) res
 
-#define UNIQUE_NAME(base) PP_CAT(base, __COUNTER__)
+#define ANNO_UNIQUE_NAME(base) PP_CAT(base, __COUNTER__)
 
 
-#define SCOPE_GUARD(code) RunOnExit UNIQUE_NAME(roe) ([&] () { code; })
+#define SCOPE_GUARD(code) RunOnExit ANNO_UNIQUE_NAME(roe) ([&] () { code; })
 #define SCOPE_LOCK(lock) EnterCriticalSection(lock); SCOPE_GUARD(LeaveCriticalSection(lock));
