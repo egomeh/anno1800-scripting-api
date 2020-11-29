@@ -1052,9 +1052,9 @@ def GenerateFunctionCalls(data_types, functionData, enums):
 
     cs_functions_string = "\n".join(cs_functions)
 
-    with open("annoscripting/annoscripting/autocomms.py", "w") as file:
+    #with open("annoscripting/annoscripting/autocomms.py", "w") as file:
 
-        file.write(template.format(classes = python_classes, functions = functions_string))
+    #    file.write(template.format(classes = python_classes, functions = functions_string))
 
     with open("TomCruise/autocomms_native.h", "w") as file:
 
