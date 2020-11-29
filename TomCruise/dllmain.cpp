@@ -245,9 +245,9 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     PrepareAndLocateHook(&shipContextSetup, "ship context hook", (uint64_t)ShipContextSet, moduleBase, moduleBase + 0x1225591, HookScripts::ShipContextSetHook, regions, nRegions);
     hooks.push_back(shipContextSetup);
 
-    //Hook shipListIteration;
-    //PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0x8084E0, HookScripts::ShipListIteration, regions, nRegions);
-    //hooks.push_back(shipListIteration);
+    Hook shipListIteration;
+    PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0x809ED0, HookScripts::ShipListIteration, regions, nRegions);
+    hooks.push_back(shipListIteration);
 
     //Hook regionIteration;
     //PrepareAndLocateHook(&regionIteration, "Region iteration", (uint64_t)RegionIteration, moduleBase, moduleBase + 0x69A64C, HookScripts::RegionIteration, regions, nRegions);
