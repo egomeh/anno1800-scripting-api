@@ -3,7 +3,7 @@
 #include "native_callbacks.h"
 #include "native_calls.h"
 #include "native_traversal.h"
-#include "globals.h""
+#include "globals.h"
 
 #include <unordered_map>
 
