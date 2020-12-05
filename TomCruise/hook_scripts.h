@@ -136,29 +136,62 @@ ff d0                               // call   rax
 ff e0                               // jmp    rax
 )";
 
+//const char* ShipContextSetHook =
+//R"(
+//-pattern:
+//48 c1 e1 10                         // shl    rcx,0x10
+//41 0f b7 c4                         // movzx  eax,r12w
+//48 0b c8                            // or     rcx,rax
+//4a 89 0c 2a                         // mov    QWORD PTR [rdx+r13*1],rcx
+//4c 89 44 24 40                      // mov    QWORD PTR [rsp+0x40],r8
+//
+//-replacement:
+//50                                  // push   rax
+//48 b8 [detourAddress : 8]           // movabs rax, detourAddress
+//ff e0                               // jmp    rax
+//90
+//returnLocation
+//
+//-detour:
+//58                                  // pop    rax
+//48 c1 e1 10                         // shl    rcx,0x10
+//41 0f b7 c4                         // movzx  eax,r12w
+//48 0b c8                            // or     rcx,rax
+//4a 89 0c 2a                         // mov    QWORD PTR [rdx+r13*1],rcx
+//4c 89 44 24 40                      // mov    QWORD PTR [rsp+0x40],r8
+//
+//[push volatile]
+//48 83 ec 20                         // sub    rsp,0x20
+//65 48 8b 0c 25 58 00 00 00          // mov    rcx,QWORD PTR gs:0x58
+//48 b8 [targetAddress : 8]           // movabs rax, targetAddress
+//ff d0                               // call   rax
+//48 83 c4 20                         // add    rsp,0x20
+//[pop volatile]
+//
+//48 ba [returnAddress : 8]           // movabs rdx, returnAddress
+//ff e2                               // jmp    rdx
+//)";
+
 const char* ShipContextSetHook =
 R"(
 -pattern:
-48 c1 e1 10                         // shl    rcx,0x10
-41 0f b7 c4                         // movzx  eax,r12w
-48 0b c8                            // or     rcx,rax
-4a 89 0c 2a                         // mov    QWORD PTR [rdx+r13*1],rcx
-4c 89 44 24 40                      // mov    QWORD PTR [rsp+0x40],r8
+4b 89 1c 2f                         // mov    QWORD PTR [r15+r13*1],rbx
+4a 89 04 39                         // mov    QWORD PTR [rcx+r15*1],rax
+48 8b 4e 38                         // mov    rcx,QWORD PTR [rsi+0x38]
+48 85 c9                            // test   rcx,rcx
 
 -replacement:
-50                                  // push   rax
-48 b8 [detourAddress : 8]           // movabs rax, detourAddress
-ff e0                               // jmp    rax
-90
+51                                  // push   rcx
+48 b9 [detourAddress : 8]           // movabs rcx, detourAddress
+ff e1                               // jmp    rcx
 returnLocation
 
 -detour:
-58                                  // pop    rax
-48 c1 e1 10                         // shl    rcx,0x10
-41 0f b7 c4                         // movzx  eax,r12w
-48 0b c8                            // or     rcx,rax
-4a 89 0c 2a                         // mov    QWORD PTR [rdx+r13*1],rcx
-4c 89 44 24 40                      // mov    QWORD PTR [rsp+0x40],r8
+59                                  // pop    rcx
+4b 89 1c 2f                         // mov    QWORD PTR [r15+r13*1],rbx
+4a 89 04 39                         // mov    QWORD PTR [rcx+r15*1],rax
+48 8b 4e 38                         // mov    rcx,QWORD PTR [rsi+0x38]
+48 85 c9                            // test   rcx,rcx
 
 [push volatile]
 48 83 ec 20                         // sub    rsp,0x20
@@ -168,8 +201,8 @@ ff d0                               // call   rax
 48 83 c4 20                         // add    rsp,0x20
 [pop volatile]
 
-48 ba [returnAddress : 8]           // movabs rdx, returnAddress
-ff e2                               // jmp    rdx
+48 b8 [returnAddress : 8]           // movabs rax, returnAddress
+ff e0                               // jmp    rax
 )";
 
 const char* RegionIteration =

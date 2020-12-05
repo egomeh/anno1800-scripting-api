@@ -238,16 +238,16 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     bool isUplayBinary = false;
 
     Hook timeHook;
-    PrepareAndLocateHook(&timeHook, "time hook", (uint64_t)NativeCallbackUpdateTime, moduleBase, moduleBase + 0x122eff1, HookScripts::TimeAndFrame, regions, nRegions);
+    PrepareAndLocateHook(&timeHook, "time hook", (uint64_t)NativeCallbackUpdateTime, moduleBase, moduleBase + 0x122f481, HookScripts::TimeAndFrame, regions, nRegions);
     hooks.push_back(timeHook);
 
     Hook shipContextSetup;
-    PrepareAndLocateHook(&shipContextSetup, "ship context hook", (uint64_t)ShipContextSet, moduleBase, moduleBase + 0x1225591, HookScripts::ShipContextSetHook, regions, nRegions);
+    PrepareAndLocateHook(&shipContextSetup, "ship context hook", (uint64_t)ShipContextSet, moduleBase, moduleBase + 0x541A73, HookScripts::ShipContextSetHook, regions, nRegions);
     hooks.push_back(shipContextSetup);
 
-    Hook shipListIteration;
-    PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0x809ED0, HookScripts::ShipListIteration, regions, nRegions);
-    hooks.push_back(shipListIteration);
+    //Hook shipListIteration;
+    //PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0x809ED0, HookScripts::ShipListIteration, regions, nRegions);
+    //hooks.push_back(shipListIteration);
 
     //Hook regionIteration;
     //PrepareAndLocateHook(&regionIteration, "Region iteration", (uint64_t)RegionIteration, moduleBase, moduleBase + 0x69A64C, HookScripts::RegionIteration, regions, nRegions);
@@ -264,7 +264,7 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     //nativeCalls.push_back(virtualShipGetComponent);
 
     NativeCallSetup shipMoveSetup;
-    PrepareAndSetupNativeCall(&shipMoveSetup, "Ship move call", NativeCallSetups::ShipDispatch, NativeCallSetups::ShipDispatchPreCall, (uint64_t*)&ShipDispatchPreCode, moduleBase, moduleBase + 0x10E84E0, regions, nRegions);
+    PrepareAndSetupNativeCall(&shipMoveSetup, "Ship move call", NativeCallSetups::ShipDispatch, NativeCallSetups::ShipDispatchPreCall, (uint64_t*)&ShipDispatchPreCode, moduleBase, moduleBase + 0x10E8970, regions, nRegions);
     nativeCalls.push_back(shipMoveSetup);
 
     //NativeCallSetup shipRegionTransferSetup;

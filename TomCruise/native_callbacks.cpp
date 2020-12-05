@@ -71,19 +71,27 @@ void ShipContextSet(uint64_t pointerValue)
 
     uint64_t pointerValue1 = ReadU64(pointerValue);
 
-    uint64_t areaOffset = 0x9DE4 + 0x18;
+    if (!IsReadable((void*)pointerValue1, 8))
+        return;
+
+    uint64_t areaOffset = 0x9E10;
 
     if (!IsReadable((void*)(pointerValue1 + areaOffset), 8))
         return;
 
-    uint64_t areaID = (ReadU64(pointerValue1 + areaOffset) >> 0x30) & 0xFFFF;
+    uint64_t areaPointer = ReadU64(pointerValue1 + areaOffset);
+
+    if (!IsReadable((void*)(areaPointer + 8), 8))
+        return;
+
+    uint64_t areaID = (ReadU64(areaPointer + 8) & 0xFFFF);
 
     uint64_t idValue = 0;
 
     if (areaID == 0xBF37)
-        idValue = 2;
+        idValue = 2; // Old world
     else if (areaID == 0xBF39)
-        idValue = 3;
+        idValue = 3; // New world
  
     switch (callType)
     {
