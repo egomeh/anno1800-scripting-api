@@ -21,6 +21,9 @@ extern VirtualShipGetComponentType VirtualShipGetComponent;
 typedef void (*ShipDispatchPreCodeType)(uint64_t, uint64_t);
 extern ShipDispatchPreCodeType ShipDispatchPreCode;
 
+typedef void (*ShipClearCommandQueuePreCodeType)(uint64_t);
+extern ShipClearCommandQueuePreCodeType ShipClearCommandQueuePreCode;
+
 typedef void (*ShipTransferPreCodeType)(uint64_t, uint64_t);
 extern ShipTransferPreCodeType ShipTransferPreCode;
 

@@ -4,6 +4,36 @@
 namespace NativeCallSetups
 {
 
+const char* ShipClearCommandQueue = 
+R"(
+48 8b c4                            // mov    rax,rsp
+48 89 58 18                         // mov    QWORD PTR [rax+0x18],rbx
+88 50 10                            // mov    BYTE PTR [rax+0x10],dl
+55                                  // push   rbp
+56                                  // push   rsi
+57                                  // push   rdi
+41 54                               // push   r12
+41 55                               // push   r13
+41 56                               // push   r14
+41 57                               // push   r15
+48 8d a8 88 fe ff ff                // lea    rbp,[rax-0x178]
+48 81 ec 40 02 00 00                // sub    rsp,0x240
+0f 29 70 b8                         // movaps XMMWORD PTR [rax-0x48],xmm6
+0f b6 fa                            // movzx  edi,dl
+)";
+
+const char* ShipClearCommandQueuePreCall =
+R"(
+[push volatile]
+48 81 ec 08 01 00 00                // sub    rsp,0x108
+48 b8 [nativeCode : 8]              // movabs rax, nativeCode
+ff d0                               // call   rax
+90                                  // nop
+48 81 c4 08 01 00 00                // add    rsp,0x108
+[pop volatile]
+c3                                  // ret
+)";
+
 const char* ShipDispatch =
 R"(
 48 89 4c 24 08                      // mov    QWORD PTR [rsp+0x8],rcx

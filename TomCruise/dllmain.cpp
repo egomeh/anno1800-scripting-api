@@ -267,6 +267,10 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     PrepareAndSetupNativeCall(&shipMoveSetup, "Ship move call", NativeCallSetups::ShipDispatch, NativeCallSetups::ShipDispatchPreCall, (uint64_t*)&ShipDispatchPreCode, moduleBase, moduleBase + 0x10E8970, regions, nRegions);
     nativeCalls.push_back(shipMoveSetup);
 
+    NativeCallSetup shiClearCommandQueueSetup;
+    PrepareAndSetupNativeCall(&shiClearCommandQueueSetup, "Ship clear command queue", NativeCallSetups::ShipClearCommandQueue, NativeCallSetups::ShipClearCommandQueuePreCall, (uint64_t*)&ShipClearCommandQueuePreCode, moduleBase, moduleBase + 0x713CC0, regions, nRegions);
+    nativeCalls.push_back(shiClearCommandQueueSetup);
+
     //NativeCallSetup shipRegionTransferSetup;
     //PrepareAndSetupNativeCall(&shipRegionTransferSetup, "Ship region transfer", NativeCallSetups::ShipTransfer, NativeCallSetups::ShipTransferPreCall, (uint64_t*)&ShipTransferPreCode, moduleBase, moduleBase + 0x74AEF0, regions, nRegions);
     //nativeCalls.push_back(shipRegionTransferSetup);

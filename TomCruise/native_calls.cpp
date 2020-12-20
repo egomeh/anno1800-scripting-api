@@ -78,6 +78,7 @@ bool TearDownNativeThreadCall()
 VirtualShipGetComponentType VirtualShipGetComponent = (VirtualShipGetComponentType)0;
 
 ShipDispatchPreCodeType ShipDispatchPreCode = (ShipDispatchPreCodeType)0;
+ShipClearCommandQueuePreCodeType ShipClearCommandQueuePreCode = (ShipClearCommandQueuePreCodeType)0;
 ShipTransferPreCodeType ShipTransferPreCode = (ShipTransferPreCodeType)0;
 TransferIslandToShipType TransferIslandToShipPreCode = (TransferIslandToShipType)0;
 TransferShipToIslandType TransferShipToIslandPreCode = (TransferShipToIslandType)0;
