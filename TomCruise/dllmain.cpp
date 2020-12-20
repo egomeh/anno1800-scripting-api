@@ -249,9 +249,9 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0x809F90, HookScripts::ShipListIteration, regions, nRegions);
     hooks.push_back(shipListIteration);
 
-    //Hook regionIteration;
-    //PrepareAndLocateHook(&regionIteration, "Region iteration", (uint64_t)RegionIteration, moduleBase, moduleBase + 0x69A64C, HookScripts::RegionIteration, regions, nRegions);
-    //hooks.push_back(regionIteration);
+    Hook regionIteration;
+    PrepareAndLocateHook(&regionIteration, "Region iteration", (uint64_t)RegionIteration, moduleBase, moduleBase + 0x16990D, HookScripts::RegionIteration, regions, nRegions);
+    hooks.push_back(regionIteration);
 
     //uint64_t islandConsumptionOffset = isUplayBinary ? 0x6685BD : 0x46060D;
 

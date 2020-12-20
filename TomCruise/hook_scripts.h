@@ -208,31 +208,29 @@ ff e0                               // jmp    rax
 const char* RegionIteration =
 R"(
 -pattern:
-48 8d 44 24 30                      // lea    rax, [rsp + 0x30]
-48 89 84 24 90 00 00 00             // mov    QWORD PTR[rsp + 0x90], rax
-49 8b 06                            // mov    rax, QWORD PTR[r14]
+49 8d 43 b8                         // lea    rax,[r11-0x48]
+49 89 43 08                         // mov    QWORD PTR [r11+0x8],rax
+48 8b 01                            // mov    rax,QWORD PTR [rcx]
+49 c7 43 f0 00 00 00 00             // mov    QWORD PTR [r11-0x10],0x0
 
 -replacement:
-48 b8 [detourAddress : 8]           // movabs rax, detourAddress
-ff e0                               // jmp    rax
+48 ba [detourAddress : 8]           // movabs rdx, detourAddress
+ff e2                               // jmp    rdx
 returnLocation
-90                                  // nop
-58                                  // pop rax
 
 -detour:
-48 8d 44 24 30                      // lea    rax, [rsp + 0x30]
-48 89 84 24 90 00 00 00             // mov    QWORD PTR[rsp + 0x90], rax
-49 8b 06                            // mov    rax, QWORD PTR[r14]
+49 8d 43 b8                         // lea    rax,[r11-0x48]
+49 89 43 08                         // mov    QWORD PTR [r11+0x8],rax
+48 8b 01                            // mov    rax,QWORD PTR [rcx]
+49 c7 43 f0 00 00 00 00             // mov    QWORD PTR [r11-0x10],0x0
 [push volatile]
 48 83 ec 28                         // sub    rsp,0x28
-4c 89 f1                            // mov    rcx,r14
 48 b8 [targetAddress : 8]           // movabs rax, targetAddress
 ff d0                               // call   rax
 48 83 c4 28                         // add    rsp,0x28
 [pop volatile]
-50                                  // push   rax
-48 b8 [returnAddress : 8]           // movabs rax, returnAddress
-ff e0                               // jmp    rax
+48 ba [returnAddress : 8]           // movabs rdx, returnAddress
+ff e2                               // jmp    rdx
 )";
 
 const char* IslandConsumptionIteration =
