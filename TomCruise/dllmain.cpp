@@ -276,15 +276,15 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     //nativeCalls.push_back(shipRegionTransferSetup);
 
     NativeCallSetup transferIslandToShipSetup;
-    PrepareAndSetupNativeCall(&transferIslandToShipSetup, "Resource Island -> Ship", NativeCallSetups::LoadCargoFromIslandToShip, NativeCallSetups::LoadCargoFromIslandToShipPreCall, (uint64_t*)&TransferIslandToShipPreCode, moduleBase, moduleBase + 0x10FCCD0, regions, nRegions);
+    PrepareAndSetupNativeCall(&transferIslandToShipSetup, "Resource Island -> Ship", NativeCallSetups::LoadCargoFromIslandToShip, NativeCallSetups::LoadCargoFromIslandToShipPreCall, (uint64_t*)&TransferIslandToShipPreCode, moduleBase, moduleBase + 0x10FEFA0, regions, nRegions);
     nativeCalls.push_back(transferIslandToShipSetup);
 
     NativeCallSetup transferShipToIslandSetup;
-    PrepareAndSetupNativeCall(&transferShipToIslandSetup, "Resource Island <- Ship", NativeCallSetups::LoadCargoFromShipToIsland, NativeCallSetups::LoadCargoFromShipToIslandPreCall, (uint64_t*)&TransferShipToIslandPreCode, moduleBase, moduleBase + 0x10FB980, regions, nRegions);
+    PrepareAndSetupNativeCall(&transferShipToIslandSetup, "Resource Island <- Ship", NativeCallSetups::LoadCargoFromShipToIsland, NativeCallSetups::LoadCargoFromShipToIslandPreCall, (uint64_t*)&TransferShipToIslandPreCode, moduleBase, moduleBase + 0x10FDC50, regions, nRegions);
     nativeCalls.push_back(transferShipToIslandSetup);
 
     NativeCallSetup shipDumpSetup;
-    PrepareAndSetupNativeCall(&shipDumpSetup, "Ship dump cargo call", NativeCallSetups::ShipCargoDump, NativeCallSetups::ShipCargoDumpPreCall, (uint64_t*)&ShipDumpCargoPreCode, moduleBase, moduleBase + 0x74AEF0, regions, nRegions);
+    PrepareAndSetupNativeCall(&shipDumpSetup, "Ship dump cargo call", NativeCallSetups::ShipCargoDump, NativeCallSetups::ShipCargoDumpPreCall, (uint64_t*)&ShipDumpCargoPreCode, moduleBase, moduleBase + 0x74C890, regions, nRegions);
     nativeCalls.push_back(shipDumpSetup);
 
     for (Hook& hook : hooks)
