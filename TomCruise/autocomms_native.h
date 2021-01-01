@@ -19,7 +19,6 @@ bool TargetCall_GetAllShips(const Area& area, std::vector<ShipData>* ships);
 bool TargetCall_GetShipAddress(const uint64_t& shipID, uint64_t* address);
 bool TargetCall_GetShipCargo(const uint64_t& shipID, std::vector<ShipCargoSlot>* cargo);
 bool TargetCall_AddWaypoint(const std::vector<uint64_t>& IDs, const Coordinate& waypoint);
-bool TargetCall_GetAllIslands(std::vector<IslandData>* islands);
 bool TargetCall_GetIslandsByName(const std::string& name, std::vector<IslandData>* islands);
 bool TargetCall_GetIslandResources(const uint64_t& islandID, std::vector<IslandResourceRecord>* resources);
 bool TargetCall_GetIslandBuildings(const uint64_t& islandID, std::vector<BuildingData>* buildings);
@@ -29,6 +28,7 @@ bool TargetCall_LoadCargoToShip(const uint64_t& islandID, const uint64_t& shipID
 bool TargetCall_OffloadCargoFromShip(const uint64_t& islandID, const uint64_t& shipID, const uint64_t& amount, const uint64_t& slotIndex);
 bool TargetCall_GetBuildingProduction(const uint64_t& islandID, const uint64_t& buildingID, ProductionNode* production);
 bool TargetCall_GetIslandConsumption(const uint64_t& islandID, std::vector<ConsumptionNode>* consumption);
+bool TargetCall_GetAllIslands(std::vector<IslandData>* islands);
 
 inline bool HandleScriptCall(SOCKET socket)
 {
@@ -441,7 +441,6 @@ inline bool HandleScriptCall(SOCKET socket)
     int bytesSent = send(socket, (char*)finalBuffer.data(), (int)finalBuffer.size(), 0);
 
     bool isScriptCallSuccessful = bytesSent != SOCKET_ERROR;
-
 
     return isScriptCallSuccessful;
 }

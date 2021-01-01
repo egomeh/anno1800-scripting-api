@@ -1657,31 +1657,6 @@ namespace monocle
 
             return true;
         }
-
-        public bool GetAllIslands(out List<IslandData> islands_IslandData_list)
-        {
-            List<byte> payload = new List<byte>();
-            List<byte> response = default;
-            int offset = 0;
-            int offsetAfter = offset;
-            islands_IslandData_list = default;
-            ulong function_id = 21;
-
-            if (!Serializer.Serialize(function_id, payload))
-                return false;
-
-            if (!Exchange(payload, out response))
-                return false;
-
-            byte[] buffer = response.ToArray();
-
-            if (!Serializer.Deserialize(out islands_IslandData_list, buffer, offset, out offsetAfter))
-                return false;
-
-            offset = offsetAfter;
-
-            return true;
-        }
     
         public bool GetIslandResources(UInt64 islandID, out List<IslandResourceRecord> resources_IslandResourceRecord_list)
         {
@@ -1909,6 +1884,31 @@ namespace monocle
             byte[] buffer = response.ToArray();
 
             if (!Serializer.Deserialize(out consumption_ConsumptionNode_list, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            return true;
+        }
+    
+        public bool GetAllIslands(out List<IslandData> islands_IslandData_list)
+        {
+            List<byte> payload = new List<byte>();
+            List<byte> response = default;
+            int offset = 0;
+            int offsetAfter = offset;
+            islands_IslandData_list = default;
+            ulong function_id = 21;
+
+            if (!Serializer.Serialize(function_id, payload))
+                return false;
+
+            if (!Exchange(payload, out response))
+                return false;
+
+            byte[] buffer = response.ToArray();
+
+            if (!Serializer.Deserialize(out islands_IslandData_list, buffer, offset, out offsetAfter))
                 return false;
 
             offset = offsetAfter;

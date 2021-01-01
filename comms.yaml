@@ -244,3 +244,8 @@ functions:
       - consumption:
         - type: list(ConsumptionNode)
 
+  - GetAllIslands:
+    - output:
+      - islands:
+        - type: list(IslandData)
+
