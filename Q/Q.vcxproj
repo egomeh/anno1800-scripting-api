@@ -159,7 +159,6 @@
     <ClInclude Include="comms.h" />
     <ClInclude Include="Hooking.h" />
     <ClInclude Include="rda.h" />
-    <ClInclude Include="remote_call_shared.h" />
     <ClInclude Include="structs.h" />
     <ClInclude Include="Tools.h" />
     <ClInclude Include="pch.h" />

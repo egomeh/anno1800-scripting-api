@@ -131,7 +131,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="remote_call.cpp" />
     <ClCompile Include="scripting.cpp" />
   </ItemGroup>
   <ItemGroup>

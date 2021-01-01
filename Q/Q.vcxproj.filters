@@ -30,9 +30,6 @@
     <ClInclude Include="Hooking.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="remote_call_shared.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="comms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
