@@ -23,6 +23,8 @@ data:
   - ShipData:
     - shipId:
       - type: uint64_t
+    - shipPermaId:
+      - type: uint64_t
     - shipType:
       - type: ShipType
     - name:

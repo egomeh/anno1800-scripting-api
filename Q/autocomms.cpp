@@ -269,6 +269,9 @@ bool Serialize(const ShipData& data, std::vector<uint8_t>& stream)
     if (!Serialize(data.shipId, stream))
         return false;
 
+    if (!Serialize(data.shipPermaId, stream))
+        return false;
+
     if (!Serialize(data.shipType, stream))
         return false;
 
@@ -281,6 +284,9 @@ bool Serialize(const ShipData& data, std::vector<uint8_t>& stream)
 bool Deserialize(ShipData* data, const std::vector<uint8_t>& stream, size_t* offset)
 {
     if (!Deserialize(&data->shipId, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->shipPermaId, stream, offset))
         return false;
 
     if (!Deserialize(&data->shipType, stream, offset))

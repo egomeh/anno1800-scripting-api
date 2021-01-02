@@ -48,6 +48,7 @@ namespace monocle
     public struct ShipData
     {
         public UInt64 shipId;
+        public UInt64 shipPermaId;
         public ShipType shipType;
         public string name;
     }
@@ -837,6 +838,9 @@ namespace monocle
             if (!Serialize(data.shipId, buffer))
                 return false;
 
+            if (!Serialize(data.shipPermaId, buffer))
+                return false;
+
             if (!Serialize(data.shipType, buffer))
                 return false;
 
@@ -852,6 +856,11 @@ namespace monocle
             offsetAfter = offset;
 
             if (!Deserialize(out data.shipId, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            if (!Deserialize(out data.shipPermaId, buffer, offset, out offsetAfter))
                 return false;
 
             offset = offsetAfter;

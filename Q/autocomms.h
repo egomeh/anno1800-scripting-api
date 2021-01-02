@@ -52,6 +52,7 @@ struct ShipMoveData
 struct ShipData
 {
     uint64_t shipId;
+    uint64_t shipPermaId;
     ShipType shipType;
     std::string name;
 };

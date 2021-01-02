@@ -20,3 +20,4 @@ bool GetIslandBuildings(const uint64_t islandID, std::vector<AutoComms::Building
 bool GetBuildingAddress(const uint64_t islandID, const uint64_t buildingID, BuildingCache* buildingCache, uint64_t* address);
 
 bool GetAllTradeRoutes(std::vector<AutoComms::TradeRoute>* tradeRoutes);
+

@@ -32,6 +32,7 @@ extern uint64_t Anno1800ModuleAddress;
 extern uint64_t ComponentIdName;
 extern uint64_t ComponentIdCargo;
 extern uint64_t ComponentIdMoveData;
+extern uint64_t ComponentIdPermaID;
 
 extern uint64_t ComponentIdBuildingProduction;
 extern uint64_t ComponentIdBuildingProductionNoOuput;

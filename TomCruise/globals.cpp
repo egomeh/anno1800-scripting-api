@@ -47,6 +47,7 @@ uint64_t Anno1800ModuleAddress = 0;
 uint64_t ComponentIdName = 289;
 uint64_t ComponentIdCargo = 620;
 uint64_t ComponentIdMoveData = 268;
+uint64_t ComponentIdPermaID = 286;
 
 uint64_t ComponentIdBuildingProduction = 644;
 uint64_t ComponentIdBuildingProductionNoOuput = 644;
