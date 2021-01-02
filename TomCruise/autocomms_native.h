@@ -29,6 +29,7 @@ bool TargetCall_OffloadCargoFromShip(const uint64_t& islandID, const uint64_t& s
 bool TargetCall_GetBuildingProduction(const uint64_t& islandID, const uint64_t& buildingID, ProductionNode* production);
 bool TargetCall_GetIslandConsumption(const uint64_t& islandID, std::vector<ConsumptionNode>* consumption);
 bool TargetCall_GetAllIslands(std::vector<IslandData>* islands);
+bool TargetCall_GetAllTradeRoutes(std::vector<TradeRoute>* routes);
 
 inline bool HandleScriptCall(SOCKET socket)
 {
@@ -417,6 +418,18 @@ inline bool HandleScriptCall(SOCKET socket)
             success = TargetCall_GetAllIslands(&islands);
 
             if (!AutoComms::Serialize(islands, outputBuffer))
+                return false;
+
+            break;
+        }
+
+        case 22: // GetAllTradeRoutes
+        {
+            std::vector<TradeRoute> routes;
+
+            success = TargetCall_GetAllTradeRoutes(&routes);
+
+            if (!AutoComms::Serialize(routes, outputBuffer))
                 return false;
 
             break;

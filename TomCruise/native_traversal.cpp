@@ -542,3 +542,87 @@ bool GetBuildingAddress(const uint64_t islandID, const uint64_t buildingID, Buil
 
     return true;
 }
+
+bool GetAllTradeRoutes(std::vector<AutoComms::TradeRoute>* tradeRoutes)
+{
+    tradeRoutes->clear();
+
+    uint64_t structWithTradeRoutesAddress = ReadU64(Anno1800ModuleAddress + 0x4B1D9A0);
+
+    uint64_t count = ReadU64(structWithTradeRoutesAddress + 0x80);
+    uint64_t ptr = ReadU64(structWithTradeRoutesAddress + 0x88);
+
+    // SEND_FORMATTED("Found table at %llx", ptr);
+
+    std::set<uint64_t> routesAddresses;
+
+    // Walk over table
+    for (uint64_t i = 0; i <= count; ++i)
+    {
+        uint64_t link = ReadU64(ptr + i * 8);
+
+        // Skip null pointers
+        if (!link)
+            continue;
+
+        // Skip poitners back into the table
+        if (ptr <= link && link <= ptr + (count + 1) * 8)
+            continue;
+
+        // SEND_FORMATTED("Pointer %llx", link);
+
+        // Follow the linked list
+        for (; link; link = ReadU64(link))
+        {
+            uint64_t routeAddress = ReadU64(link + 0x18);
+            routesAddresses.insert(routeAddress);
+        }
+    }
+
+    for (uint64_t address : routesAddresses)
+    {
+        AutoComms::TradeRoute route;
+        route.nodes.clear();
+
+        route.name = GetStringFromAnnoString(address + 0x10);
+
+        // Read the trade nodes
+        uint64_t tradeNodePtr = ReadU64(address + 0x40);
+        uint64_t meta1 = ReadU64(address + 0x48);
+        uint64_t meta2 = ReadU64(address + 0x50);
+
+        // Not sure which is which from reversing, so a solution to be in place
+        uint64_t capacity = max(meta1, meta2);
+        uint64_t count = min(meta1, meta2);
+
+        SEND_FORMATTED("Rote address %llx - count/capacity %lld/%lld", address, count, capacity);
+
+        for (uint64_t i = 0; i < count; ++i)
+        {
+            uint64_t nodePtr = ReadU64(tradeNodePtr + i * 8);
+            uint64_t islandID = ReadU64(nodePtr + 0x10) & 0xFFFF;
+
+            uint64_t islandBaseAddress = 0;
+            GetIslandById(islandID, &islandBaseAddress);
+
+            uint64_t nameAddress = islandBaseAddress + 0x168;
+            std::string islandName = GetStringFromAnnoString(nameAddress);
+
+            AutoComms::TradeNode node;
+            AutoComms::IslandData nodeIsland;
+
+            nodeIsland.id = islandID;
+            nodeIsland.name = islandName;
+
+            node.island = nodeIsland;
+
+            route.nodes.push_back(node);
+
+            // SEND_FORMATTED("node ptr %llx", nodePtr);
+        }
+
+        tradeRoutes->push_back(route);
+    }
+
+    return true;
+}

@@ -224,6 +224,8 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     uint64_t moduleSize = (uint64_t)(moduleInfo.SizeOfImage);
     uint64_t exeSectionSize = moduleSize - (entryPoint - moduleBase);
 
+    Anno1800ModuleAddress = moduleBase;
+
     SendMessageToHost("Going to find all memory regions");
 
     MemoryRegion* regions;

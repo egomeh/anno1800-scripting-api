@@ -94,6 +94,17 @@ namespace monocle
         public double rate;
     }
 
+    public struct TradeNode
+    {
+        public IslandData island;
+    }
+
+    public struct TradeRoute
+    {
+        public string name;
+        public List<TradeNode> nodes;
+    }
+
     public partial class Serializer
     {
         public static bool Serialize(bool data, List<byte> buffer)
@@ -1332,6 +1343,128 @@ namespace monocle
             return true;
         }
 
+        public static bool Serialize(TradeNode data, List<byte> buffer)
+        {
+            if (!Serialize(data.island, buffer))
+                return false;
+
+            return true;
+        }
+
+        public static bool Deserialize(out TradeNode data, byte[] buffer, int offset, out int offsetAfter)
+        {
+            data = default;
+            offsetAfter = offset;
+
+            if (!Deserialize(out data.island, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            return true;
+        }
+
+        public static bool Serialize(List<TradeNode> data, List<byte> buffer)
+        {
+            UInt64 size = (UInt64)data.Count;
+
+            if (!Serialize(size, buffer))
+                return false;
+
+            for (int i = 0; i < data.Count; ++i)
+            {
+                if (!Serialize(data[i], buffer))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public static bool Deserialize(out List<TradeNode> data, byte[] buffer, int offset, out int offsetAfter)
+        {
+            ulong size = 0;
+            data = new List<TradeNode>();
+            offsetAfter = offset;
+
+            if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+            for (ulong i = 0; i < size; ++i)
+            {
+                TradeNode element = default;
+                if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
+                    return false;
+                data.Add(element);
+            }
+
+            return true;
+        }
+
+        public static bool Serialize(TradeRoute data, List<byte> buffer)
+        {
+            if (!Serialize(data.name, buffer))
+                return false;
+
+            if (!Serialize(data.nodes, buffer))
+                return false;
+
+            return true;
+        }
+
+        public static bool Deserialize(out TradeRoute data, byte[] buffer, int offset, out int offsetAfter)
+        {
+            data = default;
+            offsetAfter = offset;
+
+            if (!Deserialize(out data.name, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            if (!Deserialize(out data.nodes, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            return true;
+        }
+
+        public static bool Serialize(List<TradeRoute> data, List<byte> buffer)
+        {
+            UInt64 size = (UInt64)data.Count;
+
+            if (!Serialize(size, buffer))
+                return false;
+
+            for (int i = 0; i < data.Count; ++i)
+            {
+                if (!Serialize(data[i], buffer))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public static bool Deserialize(out List<TradeRoute> data, byte[] buffer, int offset, out int offsetAfter)
+        {
+            ulong size = 0;
+            data = new List<TradeRoute>();
+            offsetAfter = offset;
+
+            if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+            for (ulong i = 0; i < size; ++i)
+            {
+                TradeRoute element = default;
+                if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
+                    return false;
+                data.Add(element);
+            }
+
+            return true;
+        }
+
     }
 
     public partial class Telegraph
@@ -1909,6 +2042,31 @@ namespace monocle
             byte[] buffer = response.ToArray();
 
             if (!Serializer.Deserialize(out islands_IslandData_list, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            return true;
+        }
+    
+        public bool GetAllTradeRoutes(out List<TradeRoute> routes_TradeRoute_list)
+        {
+            List<byte> payload = new List<byte>();
+            List<byte> response = default;
+            int offset = 0;
+            int offsetAfter = offset;
+            routes_TradeRoute_list = default;
+            ulong function_id = 22;
+
+            if (!Serializer.Serialize(function_id, payload))
+                return false;
+
+            if (!Exchange(payload, out response))
+                return false;
+
+            byte[] buffer = response.ToArray();
+
+            if (!Serializer.Deserialize(out routes_TradeRoute_list, buffer, offset, out offsetAfter))
                 return false;
 
             offset = offsetAfter;

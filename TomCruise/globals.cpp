@@ -42,6 +42,8 @@ void SendMessageToHostNoLabel(const char* message)
         NULL);            // no overlapped structure
 }
 
+uint64_t Anno1800ModuleAddress = 0;
+
 uint64_t ComponentIdName = 289;
 uint64_t ComponentIdCargo = 620;
 uint64_t ComponentIdMoveData = 268;

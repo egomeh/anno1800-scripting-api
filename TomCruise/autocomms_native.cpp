@@ -245,6 +245,11 @@ bool AutoComms::TargetCall_GetAllIslands(std::vector<IslandData>* islands)
     return true;
 }
 
+bool AutoComms::TargetCall_GetAllTradeRoutes(std::vector<TradeRoute>* routes)
+{
+    return GetAllTradeRoutes(routes);
+}
+
 bool AutoComms::TargetCall_GetIslandResources(const uint64_t& islandID, std::vector<IslandResourceRecord>* resources)
 {
     resources->clear();

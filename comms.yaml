@@ -76,6 +76,16 @@ data:
     - rate:
       - type: double
 
+  - TradeNode:
+    - island:
+      - type: IslandData
+
+  - TradeRoute:
+    - name:
+      - type: string
+    - nodes:
+      - type: list(TradeNode)
+
 functions:
 
   - GetGameTime:
@@ -248,4 +258,9 @@ functions:
     - output:
       - islands:
         - type: list(IslandData)
+
+  - GetAllTradeRoutes:
+    - output:
+      - routes:
+        - type: list(TradeRoute)
 

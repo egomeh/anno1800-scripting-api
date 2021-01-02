@@ -98,6 +98,17 @@ struct ConsumptionNode
     double rate;
 };
 
+struct TradeNode
+{
+    IslandData island;
+};
+
+struct TradeRoute
+{
+    std::string name;
+    std::vector<TradeNode> nodes;
+};
+
 
 bool Serialize(const bool& data, std::vector<uint8_t>& stream);
 bool Deserialize(bool *data, const std::vector<uint8_t>& stream, size_t* offset);
@@ -148,6 +159,10 @@ bool Serialize(const ProductionNode& data, std::vector<uint8_t>& stream);
 bool Deserialize(ProductionNode *data, const std::vector<uint8_t>& stream, size_t* offset);
 bool Serialize(const ConsumptionNode& data, std::vector<uint8_t>& stream);
 bool Deserialize(ConsumptionNode *data, const std::vector<uint8_t>& stream, size_t* offset);
+bool Serialize(const TradeNode& data, std::vector<uint8_t>& stream);
+bool Deserialize(TradeNode *data, const std::vector<uint8_t>& stream, size_t* offset);
+bool Serialize(const TradeRoute& data, std::vector<uint8_t>& stream);
+bool Deserialize(TradeRoute *data, const std::vector<uint8_t>& stream, size_t* offset);
 
 template<typename T>
 bool Serialize(const std::vector<T>& data, std::vector<uint8_t> &stream)

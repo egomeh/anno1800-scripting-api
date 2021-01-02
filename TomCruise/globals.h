@@ -27,6 +27,8 @@ extern HANDLE g_logFile;
 void SendMessageToHost(const char* message);
 void SendMessageToHostNoLabel(const char* message);
 
+extern uint64_t Anno1800ModuleAddress;
+
 extern uint64_t ComponentIdName;
 extern uint64_t ComponentIdCargo;
 extern uint64_t ComponentIdMoveData;
