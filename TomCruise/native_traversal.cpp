@@ -584,6 +584,7 @@ bool GetAllTradeRoutes(std::vector<AutoComms::TradeRoute>* tradeRoutes)
         AutoComms::TradeRoute route;
         route.nodes.clear();
 
+        route.debug_address = address;
         route.name = GetStringFromAnnoString(address + 0x10);
 
         // Read the trade nodes
@@ -615,6 +616,18 @@ bool GetAllTradeRoutes(std::vector<AutoComms::TradeRoute>* tradeRoutes)
             nodeIsland.name = islandName;
 
             node.island = nodeIsland;
+            
+            uint64_t resourceListPtr = ReadU64(nodePtr + 0x18);
+            uint64_t meta3 = ReadU64(nodePtr + 0x20);
+            uint64_t meta4 = ReadU64(nodePtr + 0x28);
+            uint64_t resourceListCapacity = max(meta3, meta4);
+            uint64_t resourceListCount = min(meta3, meta4);
+
+            for (uint64_t j = 0; j < resourceListCount; ++j)
+            {
+                uint64_t resourceNodePtr = ReadU64(resourceListPtr + j * 8);
+                SEND_FORMATTED("resource node ptr %llx", resourceNodePtr);
+            }
 
             route.nodes.push_back(node);
 

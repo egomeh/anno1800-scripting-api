@@ -95,15 +95,24 @@ namespace monocle
         public double rate;
     }
 
+    public struct LoadInstruction
+    {
+        public Resource resourceType;
+        public UInt64 amount;
+    }
+
     public struct TradeNode
     {
         public IslandData island;
+        public List<LoadInstruction> takeLoadInstructions;
+        public List<LoadInstruction> giveLoadInstructions;
     }
 
     public struct TradeRoute
     {
         public string name;
         public List<TradeNode> nodes;
+        public UInt64 debug_address;
     }
 
     public partial class Serializer
@@ -1352,9 +1361,80 @@ namespace monocle
             return true;
         }
 
+        public static bool Serialize(LoadInstruction data, List<byte> buffer)
+        {
+            if (!Serialize(data.resourceType, buffer))
+                return false;
+
+            if (!Serialize(data.amount, buffer))
+                return false;
+
+            return true;
+        }
+
+        public static bool Deserialize(out LoadInstruction data, byte[] buffer, int offset, out int offsetAfter)
+        {
+            data = default;
+            offsetAfter = offset;
+
+            if (!Deserialize(out data.resourceType, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            if (!Deserialize(out data.amount, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            return true;
+        }
+
+        public static bool Serialize(List<LoadInstruction> data, List<byte> buffer)
+        {
+            UInt64 size = (UInt64)data.Count;
+
+            if (!Serialize(size, buffer))
+                return false;
+
+            for (int i = 0; i < data.Count; ++i)
+            {
+                if (!Serialize(data[i], buffer))
+                    return false;
+            }
+
+            return true;
+        }
+
+        public static bool Deserialize(out List<LoadInstruction> data, byte[] buffer, int offset, out int offsetAfter)
+        {
+            ulong size = 0;
+            data = new List<LoadInstruction>();
+            offsetAfter = offset;
+
+            if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+            for (ulong i = 0; i < size; ++i)
+            {
+                LoadInstruction element = default;
+                if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
+                    return false;
+                data.Add(element);
+            }
+
+            return true;
+        }
+
         public static bool Serialize(TradeNode data, List<byte> buffer)
         {
             if (!Serialize(data.island, buffer))
+                return false;
+
+            if (!Serialize(data.takeLoadInstructions, buffer))
+                return false;
+
+            if (!Serialize(data.giveLoadInstructions, buffer))
                 return false;
 
             return true;
@@ -1366,6 +1446,16 @@ namespace monocle
             offsetAfter = offset;
 
             if (!Deserialize(out data.island, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            if (!Deserialize(out data.takeLoadInstructions, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            if (!Deserialize(out data.giveLoadInstructions, buffer, offset, out offsetAfter))
                 return false;
 
             offset = offsetAfter;
@@ -1417,6 +1507,9 @@ namespace monocle
             if (!Serialize(data.nodes, buffer))
                 return false;
 
+            if (!Serialize(data.debug_address, buffer))
+                return false;
+
             return true;
         }
 
@@ -1431,6 +1524,11 @@ namespace monocle
             offset = offsetAfter;
 
             if (!Deserialize(out data.nodes, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            if (!Deserialize(out data.debug_address, buffer, offset, out offsetAfter))
                 return false;
 
             offset = offsetAfter;

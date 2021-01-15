@@ -466,9 +466,37 @@ bool Deserialize(ConsumptionNode* data, const std::vector<uint8_t>& stream, size
     return true;
 }
 
+bool Serialize(const LoadInstruction& data, std::vector<uint8_t>& stream)
+{
+    if (!Serialize(data.resourceType, stream))
+        return false;
+
+    if (!Serialize(data.amount, stream))
+        return false;
+
+    return true;
+}
+
+bool Deserialize(LoadInstruction* data, const std::vector<uint8_t>& stream, size_t* offset)
+{
+    if (!Deserialize(&data->resourceType, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->amount, stream, offset))
+        return false;
+
+    return true;
+}
+
 bool Serialize(const TradeNode& data, std::vector<uint8_t>& stream)
 {
     if (!Serialize(data.island, stream))
+        return false;
+
+    if (!Serialize(data.takeLoadInstructions, stream))
+        return false;
+
+    if (!Serialize(data.giveLoadInstructions, stream))
         return false;
 
     return true;
@@ -477,6 +505,12 @@ bool Serialize(const TradeNode& data, std::vector<uint8_t>& stream)
 bool Deserialize(TradeNode* data, const std::vector<uint8_t>& stream, size_t* offset)
 {
     if (!Deserialize(&data->island, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->takeLoadInstructions, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->giveLoadInstructions, stream, offset))
         return false;
 
     return true;
@@ -490,6 +524,9 @@ bool Serialize(const TradeRoute& data, std::vector<uint8_t>& stream)
     if (!Serialize(data.nodes, stream))
         return false;
 
+    if (!Serialize(data.debug_address, stream))
+        return false;
+
     return true;
 }
 
@@ -499,6 +536,9 @@ bool Deserialize(TradeRoute* data, const std::vector<uint8_t>& stream, size_t* o
         return false;
 
     if (!Deserialize(&data->nodes, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->debug_address, stream, offset))
         return false;
 
     return true;
