@@ -110,6 +110,9 @@ struct TradeNode
     IslandData island;
     std::vector<LoadInstruction> takeLoadInstructions;
     std::vector<LoadInstruction> giveLoadInstructions;
+    bool discardCargo;
+    bool waitForGood;
+    bool waitToUnload;
 };
 
 struct TradeRoute

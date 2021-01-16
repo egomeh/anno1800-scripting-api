@@ -91,6 +91,12 @@ data:
       - type: list(LoadInstruction)
     - giveLoadInstructions:
       - type: list(LoadInstruction)
+    - discardCargo:
+      - type: bool
+    - waitForGood:
+      - type: bool
+    - waitToUnload:
+      - type: bool
 
   - TradeRoute:
     - name:

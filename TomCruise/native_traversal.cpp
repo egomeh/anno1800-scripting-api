@@ -616,6 +616,12 @@ bool GetAllTradeRoutes(std::vector<AutoComms::TradeRoute>* tradeRoutes)
             nodeIsland.name = islandName;
 
             node.island = nodeIsland;
+
+            uint64_t optionsFlags = ReadU64(nodePtr + 0x48);
+
+            node.discardCargo = (optionsFlags & 0x0000FF00) > 0;
+            node.waitForGood = (optionsFlags & 0x00FF0000) > 0;
+            node.waitToUnload = (optionsFlags & 0xFF000000) > 0;
             
             uint64_t resourceListPtr = ReadU64(nodePtr + 0x18);
             uint64_t meta3 = ReadU64(nodePtr + 0x20);
@@ -626,7 +632,14 @@ bool GetAllTradeRoutes(std::vector<AutoComms::TradeRoute>* tradeRoutes)
             for (uint64_t j = 0; j < resourceListCount; ++j)
             {
                 uint64_t resourceNodePtr = ReadU64(resourceListPtr + j * 8);
-                SEND_FORMATTED("resource node ptr %llx", resourceNodePtr);
+                uint64_t resourceTypeID = ReadU64(resourceNodePtr + 0x10) & 0xFFFFFFFF;
+                uint64_t amount = ReadU64(resourceNodePtr + 0x18) & 0xFFFFFFFF;
+
+                AutoComms::LoadInstruction instruction;
+                instruction.amount = amount;
+                instruction.resourceType = IDToResourceType(resourceTypeID);
+
+                node.giveLoadInstructions.push_back(instruction);
             }
 
             route.nodes.push_back(node);

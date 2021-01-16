@@ -106,6 +106,9 @@ namespace monocle
         public IslandData island;
         public List<LoadInstruction> takeLoadInstructions;
         public List<LoadInstruction> giveLoadInstructions;
+        public bool discardCargo;
+        public bool waitForGood;
+        public bool waitToUnload;
     }
 
     public struct TradeRoute
@@ -1437,6 +1440,15 @@ namespace monocle
             if (!Serialize(data.giveLoadInstructions, buffer))
                 return false;
 
+            if (!Serialize(data.discardCargo, buffer))
+                return false;
+
+            if (!Serialize(data.waitForGood, buffer))
+                return false;
+
+            if (!Serialize(data.waitToUnload, buffer))
+                return false;
+
             return true;
         }
 
@@ -1456,6 +1468,21 @@ namespace monocle
             offset = offsetAfter;
 
             if (!Deserialize(out data.giveLoadInstructions, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            if (!Deserialize(out data.discardCargo, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            if (!Deserialize(out data.waitForGood, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            if (!Deserialize(out data.waitToUnload, buffer, offset, out offsetAfter))
                 return false;
 
             offset = offsetAfter;

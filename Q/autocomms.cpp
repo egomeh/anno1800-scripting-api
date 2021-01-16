@@ -499,6 +499,15 @@ bool Serialize(const TradeNode& data, std::vector<uint8_t>& stream)
     if (!Serialize(data.giveLoadInstructions, stream))
         return false;
 
+    if (!Serialize(data.discardCargo, stream))
+        return false;
+
+    if (!Serialize(data.waitForGood, stream))
+        return false;
+
+    if (!Serialize(data.waitToUnload, stream))
+        return false;
+
     return true;
 }
 
@@ -511,6 +520,15 @@ bool Deserialize(TradeNode* data, const std::vector<uint8_t>& stream, size_t* of
         return false;
 
     if (!Deserialize(&data->giveLoadInstructions, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->discardCargo, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->waitForGood, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->waitToUnload, stream, offset))
         return false;
 
     return true;
