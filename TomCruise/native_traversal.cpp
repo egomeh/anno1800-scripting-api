@@ -635,11 +635,18 @@ bool GetAllTradeRoutes(std::vector<AutoComms::TradeRoute>* tradeRoutes)
                 uint64_t resourceTypeID = ReadU64(resourceNodePtr + 0x10) & 0xFFFFFFFF;
                 uint64_t amount = ReadU64(resourceNodePtr + 0x18) & 0xFFFFFFFF;
 
+                uint64_t slot = (ReadU64(resourceNodePtr + 0x18) & 0xFFFFFFFF00000000) >> 0x20;
+                bool toShip = (ReadU64(resourceNodePtr + 0x10) & 0x0000000100000000) > 0;
+
                 AutoComms::LoadInstruction instruction;
                 instruction.amount = amount;
                 instruction.resourceType = IDToResourceType(resourceTypeID);
+                instruction.slot = slot;
 
-                node.giveLoadInstructions.push_back(instruction);
+                if (toShip)
+                    node.takeLoadInstructions.push_back(instruction);
+                else
+                    node.giveLoadInstructions.push_back(instruction);
             }
 
             route.nodes.push_back(node);

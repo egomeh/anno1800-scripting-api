@@ -99,6 +99,7 @@ namespace monocle
     {
         public Resource resourceType;
         public UInt64 amount;
+        public UInt64 slot;
     }
 
     public struct TradeNode
@@ -1372,6 +1373,9 @@ namespace monocle
             if (!Serialize(data.amount, buffer))
                 return false;
 
+            if (!Serialize(data.slot, buffer))
+                return false;
+
             return true;
         }
 
@@ -1386,6 +1390,11 @@ namespace monocle
             offset = offsetAfter;
 
             if (!Deserialize(out data.amount, buffer, offset, out offsetAfter))
+                return false;
+
+            offset = offsetAfter;
+
+            if (!Deserialize(out data.slot, buffer, offset, out offsetAfter))
                 return false;
 
             offset = offsetAfter;

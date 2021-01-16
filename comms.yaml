@@ -83,6 +83,8 @@ data:
       - type: Resource
     - amount:
       - type: uint64_t
+    - slot:
+      - type: uint64_t
 
   - TradeNode:
     - island:

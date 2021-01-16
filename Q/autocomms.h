@@ -103,6 +103,7 @@ struct LoadInstruction
 {
     Resource resourceType;
     uint64_t amount;
+    uint64_t slot;
 };
 
 struct TradeNode

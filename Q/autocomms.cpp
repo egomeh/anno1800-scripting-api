@@ -474,6 +474,9 @@ bool Serialize(const LoadInstruction& data, std::vector<uint8_t>& stream)
     if (!Serialize(data.amount, stream))
         return false;
 
+    if (!Serialize(data.slot, stream))
+        return false;
+
     return true;
 }
 
@@ -483,6 +486,9 @@ bool Deserialize(LoadInstruction* data, const std::vector<uint8_t>& stream, size
         return false;
 
     if (!Deserialize(&data->amount, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->slot, stream, offset))
         return false;
 
     return true;
