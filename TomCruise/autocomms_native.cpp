@@ -434,8 +434,8 @@ bool AutoComms::TargetCall_GetIslandConsumption(const uint64_t& islandID, std::v
 
     uint64_t address = islandConsumptionMap[islandID];
 
-    uint64_t consumerListBase = ReadU64(address + 0x28);
-    uint64_t consumerListSize = ReadU64(address + 0x30) & 0xFFFF;
+    uint64_t consumerListBase = ReadU64(address + 0x30);
+    uint64_t consumerListSize = ReadU64(address + 0x38) & 0xFFFF;
 
     if (!consumerListBase)
         return false;
