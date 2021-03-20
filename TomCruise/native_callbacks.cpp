@@ -74,17 +74,19 @@ void ShipContextSet(uint64_t pointerValue)
     if (!IsReadable((void*)pointerValue1, 8))
         return;
 
-    uint64_t areaOffset = 0x9E10;
+    uint64_t areaOffset = 0x9E02;
 
     if (!IsReadable((void*)(pointerValue1 + areaOffset), 8))
         return;
 
     uint64_t areaPointer = ReadU64(pointerValue1 + areaOffset);
 
-    if (!IsReadable((void*)(areaPointer + 8), 8))
-        return;
+    //if (!IsReadable((void*)(areaPointer), 8))
+    //    return;
 
-    uint64_t areaID = (ReadU64(areaPointer + 8) & 0xFFFF);
+    //uint64_t areaID = (ReadU64(areaPointer) & 0xFFFF);
+
+    uint64_t areaID = areaPointer & 0xFFFF;
 
     uint64_t idValue = 0;
 
@@ -102,22 +104,22 @@ void ShipContextSet(uint64_t pointerValue)
         //  This should likely test for world id....
         if (idValue == desiredId && ShipDispatchPreCode != 0)
         {
-            for (uint64_t i = 0; i < setWaypointForShipInput.idList.size(); ++i)
-            {
-                const uint64_t shipId = setWaypointForShipInput.idList[i];
-                uint64_t shipAddress = 0;
+            //for (uint64_t i = 0; i < setWaypointForShipInput.idList.size(); ++i)
+            //{
+            //    const uint64_t shipId = setWaypointForShipInput.idList[i];
+            //    uint64_t shipAddress = 0;
 
-                if (!GetShipAddress(shipId, &shipAddress))
-                    continue;
+            //    if (!GetShipAddress(shipId, &shipAddress))
+            //        continue;
 
-                uint64_t moveDataCompoentAddress = VirtualShipGetComponent(shipAddress, ComponentIdMoveData);
-                if (!moveDataCompoentAddress)
-                    continue;
+            //    uint64_t moveDataCompoentAddress = VirtualShipGetComponent(shipAddress, ComponentIdMoveData);
+            //    if (!moveDataCompoentAddress)
+            //        continue;
 
-                makingCallInSelf = true;
-                ShipClearCommandQueuePreCode(moveDataCompoentAddress);
-                makingCallInSelf = false;
-            }
+            //    makingCallInSelf = true;
+            //    ShipClearCommandQueuePreCode(moveDataCompoentAddress);
+            //    makingCallInSelf = false;
+            //}
 
             std::vector<uint64_t> inputBuffer1;
             inputBuffer1.push_back(setWaypointForShipInput.idList.size() << 0x20);

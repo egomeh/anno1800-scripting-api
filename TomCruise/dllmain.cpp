@@ -244,11 +244,11 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     hooks.push_back(timeHook);
 
     Hook shipContextSetup;
-    PrepareAndLocateHook(&shipContextSetup, "ship context hook", (uint64_t)ShipContextSet, moduleBase, moduleBase + 0x541A73, HookScripts::ShipContextSetHook, regions, nRegions);
+    PrepareAndLocateHook(&shipContextSetup, "ship context hook", (uint64_t)ShipContextSet, moduleBase, moduleBase + 0x12A2CE5, HookScripts::ShipContextSetHook, regions, nRegions);
     hooks.push_back(shipContextSetup);
 
     Hook shipListIteration;
-    PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0xA60FA0, HookScripts::ShipListIteration, regions, nRegions);
+    PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0xA62360, HookScripts::ShipListIteration, regions, nRegions);
     hooks.push_back(shipListIteration);
 
     Hook regionIteration;
@@ -265,9 +265,9 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     PrepareAndSetupNativeCall(&virtualShipGetComponent, "virtual ship: GetComponent", nullptr, NativeCallSetups::VirtualShipGetComponent, (uint64_t*)&VirtualShipGetComponent, moduleBase, moduleBase, regions, nRegions);
     nativeCalls.push_back(virtualShipGetComponent);
 
-    //NativeCallSetup shipMoveSetup;
-    //PrepareAndSetupNativeCall(&shipMoveSetup, "Ship move call", NativeCallSetups::ShipDispatch, NativeCallSetups::ShipDispatchPreCall, (uint64_t*)&ShipDispatchPreCode, moduleBase, moduleBase + 0x10E8970, regions, nRegions);
-    //nativeCalls.push_back(shipMoveSetup);
+    NativeCallSetup shipMoveSetup;
+    PrepareAndSetupNativeCall(&shipMoveSetup, "Ship move call", NativeCallSetups::ShipDispatch, NativeCallSetups::ShipDispatchPreCall, (uint64_t*)&ShipDispatchPreCode, moduleBase, moduleBase + 0x1219410, regions, nRegions);
+    nativeCalls.push_back(shipMoveSetup);
 
     //NativeCallSetup shiClearCommandQueueSetup;
     //PrepareAndSetupNativeCall(&shiClearCommandQueueSetup, "Ship clear command queue", NativeCallSetups::ShipClearCommandQueue, NativeCallSetups::ShipClearCommandQueuePreCall, (uint64_t*)&ShipClearCommandQueuePreCode, moduleBase, moduleBase + 0x713CC0, regions, nRegions);
