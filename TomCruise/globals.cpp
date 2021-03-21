@@ -49,5 +49,5 @@ uint64_t ComponentIdCargo = 632;
 uint64_t ComponentIdMoveData = 273;
 uint64_t ComponentIdPermaID = 291;
 
-uint64_t ComponentIdBuildingProduction = 644;
-uint64_t ComponentIdBuildingProductionNoOuput = 644;
+uint64_t ComponentIdBuildingProduction = 656;
+uint64_t ComponentIdBuildingProductionNoOuput = 656;
