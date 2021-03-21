@@ -76,9 +76,9 @@ bool AutoComms::TargetCall_GetShipMoveData(const uint64_t& id, ShipMoveData* mov
     if (!component)
         FAIL_MESSAGE("Failed to get movedata component from ship id %llx address %llx", id, shipAddress);
 
-    moveData->moving = ReadU32(component + 0x28);
-    moveData->position.x = ReadF32(component + 0x34);
-    moveData->position.y = ReadF32(component + 0x38);
+    moveData->moving = ReadU32(component + 0x38);
+    moveData->position.x = ReadF32(component + 0x3C);
+    moveData->position.y = ReadF32(component + 0x40);
     // output->rotation = ReadF32(component + 0x3c);
 
     return true;

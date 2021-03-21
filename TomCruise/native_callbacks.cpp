@@ -104,22 +104,22 @@ void ShipContextSet(uint64_t pointerValue)
         //  This should likely test for world id....
         if (idValue == desiredId && ShipDispatchPreCode != 0)
         {
-            //for (uint64_t i = 0; i < setWaypointForShipInput.idList.size(); ++i)
-            //{
-            //    const uint64_t shipId = setWaypointForShipInput.idList[i];
-            //    uint64_t shipAddress = 0;
+            for (uint64_t i = 0; i < setWaypointForShipInput.idList.size(); ++i)
+            {
+                const uint64_t shipId = setWaypointForShipInput.idList[i];
+                uint64_t shipAddress = 0;
 
-            //    if (!GetShipAddress(shipId, &shipAddress))
-            //        continue;
+                if (!GetShipAddress(shipId, &shipAddress))
+                    continue;
 
-            //    uint64_t moveDataCompoentAddress = VirtualShipGetComponent(shipAddress, ComponentIdMoveData);
-            //    if (!moveDataCompoentAddress)
-            //        continue;
+                uint64_t moveDataCompoentAddress = VirtualShipGetComponent(shipAddress, ComponentIdMoveData);
+                if (!moveDataCompoentAddress)
+                    continue;
 
-            //    makingCallInSelf = true;
-            //    ShipClearCommandQueuePreCode(moveDataCompoentAddress);
-            //    makingCallInSelf = false;
-            //}
+                makingCallInSelf = true;
+                ShipClearCommandQueuePreCode(moveDataCompoentAddress);
+                makingCallInSelf = false;
+            }
 
             std::vector<uint64_t> inputBuffer1;
             inputBuffer1.push_back(setWaypointForShipInput.idList.size() << 0x20);
