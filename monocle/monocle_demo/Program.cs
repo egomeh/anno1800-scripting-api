@@ -9,6 +9,7 @@ using System.Collections;
 using System.Net;
 using System.Security.Principal;
 using System.Xml.Schema;
+using SharpDX.DirectInput;
 
 namespace monocle_demo
 {
@@ -18,6 +19,9 @@ namespace monocle_demo
         {
             Program program = new Program();
             // program.Run(args);
+
+            
+            // program.ShipComponentExperiment();
 
             program.Demo();
             // program.DemoAllIslands();
@@ -72,88 +76,281 @@ namespace monocle_demo
 
         void Demo()
         {
-            monocle.Telegraph telegraph = new monocle.Telegraph();
 
-            List<ShipData> testShips;
-            telegraph.GetAllShips(Area.OldWorld, out testShips);
+            {
+                Telegraph telegraph = new Telegraph();
+
+                monocle.GameTime gameTime;
+                telegraph.GetGameTime(out gameTime);
+
+                ShipMoveData shipMoveData;
+                telegraph.GetShipMoveData(0x0000000200000FF8, out shipMoveData);
+
+                //List<monocle.ShipData> ships;
+                //List<monocle.IslandData> islands;
+
+                //telegraph.GetAllShips(Area.OldWorld, out ships);
+                //telegraph.GetIslandsByName("Shortisland", out islands);
+
+                //List<monocle.ConsumptionNode> musliConsumption = null;
+                //telegraph.GetIslandConsumption(islands.First().id, out musliConsumption);
+
+                //// List with Orpheus' ID
+                //List<ulong> Orpheus = new List<ulong>() { 0x0000000200000F88 };
+
+                //// The target destination
+                //Coordinate destination = new Coordinate() { x = 1111f, y = 1616f };
+
+                //// Call user-facing part of function
+                //telegraph.AddWaypoint(Orpheus, destination);
+
+                return;
+
+                //List<monocle.ConsumptionNode> musliConsumption;
+                //telegraph.GetIslandConsumption(islands.FirstOrDefault().id, out musliConsumption);
+
+                //List<monocle.BuildingData> buildings = new List<monocle.BuildingData>();
+                //telegraph.GetIslandBuildings(islands.FirstOrDefault().id, out buildings);
+
+                //monocle.BuildingData bakery;
+                //bakery.id = 0;
+
+                //foreach (var building in buildings)
+                //{
+                //    if (building.buidlingType == Building.Bakery)
+                //    {
+                //        bakery = building;
+                //        break;
+                //    }
+                //}
+
+                //monocle.ProductionNode production;
+                //telegraph.GetBuildingProduction(islands.FirstOrDefault().id, bakery.id, out production);
+
+                //for (ulong i = 0; i < 2048; ++i)
+                //{
+                //    ulong compAddress = 0;
+
+                //    // telegraph.GetShipComponentAddress(0x0000000200000FF8, i, out compAddress);
+
+                //    telegraph.GetBuildingComponentAddress(islands.FirstOrDefault().id, bakery.id, i, out compAddress);
+
+                //    if (compAddress != 0)
+                //    {
+                //        string sAddress = compAddress.ToString("X");
+                //        string sI = i.ToString();
+
+                //        Console.WriteLine(string.Format("{0} {1}", sI, sAddress));
+                //    }
+                //}
+
+                //List<ulong> ids = new List<ulong>();
+                //ids.Add(ships[0].shipId);
+
+                //telegraph.AddWaypoint(ids, new monocle.Coordinate { x = 1111, y = 1616});
+
+                //List<TradeRoute> tradeRoutes;
+
+                //telegraph.GetAllTradeRoutes(out tradeRoutes);
+
+                //List<ShipData> oldWorldShips;
+                //List<ShipData> newWorldShips;
+
+                //telegraph.GetAllShips(Area.OldWorld, out oldWorldShips);
+                //telegraph.GetAllShips(Area.NewWorld, out newWorldShips);
+
+                //List<IslandData> islands = null;
+                //telegraph.GetIslandsByName("musli", out islands);
+
+                //var musli = islands.First();
+
+                //List<ShipData> ships = null;
+                //telegraph.GetAllShips(Area.OldWorld, out ships);
+
+                //var goldenBehind = from ship in ships where ship.name.Equals("Golden Behind") select ship;
+
+                //List < ConsumptionNode > musliconsumption;
+                //telegraph.GetIslandConsumption(musli.id, out musliconsumption);
+            }
 
             return;
 
-            List<monocle.IslandData> islandData = new List<monocle.IslandData>();
+           //// Initialize DirectInput
+           //// var directInput = new DirectInput();
 
-            if (!telegraph.GetIslandsByName("Shortisland", out islandData))
-                return;
+           //// Find a Joystick Guid
+           //// var joystickGuid = Guid.Empty;
 
-            monocle.IslandData island = islandData.First();
+           //// foreach (var deviceInstance in directInput.GetDevices(DeviceType.Gamepad,
+           ////             DeviceEnumerationFlags.AllDevices))
+           ////     joystickGuid = deviceInstance.InstanceGuid;
 
-            List<monocle.BuildingData> buildings = new List<monocle.BuildingData>();
+           //// If Gamepad not found, look for a Joystick
+           //// if (joystickGuid == Guid.Empty)
+           ////         foreach (var deviceInstance in directInput.GetDevices(DeviceType.Joystick,
+           ////                 DeviceEnumerationFlags.AllDevices))
+           ////             joystickGuid = deviceInstance.InstanceGuid;
 
-            if (!telegraph.GetIslandBuildings(islandData.First().id, out buildings))
-                return;
+           //// If Joystick not found, throws an error
+           //// if (joystickGuid == Guid.Empty)
+           //// {
+           ////     Console.WriteLine("No joystick/Gamepad found.");
+           ////     Console.ReadKey();
+           ////     Environment.Exit(1);
+           //// }
 
-            foreach (var building in buildings)
-            {
-                if (building.buidlingType == monocle.Building.SmallTradingPost)
-                {
-                    for (ulong i = 0; i < 2048; ++i)
-                    {
-                        ulong compAddress = 0;
+           //// Instantiate the joystick
+           ////var joystick = new Joystick(directInput, joystickGuid);
 
-                        telegraph.GetBuildingComponentAddress(islandData.First().id, building.id, i, out compAddress);
+           //// Console.WriteLine("Found Joystick/Gamepad with GUID: {0}", joystickGuid);
 
-                        if (compAddress != 0)
-                        {
-                            string sAddress = compAddress.ToString("X");
-                            string sI = i.ToString();
+           //// Query all suported ForceFeedback effects
+           ////var allEffects = joystick.GetEffects();
+           //// foreach (var effectInfo in allEffects)
+           ////     Console.WriteLine("Effect available {0}", effectInfo.Name);
 
-                            Console.WriteLine(string.Format("{0} {1}", sI, sAddress));
-                        }
-                    }
-                }
+           //// Set BufferSize in order to use buffered data.
+           ////joystick.Properties.BufferSize = 128;
+
+           //// Acquire the joystick
+           //// joystick.Acquire();
+
+           //// monocle.Telegraph telegraph = new monocle.Telegraph();
+
+           //// List<ShipData> oldWorldShips = new List<ShipData>();
+
+           //// telegraph.GetAllShips(Area.OldWorld, out oldWorldShips);
+
+           //// List<ulong> ships = new List<ulong>();
+           //// ships.Add(oldWorldShips[5].shipId);
+
+           //// ShipMoveData moveData;
+
+           //// double x = 0;
+           //// double y = 0;
+
+           //// float dx = 0;
+           //// float dy = 0;
+
+           //// Poll events from joystick
+           //// while (true)
+           //// {
+           ////     joystick.Poll();
+           ////     var datas = joystick.GetBufferedData();
+           ////     foreach (var state in datas)
+           ////     {
+           ////         if (state.Offset == JoystickOffset.Y)
+           ////         {
+           ////             y = ((double)state.Value / 65535.0 - .5) * 2.0;
+           ////         }
+           ////         else if (state.Offset == JoystickOffset.X)
+           ////         {
+           ////             x = ((double)state.Value / 65535.0 - .5) * 2.0;
+           ////         }
+
+           ////         Console.WriteLine(String.Format("{0} - {1}", x, y));
+           ////     }
+
+           ////     dx = (float)x * 20.0f;
+           ////     dy = (float)y * 20.0f;
+
+           ////     if (-.1 < x && x < .1)
+           ////         dx = 0;
+
+           ////     if (-.1 < y && y < .1)
+           ////         dy = 0;
+
+           ////     if (dx == 0.0f && dy == 0.0f)
+           ////         continue;
+
+           ////     telegraph.GetShipMoveData(ships.First(), out moveData);
+           ////     telegraph.AddWaypoint(ships, new Coordinate() { x = moveData.position.x - dx, y = moveData.position.y + dy });
+           //// }
+
+           //// while (true)
+           //// {
+           ////     telegraph.GetShipMoveData(ships.First(), out moveData);
+           ////     telegraph.AddWaypoint(ships, new Coordinate() { x = moveData.position.x + 10, y = moveData.position.y });
+           //// }
 
 
-                monocle.ProductionNode productionNode;
+           //// return;
 
-                if (!telegraph.GetBuildingProduction(island.id, building.id, out productionNode))
-                    continue;
-            }
+           //// List<monocle.IslandData> islandData = new List<monocle.IslandData>();
 
-            List<monocle.ConsumptionNode> consumption = new List<monocle.ConsumptionNode>();
+           //// if (!telegraph.GetIslandsByName("Shortisland", out islandData))
+           ////     return;
 
-            if (!telegraph.GetIslandConsumption(island.id, out consumption))
-                return;
+           //// monocle.IslandData island = islandData.First();
 
-            List<monocle.ShipData> ships = new List<monocle.ShipData>();
+           //// List<monocle.BuildingData> buildings = new List<monocle.BuildingData>();
 
-            if (!telegraph.GetAllShips(monocle.Area.OldWorld, out ships))
-                return;
+           //// if (!telegraph.GetIslandBuildings(islandData.First().id, out buildings))
+           ////     return;
 
-            ships = (from s in ships where s.shipType == monocle.ShipType.Clipper select s).ToList();
+           //// foreach (var building in buildings)
+           //// {
+           ////     if (building.buidlingType == monocle.Building.SmallTradingPost)
+           ////     {
+           ////         for (ulong i = 0; i < 2048; ++i)
+           ////         {
+           ////             ulong compAddress = 0;
 
-            monocle.ShipMoveData moveData;
+           ////             telegraph.GetBuildingComponentAddress(islandData.First().id, building.id, i, out compAddress);
 
-            if (!telegraph.GetShipMoveData(ships.First().shipId, out moveData))
-                return;
+           ////             if (compAddress != 0)
+           ////             {
+           ////                 string sAddress = compAddress.ToString("X");
+           ////                 string sI = i.ToString();
 
-            monocle.Coordinate target = moveData.position;
-            target.x = target.x + 100;
+           ////                 Console.WriteLine(string.Format("{0} {1}", sI, sAddress));
+           ////             }
+           ////         }
+           ////     }
 
-            List<ulong> ids = (from s in ships select s.shipId).ToList();
 
-            if (!telegraph.AddWaypoint(ids, target))
-                return;
+           ////     monocle.ProductionNode productionNode;
 
-            List<monocle.ShipCargoSlot> cargo = new List<monocle.ShipCargoSlot>();
+           ////     if (!telegraph.GetBuildingProduction(island.id, building.id, out productionNode))
+           ////         continue;
+           //// }
 
-            if (!telegraph.GetShipCargo(ids.First(), out cargo))
-                return;
+           //// List<monocle.ConsumptionNode> consumption = new List<monocle.ConsumptionNode>();
 
-            if (!telegraph.ShipDumpCargo(ids.First(), 1))
-                return;
+           //// if (!telegraph.GetIslandConsumption(island.id, out consumption))
+           ////     return;
 
-            ulong address = 0;
+           //// List<monocle.ShipData> ships = new List<monocle.ShipData>();
 
-            telegraph.GetShipComponentAddress(ids.First(), 253, out address);
+           //// if (!telegraph.GetAllShips(monocle.Area.OldWorld, out ships))
+           ////     return;
+
+           //// ships = (from s in ships where s.shipType == monocle.ShipType.Clipper select s).ToList();
+
+           //// monocle.ShipMoveData moveData;
+
+           //// if (!telegraph.GetShipMoveData(ships.First().shipId, out moveData))
+           ////     return;
+
+           //// monocle.Coordinate target = moveData.position;
+           //// target.x = target.x + 100;
+
+           //// List<ulong> ids = (from s in ships select s.shipId).ToList();
+
+           //// if (!telegraph.AddWaypoint(ids, target))
+           ////     return;
+
+           //// List<monocle.ShipCargoSlot> cargo = new List<monocle.ShipCargoSlot>();
+
+           //// if (!telegraph.GetShipCargo(ids.First(), out cargo))
+           ////     return;
+
+           //// if (!telegraph.ShipDumpCargo(ids.First(), 1))
+           ////     return;
+
+           //// ulong address = 0;
+
+           //// telegraph.GetShipComponentAddress(ids.First(), 253, out address);
         }
 
         bool SendShipToPosition(monocle.Telegraph telegraph)
@@ -171,18 +368,20 @@ namespace monocle_demo
             return true;
         }
 
-        bool ShipComponentExperiment(monocle.Telegraph telegraph)
+        bool ShipComponentExperiment()
         {
-            List<monocle.ShipData> ships = null;
+            Telegraph telegraph = new Telegraph();
 
-            if (!telegraph.GetAllShips(monocle.Area.OldWorld, out ships))
-                return false;
+            //List<monocle.ShipData> ships = null;
+
+            //if (!telegraph.GetAllShips(monocle.Area.OldWorld, out ships))
+            // return false;
 
             for (ulong i = 0; i < 2048; ++i)
             {
                 ulong address = 0;
 
-                if (!telegraph.GetShipComponentAddress(ships[0].shipId, i, out address))
+                if (!telegraph.GetShipComponentAddress(0x200000FF8, i, out address))
                     continue;
 
                 if (address == 0)
