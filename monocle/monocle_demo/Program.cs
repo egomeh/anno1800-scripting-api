@@ -86,6 +86,8 @@ namespace monocle_demo
                 ShipMoveData shipMoveData;
                 telegraph.GetShipMoveData(0x0000000200000FF8, out shipMoveData);
 
+                telegraph.AddWaypoint(new List<ulong>() { 0x0000000200000FF8 }, new Coordinate() { x = 1111, y = 1616 });
+
                 //List<monocle.ShipData> ships;
                 //List<monocle.IslandData> islands;
 
