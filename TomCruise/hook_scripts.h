@@ -237,29 +237,35 @@ ff e0                               // jmp    rax
 const char* RegionIteration =
 R"(
 -pattern:
-49 8d 43 b8                         // lea    rax,[r11-0x48]
-49 89 43 08                         // mov    QWORD PTR [r11+0x8],rax
-48 8b 01                            // mov    rax,QWORD PTR [rcx]
-49 c7 43 f0 00 00 00 00             // mov    QWORD PTR [r11-0x10],0x0
+48 89 5c 24 10                      // mov    QWORD PTR [rsp+0x10],rbx
+48 89 74 24 18                      // mov    QWORD PTR [rsp+0x18],rsi
+55                                  // push   rbp
+57                                  // push   rdi
+41 54                               // push   r12
+41 56                               // push   r14
+41 57                               // push   r15
 
 -replacement:
-48 ba [detourAddress : 8]           // movabs rdx, detourAddress
-ff e2                               // jmp    rdx
+48 b8 [detourAddress : 8]           // movabs rsi, detourAddress
+ff e0                               // jmp    rsi
 returnLocation
 
 -detour:
-49 8d 43 b8                         // lea    rax,[r11-0x48]
-49 89 43 08                         // mov    QWORD PTR [r11+0x8],rax
-48 8b 01                            // mov    rax,QWORD PTR [rcx]
-49 c7 43 f0 00 00 00 00             // mov    QWORD PTR [r11-0x10],0x0
+48 89 5c 24 10                      // mov    QWORD PTR [rsp+0x10],rbx
+48 89 74 24 18                      // mov    QWORD PTR [rsp+0x18],rsi
+55                                  // push   rbp
+57                                  // push   rdi
+41 54                               // push   r12
+41 56                               // push   r14
+41 57                               // push   r15
 [push volatile]
 48 83 ec 28                         // sub    rsp,0x28
 48 b8 [targetAddress : 8]           // movabs rax, targetAddress
 ff d0                               // call   rax
 48 83 c4 28                         // add    rsp,0x28
 [pop volatile]
-48 ba [returnAddress : 8]           // movabs rdx, returnAddress
-ff e2                               // jmp    rdx
+48 b8 [returnAddress : 8]           // movabs rsi, returnAddress
+ff e0                               // jmp    rsi
 )";
 
 const char* IslandConsumptionIteration =

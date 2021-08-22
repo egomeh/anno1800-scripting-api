@@ -83,10 +83,21 @@ namespace monocle_demo
                 monocle.GameTime gameTime;
                 telegraph.GetGameTime(out gameTime);
 
+
+                List<ShipData> ships = null;
+                telegraph.GetAllShips(Area.OldWorld, out ships);
+
                 ShipMoveData shipMoveData;
                 telegraph.GetShipMoveData(0x0000000200000FF8, out shipMoveData);
 
                 telegraph.AddWaypoint(new List<ulong>() { 0x0000000200000FF8 }, new Coordinate() { x = 1111, y = 1616 });
+
+                List<IslandData> musli;
+                telegraph.GetIslandsByName("musli", out musli);
+
+                List<ShipCargoSlot> OrpheusCargo = null;
+                telegraph.GetShipCargo(0x0000000200000FF8, out OrpheusCargo);
+                telegraph.ShipDumpCargo(0x0000000200000FF8, 0);
 
                 //List<monocle.ShipData> ships;
                 //List<monocle.IslandData> islands;
@@ -105,8 +116,6 @@ namespace monocle_demo
 
                 //// Call user-facing part of function
                 //telegraph.AddWaypoint(Orpheus, destination);
-
-                return;
 
                 //List<monocle.ConsumptionNode> musliConsumption;
                 //telegraph.GetIslandConsumption(islands.FirstOrDefault().id, out musliConsumption);
@@ -128,23 +137,6 @@ namespace monocle_demo
 
                 //monocle.ProductionNode production;
                 //telegraph.GetBuildingProduction(islands.FirstOrDefault().id, bakery.id, out production);
-
-                //for (ulong i = 0; i < 2048; ++i)
-                //{
-                //    ulong compAddress = 0;
-
-                //    // telegraph.GetShipComponentAddress(0x0000000200000FF8, i, out compAddress);
-
-                //    telegraph.GetBuildingComponentAddress(islands.FirstOrDefault().id, bakery.id, i, out compAddress);
-
-                //    if (compAddress != 0)
-                //    {
-                //        string sAddress = compAddress.ToString("X");
-                //        string sI = i.ToString();
-
-                //        Console.WriteLine(string.Format("{0} {1}", sI, sAddress));
-                //    }
-                //}
 
                 //List<ulong> ids = new List<ulong>();
                 //ids.Add(ships[0].shipId);
@@ -174,8 +166,6 @@ namespace monocle_demo
                 //List < ConsumptionNode > musliconsumption;
                 //telegraph.GetIslandConsumption(musli.id, out musliconsumption);
             }
-
-            return;
 
            //// Initialize DirectInput
            //// var directInput = new DirectInput();

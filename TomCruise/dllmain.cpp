@@ -240,7 +240,7 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     bool isUplayBinary = false;
 
     Hook timeHook;
-    PrepareAndLocateHook(&timeHook, "time hook", (uint64_t)NativeCallbackUpdateTime, moduleBase, moduleBase + 0x132dfe1, HookScripts::TimeAndFrame, regions, nRegions);
+    PrepareAndLocateHook(&timeHook, "time hook", (uint64_t)NativeCallbackUpdateTime, moduleBase, moduleBase + 0x132e1c1, HookScripts::TimeAndFrame, regions, nRegions);
     hooks.push_back(timeHook);
 
     Hook shipContextSetup;
@@ -248,14 +248,14 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     hooks.push_back(shipContextSetup);
 
     Hook shipListIteration;
-    PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0x71B6F0, HookScripts::ShipListIteration, regions, nRegions);
+    PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0x71B5A0, HookScripts::ShipListIteration, regions, nRegions);
     hooks.push_back(shipListIteration);
 
-    //Hook regionIteration;
-    //PrepareAndLocateHook(&regionIteration, "Region iteration", (uint64_t)RegionIteration, moduleBase, moduleBase + 0x149f3d, HookScripts::RegionIteration, regions, nRegions);
-    //hooks.push_back(regionIteration);
+    Hook regionIteration;
+    PrepareAndLocateHook(&regionIteration, "Region iteration", (uint64_t)RegionIteration, moduleBase, moduleBase + 0x2B8B50, HookScripts::RegionIteration, regions, nRegions);
+    hooks.push_back(regionIteration);
 
-    //uint64_t islandConsumptionOffset = isUplayBinary ? 0x00000 : 0x2E8F9D;
+    // uint64_t islandConsumptionOffset = isUplayBinary ? 0x00000 : 0x2E8F9D;
 
     //Hook islandConsumptionIteration;
     //PrepareAndLocateHook(&islandConsumptionIteration, "Island consumption", (uint64_t)IslandConsumptionIteration, moduleBase, moduleBase + islandConsumptionOffset, HookScripts::IslandConsumptionIteration, regions, nRegions);
@@ -285,9 +285,9 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     //PrepareAndSetupNativeCall(&transferShipToIslandSetup, "Resource Island <- Ship", NativeCallSetups::LoadCargoFromShipToIsland, NativeCallSetups::LoadCargoFromShipToIslandPreCall, (uint64_t*)&TransferShipToIslandPreCode, moduleBase, moduleBase + 0x1230760, regions, nRegions);
     //nativeCalls.push_back(transferShipToIslandSetup);
 
-    //NativeCallSetup shipDumpSetup;
-    //PrepareAndSetupNativeCall(&shipDumpSetup, "Ship dump cargo call", NativeCallSetups::ShipCargoDump, NativeCallSetups::ShipCargoDumpPreCall, (uint64_t*)&ShipDumpCargoPreCode, moduleBase, moduleBase + 0xA1ED00, regions, nRegions);
-    //nativeCalls.push_back(shipDumpSetup);
+    NativeCallSetup shipDumpSetup;
+    PrepareAndSetupNativeCall(&shipDumpSetup, "Ship dump cargo call", NativeCallSetups::ShipCargoDump, NativeCallSetups::ShipCargoDumpPreCall, (uint64_t*)&ShipDumpCargoPreCode, moduleBase, moduleBase + 0x6D70D0, regions, nRegions);
+    nativeCalls.push_back(shipDumpSetup);
 
     for (Hook& hook : hooks)
         EnableHook(&hook, anno);
