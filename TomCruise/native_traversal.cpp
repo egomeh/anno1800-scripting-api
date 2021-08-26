@@ -480,8 +480,8 @@ bool GetIslandBuildings(const uint64_t islandID, std::vector<AutoComms::Building
         AutoComms::BuildingData building;
 
         building.id = ReadU32(buildingAddress + 0x28) & 0xFFFFFFFF;
-        building.position.x = ReadF32(buildingAddress + 0x3c);
-        building.position.y = ReadF32(buildingAddress + 0x44);
+        building.position.x = ReadF32(buildingAddress + 0x40);
+        building.position.y = ReadF32(buildingAddress + 0x48);
         building.rawBuildingTypeID = ReadU32(buildingAddress + 0x8);
         building.buidlingType = IDToBuildingType(building.rawBuildingTypeID);
         building.debug_address = buildingAddress;

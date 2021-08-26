@@ -18,12 +18,11 @@ namespace monocle_demo
         static void Main(string[] args)
         {
             Program program = new Program();
-            // program.Run(args);
+            program.Run(args);
 
-            
             // program.ShipComponentExperiment();
 
-            program.Demo();
+            // program.Demo();
             // program.DemoAllIslands();
         }
 
@@ -90,14 +89,17 @@ namespace monocle_demo
                 ShipMoveData shipMoveData;
                 telegraph.GetShipMoveData(0x0000000200000FF8, out shipMoveData);
 
-                telegraph.AddWaypoint(new List<ulong>() { 0x0000000200000FF8 }, new Coordinate() { x = 1111, y = 1616 });
+                telegraph.AddWaypoint(new List<ulong>() { 0x0000000200000FF8 }, new Coordinate() { x = 1151, y = 1616 });
 
                 List<IslandData> musli;
                 telegraph.GetIslandsByName("musli", out musli);
 
                 List<ShipCargoSlot> OrpheusCargo = null;
                 telegraph.GetShipCargo(0x0000000200000FF8, out OrpheusCargo);
-                telegraph.ShipDumpCargo(0x0000000200000FF8, 0);
+                telegraph.ShipDumpCargo(0x0000000200000FF8, 1);
+
+                List<ConsumptionNode> musliconsumption;
+                telegraph.GetIslandConsumption(musli[0].id, out musliconsumption);
 
                 //List<monocle.ShipData> ships;
                 //List<monocle.IslandData> islands;
