@@ -8,9 +8,9 @@ const char* TimeAndFrame =
 R"(
 -pattern:
 48 8b c8                        // mov    rcx,rax
-49 01 46 60                     // add    QWORD PTR [r14+0x60],rax
-41 ff 46 70                     // inc    DWORD PTR [r14+0x70]
-49 63 86 c8 00 00 00            // movsxd rax,DWORD PTR [r14+0xc8]
+48 01 43 60                     // add    QWORD PTR [rbx+0x60],rax
+ff 43 70                        // inc    DWORD PTR [rbx+0x70]
+48 63 83 c8 00 00 00            // movsxd rax,DWORD PTR [rbx+0xc8]
 
 -replacement:
 48 b9 [detourAddress : 8]       // movabs rcx, detour address
@@ -18,12 +18,12 @@ ff d1                           // call   rcx
 
 -detour:
 48 8b c8                        // mov    rcx,rax
-49 01 46 60                     // add    QWORD PTR [r14+0x60],rax
-41 ff 46 70                     // inc    DWORD PTR [r14+0x70]
-49 63 86 c8 00 00 00            // movsxd rax,DWORD PTR [r14+0xc8]
+48 01 43 60                     // add    QWORD PTR [rbx+0x60],rax
+ff 43 70                        // inc    DWORD PTR [rbx+0x70]
+48 63 83 c8 00 00 00            // movsxd rax,DWORD PTR [rbx+0xc8]
 [push volatile]
-49 8b 4e 60                     // mov    rcx,QWORD PTR [r14+0x60]
-49 8b 56 70                     // mov    rdx,QWORD PTR [r14+0x70]
+48 8b 4b 60                     // mov    rcx,QWORD PTR [rbx+0x60]
+48 8b 53 70                     // mov    rdx,QWORD PTR [rbx+0x70]
 48 b8 [targetAddress : 8]       // movabs rax, hookAddress
 FF D0                           // call rax
 [pop volatile]
@@ -104,7 +104,7 @@ C3                              // ret
 const char* ShipListIteration =
 R"(
 -pattern:
-48 89 5c 24 20                      // mov    QWORD PTR [rsp+0x20],rbx
+48 89 5c 24 18                      // mov    QWORD PTR [rsp+0x18],rbx
 48 89 4c 24 08                      // mov    QWORD PTR [rsp+0x8],rcx
 55                                  // push   rbp
 56                                  // push   rsi
@@ -119,7 +119,7 @@ R"(
 ff e0                               // jmp    rax
 
 -detour:
-48 89 5c 24 20                      // mov    QWORD PTR [rsp+0x20],rbx
+48 89 5c 24 18                      // mov    QWORD PTR [rsp+0x18],rbx
 48 89 4c 24 08                      // mov    QWORD PTR [rsp+0x8],rcx
 55                                  // push   rbp
 56                                  // push   rsi
@@ -208,9 +208,9 @@ ff e0                               // jmp    rax
 const char* ShipContextSetHook =
 R"(
 -pattern:
-b9 10 9e 00 00                      // mov    ecx,0x9e10
-4a 8b 0c 29                         // mov    rcx,QWORD PTR [rcx+r13*1]
-48 85 c9                            // test   rcx,rcx
+48 89 5c 24 10                      // mov    QWORD PTR [rsp+0x10],rbx
+48 89 6c 24 18                      // mov    QWORD PTR [rsp+0x18],rbp
+48 89 74 24 20                      // mov    QWORD PTR [rsp+0x20],rsi
 
 -replacement:
 48 b8 [detourAddress : 8]           // movabs rax, detourAddress
@@ -218,10 +218,9 @@ ff e0                               // jmp    rax
 returnLocation
 
 -detour:
-b9 10 9e 00 00                      // mov    ecx,0x9e10
-4a 8b 0c 29                         // mov    rcx,QWORD PTR [rcx+r13*1]
-48 85 c9                            // test   rcx,rcx
-
+48 89 5c 24 10                      // mov    QWORD PTR [rsp+0x10],rbx
+48 89 6c 24 18                      // mov    QWORD PTR [rsp+0x18],rbp
+48 89 74 24 20                      // mov    QWORD PTR [rsp+0x20],rsi
 [push volatile]
 48 83 ec 20                         // sub    rsp,0x20
 65 48 8b 0c 25 58 00 00 00          // mov    rcx,QWORD PTR gs:0x58
@@ -229,7 +228,6 @@ b9 10 9e 00 00                      // mov    ecx,0x9e10
 ff d0                               // call   rax
 48 83 c4 20                         // add    rsp,0x20
 [pop volatile]
-
 48 b8 [returnAddress : 8]           // movabs rax, returnAddress
 ff e0                               // jmp    rax
 )";

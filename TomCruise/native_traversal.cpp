@@ -171,6 +171,34 @@ bool GetIslandIDsByName(const std::string& name, std::vector<uint64_t>* ids)
     return true;
 }
 
+bool GetAllShips(std::vector<ShipIDAddressPair>* ships)
+{
+    ships->clear();
+
+    for (uint64_t address : shipLists)
+    {
+        uint64_t listPtr = ReadU64(address + 0x28);
+        uint64_t first = listPtr;
+        uint64_t last = ReadU64(address + 0x30);
+
+        uint64_t size = (last - first) / 24; // 24 bytes per struct
+
+        for (uint64_t i = 0; i < size; ++i)
+        {
+            uint64_t shipId = ReadU64(listPtr + i * 0x18);
+            uint64_t shipPtr = ReadU64(listPtr + i * 0x18 + 0x8);
+
+            ShipIDAddressPair ship;
+            ship.id = shipId;
+            ship.address = shipPtr;
+
+            ships->push_back(ship);
+        }
+    }
+
+    return true;
+}
+
 bool GetAllIslands(std::vector<AutoComms::IslandData>* islands)
 {
     islands->clear();
@@ -344,23 +372,20 @@ bool GetShipById(const uint64_t id, uint64_t* shipBaseAddress)
 {
     bool found = false;
 
-    for (uint64_t address : shipLists)
+    std::vector<ShipIDAddressPair> ships;
+    GetAllShips(&ships);
+
+    for (const ShipIDAddressPair& ship : ships)
     {
-        uint64_t listPtr = ReadU64(address + 0x20);
-        uint64_t size = ReadU64(address + 0x28);
-
-        for (uint64_t i = 0; i < size; ++i)
+        if (id == ship.id)
         {
-            uint64_t shipId = ReadU64(listPtr + i * 0x18);
-            uint64_t shipPtr = ReadU64(listPtr + i * 0x18 + 0x8);
-
-            if (id == shipId)
-            {
-                *shipBaseAddress = shipPtr;
-                found = true;
-            }
+            *shipBaseAddress = ship.address;
+            found = true;
         }
     }
+
+    if (!found)
+        SEND_FORMATTED("GetShipById failed to find ship with ID %llx", id);
 
     return found;
 }

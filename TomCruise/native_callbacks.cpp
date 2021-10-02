@@ -66,20 +66,26 @@ void ShipContextSet(uint64_t pointerValue)
     if (callType == CallFromOtherThread::None)
         return;
 
+    SEND_FORMATTED("Here 2");
+
     if (!IsReadable((void*)pointerValue, 8))
         return;
+
+    SEND_FORMATTED("Here 2");
 
     uint64_t pointerValue1 = ReadU64(pointerValue);
 
     if (!IsReadable((void*)pointerValue1, 8))
         return;
 
-    uint64_t areaOffset = 0x9E02;
+    uint64_t areaOffset = 0x151A;
 
     if (!IsReadable((void*)(pointerValue1 + areaOffset), 8))
         return;
 
     uint64_t areaPointer = ReadU64(pointerValue1 + areaOffset);
+
+    SEND_FORMATTED("Here 3");
 
     //if (!IsReadable((void*)(areaPointer), 8))
     //    return;
@@ -94,6 +100,8 @@ void ShipContextSet(uint64_t pointerValue)
         idValue = 2; // Old world
     else if (areaID == 0xBF39)
         idValue = 3; // New world
+
+    SEND_FORMATTED("Here 5");
  
     switch (callType)
     {
@@ -112,20 +120,30 @@ void ShipContextSet(uint64_t pointerValue)
                 if (!GetShipAddress(shipId, &shipAddress))
                     continue;
 
+                SEND_FORMATTED("Here 6");
+
                 uint64_t moveDataCompoentAddress = VirtualShipGetComponent(shipAddress, ComponentIdMoveData);
                 if (!moveDataCompoentAddress)
                     continue;
 
+                SEND_FORMATTED("Here 7");
+
                 makingCallInSelf = true;
                 ShipClearCommandQueuePreCode(moveDataCompoentAddress);
                 makingCallInSelf = false;
+
+                SEND_FORMATTED("Here 8");
             }
 
             std::vector<uint64_t> inputBuffer1;
             inputBuffer1.push_back(setWaypointForShipInput.idList.size() << 0x20);
 
+            SEND_FORMATTED("Here 9");
+
             for (uint64_t shipId : setWaypointForShipInput.idList)
                 inputBuffer1.push_back(shipId);
+
+            SEND_FORMATTED("Here 10");
 
             uint64_t packedWaypoint = 0;
             memcpy((uint8_t*)&packedWaypoint, (void*)&setWaypointForShipInput.x, 4);
@@ -148,6 +166,8 @@ void ShipContextSet(uint64_t pointerValue)
             makingCallInSelf = true;
             ShipDispatchPreCode(rcx, rdx);
             makingCallInSelf = false;
+
+            SEND_FORMATTED("Here 11");
 
             SignalCallDone();
         }

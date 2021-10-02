@@ -44,10 +44,10 @@ void SendMessageToHostNoLabel(const char* message)
 
 uint64_t Anno1800ModuleAddress = 0;
 
-uint64_t ComponentIdName = 308;
-uint64_t ComponentIdCargo = 656;
-uint64_t ComponentIdMoveData = 287;
+uint64_t ComponentIdName = 310;
+uint64_t ComponentIdCargo = 659;
+uint64_t ComponentIdMoveData = 289;
 uint64_t ComponentIdPermaID = 305;
 
-uint64_t ComponentIdBuildingProduction = 656;
-uint64_t ComponentIdBuildingProductionNoOuput = 656;
+uint64_t ComponentIdBuildingProduction = 683;
+uint64_t ComponentIdBuildingProductionNoOuput = 683;

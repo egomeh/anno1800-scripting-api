@@ -18,11 +18,11 @@ namespace monocle_demo
         static void Main(string[] args)
         {
             Program program = new Program();
-            program.Run(args);
+            // program.Run(args);
 
             // program.ShipComponentExperiment();
 
-            // program.Demo();
+            program.Demo();
             // program.DemoAllIslands();
         }
 
@@ -76,30 +76,57 @@ namespace monocle_demo
         void Demo()
         {
 
+            Telegraph telegraph = new Telegraph();
+
+            List<ShipData> ships;
+
+            telegraph.GetAllShips(Area.OldWorld, out ships);
+
+            List<ulong> ids = new List<ulong>() { ships[0].shipId, ships[1].shipId };
+
+            telegraph.AddWaypoint(ids, new Coordinate { x = 1111.0f, y = 1616.0f });
+
+            return;
+
             {
-                Telegraph telegraph = new Telegraph();
+                //List<ShipData> ships = null;
+                //telegraph.GetAllShips(Area.OldWorld, out ships);
 
-                monocle.GameTime gameTime;
-                telegraph.GetGameTime(out gameTime);
+                //ShipMoveData shipMoveData;
+                //telegraph.GetShipMoveData(0x0000000200000FF8, out shipMoveData);
+
+                //telegraph.AddWaypoint(new List<ulong>() { 0x0000000200000FF8 }, new Coordinate() { x = 1151, y = 1616 });
+
+                //List<IslandData> musli;
+                //telegraph.GetIslandsByName("musli", out musli);
+
+                //List<ShipCargoSlot> OrpheusCargo = null;
+                //telegraph.GetShipCargo(0x0000000200000FF8, out OrpheusCargo);
+                //telegraph.ShipDumpCargo(0x0000000200000FF8, 1);
+
+                //List<ConsumptionNode> musliconsumption;
+                //telegraph.GetIslandConsumption(musli[0].id, out musliconsumption);
 
 
-                List<ShipData> ships = null;
-                telegraph.GetAllShips(Area.OldWorld, out ships);
+                //List<IslandData> islands;
 
-                ShipMoveData shipMoveData;
-                telegraph.GetShipMoveData(0x0000000200000FF8, out shipMoveData);
+                //if (!telegraph.GetIslandsByName("musli", out islands))
+                //    return;
 
-                telegraph.AddWaypoint(new List<ulong>() { 0x0000000200000FF8 }, new Coordinate() { x = 1151, y = 1616 });
+                //IslandData musli = islands[0];
 
-                List<IslandData> musli;
-                telegraph.GetIslandsByName("musli", out musli);
+                //List<BuildingData> buildingsOnMusli;
 
-                List<ShipCargoSlot> OrpheusCargo = null;
-                telegraph.GetShipCargo(0x0000000200000FF8, out OrpheusCargo);
-                telegraph.ShipDumpCargo(0x0000000200000FF8, 1);
+                //if (!telegraph.GetIslandBuildings(musli.id, out buildingsOnMusli))
+                //    return;
 
-                List<ConsumptionNode> musliconsumption;
-                telegraph.GetIslandConsumption(musli[0].id, out musliconsumption);
+                //ProductionNode LumberjackProduction;
+                //if (!telegraph.GetBuildingProduction(musli.id, 0x2bf, out LumberjackProduction))
+                //    return;
+
+                //ProductionNode BreweryProduction;
+                //if (!telegraph.GetBuildingProduction(musli.id, 0x319b, out BreweryProduction))
+                //    return;
 
                 //List<monocle.ShipData> ships;
                 //List<monocle.IslandData> islands;

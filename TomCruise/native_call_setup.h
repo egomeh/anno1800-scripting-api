@@ -16,8 +16,8 @@ R"(
 41 55                               // push   r13
 41 56                               // push   r14
 41 57                               // push   r15
-48 8d a8 88 fe ff ff                // lea    rbp,[rax-0x178]
-48 81 ec 40 02 00 00                // sub    rsp,0x240
+48 8d 68 a1                         // lea    rbp,[rax-0x5f]
+48 81 ec c0 00 00 00                // sub    rsp,0xc0
 0f 29 70 b8                         // movaps XMMWORD PTR [rax-0x48],xmm6
 0f b6 fa                            // movzx  edi,dl
 )";
@@ -25,41 +25,42 @@ R"(
 const char* ShipClearCommandQueuePreCall =
 R"(
 [push volatile]
-48 81 ec 08 01 00 00                // sub    rsp,0x108
+48 81 ec 00 01 00 00                // sub    rsp,0x100
 48 b8 [nativeCode : 8]              // movabs rax, nativeCode
 ff d0                               // call   rax
 90                                  // nop
-48 81 c4 08 01 00 00                // add    rsp,0x108
+48 81 c4 00 01 00 00                // add    rsp,0x100
 [pop volatile]
 c3                                  // ret
 )";
 
 const char* ShipDispatch =
 R"(
-48 89 4c 24 08                      // mov    QWORD PTR [rsp+0x8],rcx
+48 89 5c 24 20                      // mov    QWORD PTR [rsp+0x20],rbx
 55                                  // push   rbp
-53                                  // push   rbx
 56                                  // push   rsi
 57                                  // push   rdi
 41 54                               // push   r12
 41 55                               // push   r13
 41 56                               // push   r14
 41 57                               // push   r15
-48 8d ac 24 98 fd ff ff             // lea    rbp,[rsp-0x268]
-48 81 ec 68 03 00 00                // sub    rsp,0x368
-48 8b f1                            // mov    rsi,rcx
-33 db                               // xor    ebx,ebx
-4c 8b 09                            // mov    r9,QWORD PTR [rcx]
+48 8b ec                            // mov    rbp,rsp
+48 83 ec 70                         // sub    rsp,0x70
+4c 8b e1                            // mov    r12,rcx
+4c 8b 01                            // mov    r8,QWORD PTR [rcx]
+41 b9 04 15 00 00                   // mov    r9d,0x1504
 )";
 
 const char* ShipDispatchPreCall =
 R"(
 [push volatile]
-50
+48 81 ec 08 01 00 00                // sub    rsp,0x108
+50                                  // push rax
 48 b8 [nativeCode : 8]              // movabs rax, nativeCode
 ff d0                               // call   rax
 90                                  // nop
-58
+58                                  // pop rax
+48 81 c4 08 01 00 00                // add    rsp,0x108
 [pop volatile]
 c3                                  // ret
 )";

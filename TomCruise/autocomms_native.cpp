@@ -137,11 +137,11 @@ bool AutoComms::TargetCall_GetAllShips(const Area& area, std::vector<ShipData>* 
 
         SEND_FORMATTED("PermaID address: %llx - ship %llx address", permaIdComponentAddress, address);
 
-        if (permaIdComponentAddress)
-        {
-            uint64_t permaId = ReadU64(permaIdComponentAddress + 0x20);
-            data.shipPermaId = permaId;
-        }
+        //if (permaIdComponentAddress)
+        //{
+        //    uint64_t permaId = ReadU64(permaIdComponentAddress + 0x20);
+        //    data.shipPermaId = permaId;
+        //}
 
         ships->push_back(data);
     }

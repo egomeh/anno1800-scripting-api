@@ -8,6 +8,15 @@
 std::string GetStringFromAnnoString(uint64_t stringAddress);
 std::string GetStringFromNameComponent(uint64_t componentAddress);
 
+struct ShipIDAddressPair
+{
+    uint64_t id;
+    uint64_t address;
+};
+
+
+bool GetAllShips(std::vector<ShipIDAddressPair>* ships);
+
 bool GetAllIslands(std::vector<AutoComms::IslandData>* ids);
 bool GetIslandById(const uint64_t id, uint64_t* islandBaseAddress);
 bool GetIslandIDsByName(const std::string& name, std::vector<uint64_t>* ids);

@@ -238,31 +238,19 @@ bool GetShipName(uint64_t shipId, std::string* name)
     name->clear();
 
     EnterCriticalSection(&shipServiceLock);
-    for (uint64_t address : shipLists)
+
+    std::vector<ShipIDAddressPair> ships;
+    GetAllShips(&ships);
+
+    for (const ShipIDAddressPair& ship : ships)
     {
-        uint64_t listPtr = ReadU64(address + 0x20);
-        uint64_t size = ReadU64(address + 0x28);
+        if (ship.id != shipId)
+            continue;
 
-        for (uint64_t i = 0; i < size; ++i)
-        {
-            uint64_t id = ReadU64(listPtr + i * 0x18);
-            uint64_t shipPtr = ReadU64(listPtr + i * 0x18 + 0x8);
+        uint64_t nameComponentAddress = VirtualShipGetComponent(ship.address, ComponentIdName);
+        *name = GetStringFromNameComponent(nameComponentAddress);
 
-            if (id != shipId)
-                continue;
-
-            //for (uint64_t componentId = 0; componentId < 2048; ++componentId)
-            //{
-            //    uint64_t componentAddress = VirtualShipGetComponent(shipPtr, componentId);
-
-            //    if (componentAddress)
-            //        SEND_FORMATTED("%llx : %lld", componentAddress, componentId);
-            //}
-
-            // Name
-            uint64_t nameComponentAddress = VirtualShipGetComponent(shipPtr, ComponentIdName);
-            *name = GetStringFromNameComponent(nameComponentAddress);
-        }
+        break;
     }
     LeaveCriticalSection(&shipServiceLock);
 
@@ -274,27 +262,23 @@ bool GetShipsByName(const std::string& name, std::vector<uint64_t>* shipList)
     shipList->clear();
 
     EnterCriticalSection(&shipServiceLock);
-    for (uint64_t address : shipLists)
+
+    std::vector<ShipIDAddressPair> ships;
+    GetAllShips(&ships);
+
+    for (const ShipIDAddressPair& ship : ships)
     {
-        uint64_t listPtr = ReadU64(address + 0x20);
-        uint64_t size = ReadU64(address + 0x28);
+        // Name
+        uint64_t nameComponentAddress = VirtualShipGetComponent(ship.address, ComponentIdName);
+        std::string currentName = GetStringFromNameComponent(nameComponentAddress);
 
-        for (uint64_t i = 0; i < size; ++i)
+        if (name.compare(currentName) == 0)
         {
-            uint64_t id = ReadU64(listPtr + i * 0x18);
-            uint64_t shipPtr = ReadU64(listPtr + i * 0x18 + 0x8);
-
-            // Name
-            uint64_t nameComponentAddress = VirtualShipGetComponent(shipPtr, 266);
-            std::string currentName = GetStringFromNameComponent(nameComponentAddress);
-
-            if (name.compare(currentName) == 0)
-            {
-                shipList->push_back(id);
-                SEND_FORMATTED("Found '%s' with id %llx ptr %llx", currentName.c_str(), id, shipPtr);
-            }
+            shipList->push_back(ship.id);
+            SEND_FORMATTED("Found '%s' with id %llx ptr %llx", currentName.c_str(), ship.id, ship.address);
         }
     }
+
     LeaveCriticalSection(&shipServiceLock);
 
     return true;
@@ -305,22 +289,18 @@ bool GetAllShipsInWorld(const uint64_t& worldId, std::vector<uint64_t>* shipList
     shipList->clear();
 
     EnterCriticalSection(&shipServiceLock);
-    for (uint64_t address : shipLists)
+
+    std::vector<ShipIDAddressPair> ships;
+    GetAllShips(&ships);
+
+    for (const ShipIDAddressPair& ship : ships)
     {
-        uint64_t listPtr = ReadU64(address + 0x20);
-        uint64_t size = ReadU64(address + 0x28);
-
-        for (uint64_t i = 0; i < size; ++i)
+        if (((ship.id & 0xFFFFFFFF000000) >> 0x20) == worldId)
         {
-            uint64_t id = ReadU64(listPtr + i * 0x18);
-            uint64_t shipPtr = ReadU64(listPtr + i * 0x18 + 0x8);
-
-            if (((id & 0xFFFFFFFF000000) >> 0x20) == worldId)
-            {
-                shipList->push_back(id);
-            }
+            shipList->push_back(ship.id);
         }
     }
+
     LeaveCriticalSection(&shipServiceLock);
 
     return true;
@@ -331,23 +311,19 @@ bool GetShipAddress(uint64_t shipId, uint64_t* result)
     bool found = false;
 
     EnterCriticalSection(&shipServiceLock);
-    for (uint64_t address : shipLists)
+        
+    std::vector<ShipIDAddressPair> ships;
+    GetAllShips(&ships);
+
+    for (const ShipIDAddressPair& ship : ships)
     {
-        uint64_t listPtr = ReadU64(address + 0x20);
-        uint64_t size = ReadU64(address + 0x28);
-
-        for (uint64_t i = 0; i < size && !found; ++i)
+        if (shipId == ship.id)   
         {
-            uint64_t id = ReadU64(listPtr + i * 0x18);
-            uint64_t shipPtr = ReadU64(listPtr + i * 0x18 + 0x8);
-
-            if (shipId == id)   
-            {
-                *result = shipPtr;
-                found = true;
-            }
+            *result = ship.address;
+            found = true;
         }
     }
+
     LeaveCriticalSection(&shipServiceLock);
 
     if (!found)

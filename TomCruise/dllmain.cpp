@@ -240,54 +240,54 @@ static bool ComputeFunctionOffests(HANDLE anno, std::vector<Hook>& hooks, std::v
     bool isUplayBinary = false;
 
     Hook timeHook;
-    PrepareAndLocateHook(&timeHook, "time hook", (uint64_t)NativeCallbackUpdateTime, moduleBase, moduleBase + 0x132e1c1, HookScripts::TimeAndFrame, regions, nRegions);
+    PrepareAndLocateHook(&timeHook, "time hook", (uint64_t)NativeCallbackUpdateTime, moduleBase, moduleBase + 0x8468D, HookScripts::TimeAndFrame, regions, nRegions);
     hooks.push_back(timeHook);
 
     Hook shipContextSetup;
-    PrepareAndLocateHook(&shipContextSetup, "ship context hook", (uint64_t)ShipContextSet, moduleBase, moduleBase + 0x132468C, HookScripts::ShipContextSetHook, regions, nRegions);
+    PrepareAndLocateHook(&shipContextSetup, "ship context hook", (uint64_t)ShipContextSet, moduleBase, moduleBase + 0xF79410, HookScripts::ShipContextSetHook, regions, nRegions);
     hooks.push_back(shipContextSetup);
 
     Hook shipListIteration;
-    PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0x71B5A0, HookScripts::ShipListIteration, regions, nRegions);
+    PrepareAndLocateHook(&shipListIteration, "Ship list iteration", (uint64_t)ShipListIteration, moduleBase, moduleBase + 0xE8FC80, HookScripts::ShipListIteration, regions, nRegions);
     hooks.push_back(shipListIteration);
 
-    Hook regionIteration;
-    PrepareAndLocateHook(&regionIteration, "Region iteration", (uint64_t)RegionIteration, moduleBase, moduleBase + 0x2B8B50, HookScripts::RegionIteration, regions, nRegions);
-    hooks.push_back(regionIteration);
+    //Hook regionIteration;
+    //PrepareAndLocateHook(&regionIteration, "Region iteration", (uint64_t)RegionIteration, moduleBase, moduleBase + 0x2b8b50, HookScripts::RegionIteration, regions, nRegions);
+    //hooks.push_back(regionIteration);
 
-    uint64_t islandConsumptionOffset = isUplayBinary ? 0x00000 : 0x8D964D;
+    //uint64_t islandConsumptionOffset = isUplayBinary ? 0x00000 : 0x8D964D;
 
-    Hook islandConsumptionIteration;
-    PrepareAndLocateHook(&islandConsumptionIteration, "Island consumption", (uint64_t)IslandConsumptionIteration, moduleBase, moduleBase + islandConsumptionOffset, HookScripts::IslandConsumptionIteration, regions, nRegions);
-    hooks.push_back(islandConsumptionIteration);
+    //Hook islandConsumptionIteration;
+    //PrepareAndLocateHook(&islandConsumptionIteration, "Island consumption", (uint64_t)IslandConsumptionIteration, moduleBase, moduleBase + islandConsumptionOffset, HookScripts::IslandConsumptionIteration, regions, nRegions);
+    //hooks.push_back(islandConsumptionIteration);
 
     NativeCallSetup virtualShipGetComponent;
     PrepareAndSetupNativeCall(&virtualShipGetComponent, "virtual ship: GetComponent", nullptr, NativeCallSetups::VirtualShipGetComponent, (uint64_t*)&VirtualShipGetComponent, moduleBase, moduleBase, regions, nRegions);
     nativeCalls.push_back(virtualShipGetComponent);
 
     NativeCallSetup shipMoveSetup;
-    PrepareAndSetupNativeCall(&shipMoveSetup, "Ship move call", NativeCallSetups::ShipDispatch, NativeCallSetups::ShipDispatchPreCall, (uint64_t*)&ShipDispatchPreCode, moduleBase, moduleBase + 0x1261E60, regions, nRegions);
+    PrepareAndSetupNativeCall(&shipMoveSetup, "Ship move call", NativeCallSetups::ShipDispatch, NativeCallSetups::ShipDispatchPreCall, (uint64_t*)&ShipDispatchPreCode, moduleBase, moduleBase + 0x11E4910, regions, nRegions);
     nativeCalls.push_back(shipMoveSetup);
 
     NativeCallSetup shiClearCommandQueueSetup;
-    PrepareAndSetupNativeCall(&shiClearCommandQueueSetup, "Ship clear command queue", NativeCallSetups::ShipClearCommandQueue, NativeCallSetups::ShipClearCommandQueuePreCall, (uint64_t*)&ShipClearCommandQueuePreCode, moduleBase, moduleBase + 0x7B7AE0, regions, nRegions);
+    PrepareAndSetupNativeCall(&shiClearCommandQueueSetup, "Ship clear command queue", NativeCallSetups::ShipClearCommandQueue, NativeCallSetups::ShipClearCommandQueuePreCall, (uint64_t*)&ShipClearCommandQueuePreCode, moduleBase, moduleBase + 0xD20ED0, regions, nRegions);
     nativeCalls.push_back(shiClearCommandQueueSetup);
 
     //NativeCallSetup shipRegionTransferSetup;
     //PrepareAndSetupNativeCall(&shipRegionTransferSetup, "Ship region transfer", NativeCallSetups::ShipTransfer, NativeCallSetups::ShipTransferPreCall, (uint64_t*)&ShipTransferPreCode, moduleBase, moduleBase + 0x74AEF0, regions, nRegions);
     //nativeCalls.push_back(shipRegionTransferSetup);
 
-    NativeCallSetup transferIslandToShipSetup;
-    PrepareAndSetupNativeCall(&transferIslandToShipSetup, "Resource Island -> Ship", NativeCallSetups::LoadCargoFromIslandToShip, NativeCallSetups::LoadCargoFromIslandToShipPreCall, (uint64_t*)&TransferIslandToShipPreCode, moduleBase, moduleBase + 0x1278CF0, regions, nRegions);
-    nativeCalls.push_back(transferIslandToShipSetup);
+    //NativeCallSetup transferIslandToShipSetup;
+    //PrepareAndSetupNativeCall(&transferIslandToShipSetup, "Resource Island -> Ship", NativeCallSetups::LoadCargoFromIslandToShip, NativeCallSetups::LoadCargoFromIslandToShipPreCall, (uint64_t*)&TransferIslandToShipPreCode, moduleBase, moduleBase + 0x1278CF0, regions, nRegions);
+    //nativeCalls.push_back(transferIslandToShipSetup);
 
-    NativeCallSetup transferShipToIslandSetup;
-    PrepareAndSetupNativeCall(&transferShipToIslandSetup, "Resource Island <- Ship", NativeCallSetups::LoadCargoFromShipToIsland, NativeCallSetups::LoadCargoFromShipToIslandPreCall, (uint64_t*)&TransferShipToIslandPreCode, moduleBase, moduleBase + 0x12779A0, regions, nRegions);
-    nativeCalls.push_back(transferShipToIslandSetup);
+    //NativeCallSetup transferShipToIslandSetup;
+    //PrepareAndSetupNativeCall(&transferShipToIslandSetup, "Resource Island <- Ship", NativeCallSetups::LoadCargoFromShipToIsland, NativeCallSetups::LoadCargoFromShipToIslandPreCall, (uint64_t*)&TransferShipToIslandPreCode, moduleBase, moduleBase + 0x12779A0, regions, nRegions);
+    //nativeCalls.push_back(transferShipToIslandSetup);
 
-    NativeCallSetup shipDumpSetup;
-    PrepareAndSetupNativeCall(&shipDumpSetup, "Ship dump cargo call", NativeCallSetups::ShipCargoDump, NativeCallSetups::ShipCargoDumpPreCall, (uint64_t*)&ShipDumpCargoPreCode, moduleBase, moduleBase + 0x6D70D0, regions, nRegions);
-    nativeCalls.push_back(shipDumpSetup);
+    //NativeCallSetup shipDumpSetup;
+    //PrepareAndSetupNativeCall(&shipDumpSetup, "Ship dump cargo call", NativeCallSetups::ShipCargoDump, NativeCallSetups::ShipCargoDumpPreCall, (uint64_t*)&ShipDumpCargoPreCode, moduleBase, moduleBase + 0x6D70D0, regions, nRegions);
+    //nativeCalls.push_back(shipDumpSetup);
 
     for (Hook& hook : hooks)
         EnableHook(&hook, anno);
