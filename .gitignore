@@ -17,3 +17,6 @@ autocomms.sublime-workspace
 
 Debug/
 Release/
+Monocle/obj
+CommsCS/obj
+CodeGenerator/obj
