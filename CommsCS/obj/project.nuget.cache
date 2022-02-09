@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "jI5Q1BuMlpxw5mdZcZJ7vwBhU0+S068B8Kj07o2UZTjGnZC01OIizj104ozHGkw6ecwwu4jMkQyFzw+yeiW0Iw==",
+  "success": true,
+  "projectFilePath": "D:\\projects-d\\anno1800-scripting-api\\CommsCS\\CommsCS.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Jens\\.nuget\\packages\\yamldotnet\\11.2.1\\yamldotnet.11.2.1.nupkg.sha512"
+  ],
+  "logs": []
+}

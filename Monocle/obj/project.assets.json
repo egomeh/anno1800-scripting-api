@@ -1,0 +1,152 @@
+{
+  "version": 3,
+  "targets": {
+    "net6.0": {
+      "YamlDotNet/11.2.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.1/YamlDotNet.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/YamlDotNet.dll": {}
+        }
+      },
+      "CodeGenerator/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "YamlDotNet": "11.2.1"
+        },
+        "compile": {
+          "bin/placeholder/CodeGenerator.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/CodeGenerator.dll": {}
+        }
+      },
+      "CommsCS/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v6.0",
+        "dependencies": {
+          "CodeGenerator": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/CommsCS.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/CommsCS.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "YamlDotNet/11.2.1": {
+      "sha512": "tBt8K+korVfrjH9wyDEhiLKxbs8qoLCLIFwvYgkSUuMC9//w3z0cFQ8LQAI/5MCKq+BMil0cfRTRvPeE7eXhQw==",
+      "type": "package",
+      "path": "yamldotnet/11.2.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "images/yamldotnet.png",
+        "lib/net20/YamlDotNet.dll",
+        "lib/net20/YamlDotNet.xml",
+        "lib/net35-client/YamlDotNet.dll",
+        "lib/net35-client/YamlDotNet.xml",
+        "lib/net35/YamlDotNet.dll",
+        "lib/net35/YamlDotNet.xml",
+        "lib/net45/YamlDotNet.dll",
+        "lib/net45/YamlDotNet.xml",
+        "lib/netstandard1.3/YamlDotNet.dll",
+        "lib/netstandard1.3/YamlDotNet.xml",
+        "lib/netstandard2.1/YamlDotNet.dll",
+        "lib/netstandard2.1/YamlDotNet.xml",
+        "yamldotnet.11.2.1.nupkg.sha512",
+        "yamldotnet.nuspec"
+      ]
+    },
+    "CodeGenerator/1.0.0": {
+      "type": "project",
+      "path": "../CodeGenerator/CodeGenerator.csproj",
+      "msbuildProject": "../CodeGenerator/CodeGenerator.csproj"
+    },
+    "CommsCS/1.0.0": {
+      "type": "project",
+      "path": "../CommsCS/CommsCS.csproj",
+      "msbuildProject": "../CommsCS/CommsCS.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net6.0": [
+      "CommsCS >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Jens\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "D:\\projects-d\\anno1800-scripting-api\\Monocle\\Monocle.csproj",
+      "projectName": "Monocle",
+      "projectPath": "D:\\projects-d\\anno1800-scripting-api\\Monocle\\Monocle.csproj",
+      "packagesPath": "C:\\Users\\Jens\\.nuget\\packages\\",
+      "outputPath": "D:\\projects-d\\anno1800-scripting-api\\Monocle\\obj\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\Jens\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net6.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "projectReferences": {
+            "D:\\projects-d\\anno1800-scripting-api\\CommsCS\\CommsCS.csproj": {
+              "projectPath": "D:\\projects-d\\anno1800-scripting-api\\CommsCS\\CommsCS.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net6.0": {
+        "targetAlias": "net6.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

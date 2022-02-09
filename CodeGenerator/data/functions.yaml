@@ -1,0 +1,15 @@
+
+
+
+- functions:
+
+
+    - GetGameTime:
+        - out:
+            - time: uint32
+
+
+
+
+
+

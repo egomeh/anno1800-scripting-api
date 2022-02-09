@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CodeGenerator": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}
