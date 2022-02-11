@@ -3,13 +3,21 @@
 
 - functions:
 
-
     - GetGameTime:
         - out:
-            - time: uint32
+            - time: uint64
+
+    - GetShipWaypoints:
+        - in:
+            - shipID: uint64
+        - out:
+            - waypoints: list(Coordinate)
 
 
+- types:
 
-
-
+    - Coordinate:
+        - fields:
+            - x: float
+            - y: float
 
