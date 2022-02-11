@@ -3,6 +3,12 @@ using System.Collections;
 using YamlDotNet.Serialization;
 
 Console.WriteLine("Hello world");
+
+List<Object> functions;
+List<Object> types;
+
+YamlDataReader.ReadYamlData("data", out functions, out types);
+
 return 0;
 
 //List<string> GetAllYamlFiles(string directory)

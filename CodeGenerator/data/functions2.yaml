@@ -1,0 +1,17 @@
+
+
+
+- functions:
+
+    - TestFunction:
+        - out:
+            - time: uint64
+
+
+- types:
+
+    - SomeType:
+        - fields:
+            - x: float
+            - y: float
+

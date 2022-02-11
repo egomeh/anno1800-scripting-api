@@ -18,13 +18,12 @@
 
   <ItemGroup>
     <None Remove="data\functions.yaml" />
-    <None Remove="data\types.yaml" />
+    <None Remove="data\functions2.yaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="data\functions.yaml">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="data\functions.yaml"/>
+    <EmbeddedResource Include="data\functions2.yaml" />
   </ItemGroup>
 
   <ItemGroup>
