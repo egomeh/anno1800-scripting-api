@@ -63,6 +63,11 @@ class TypeTable
         m_Types["double"] = new Double();
     }
 
+    public bool TypeNameInTable(string typeName)
+    {
+        return m_Types.ContainsKey(typeName);
+    }
+
     // name from yaml to types
     Dictionary<string, Type> m_Types;
 }

@@ -1,5 +1,37 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 using YamlDotNet.Serialization;
+
+struct FieldEntry
+{
+    public string name;
+    public string type;
+}
+
+class TypeInfo
+{
+    public TypeInfo()
+    {
+        fields = new List<FieldEntry>();
+        name = "<None>";
+    }
+    
+    public string name;
+    public List<FieldEntry> fields;
+}
+
+//class FunctionInfo
+//{
+//    public FunctionInfo()
+//    {
+//        input = new List<string>();
+//        output = new List<string>();
+//    }
+
+//    public string name;
+//    public List<string> input;
+//    public List<string> output;
+//}
 
 class YamlDataReader
 {
@@ -59,4 +91,56 @@ class YamlDataReader
             }
         }
     }
+
+    public static List<TypeInfo> GetTypeInfo(List<Object> data)
+    {
+        List<TypeInfo> types = new List<TypeInfo>();
+
+        foreach (Object item in data)
+        {
+            var type = item as Dictionary<Object, Object>;
+            Debug.Assert(type != null);
+            string? name = type.Keys.First() as string;
+            Debug.Assert(!string.IsNullOrEmpty(name));
+
+            TypeInfo typeInfo = new TypeInfo();
+            typeInfo.name = name;
+
+            var fieldsSection = type[name] as List<Object>;
+            Debug.Assert(fieldsSection != null);
+
+            // This checks that there is only one `fields` section.
+            Debug.Assert(fieldsSection.Count == 1);
+
+            var fieldsDicionary = fieldsSection[0] as Dictionary<Object, Object>;
+            Debug.Assert(fieldsDicionary != null);
+
+            var fields = fieldsDicionary["fields"] as List<Object>;
+            Debug.Assert(fields != null);
+
+            foreach (var fieldItem in fields)
+            {
+                var field = fieldItem as Dictionary<Object, Object>;
+                Debug.Assert(field != null);
+
+                string? fieldName = field.Keys.First() as string;
+                Debug.Assert(!string.IsNullOrEmpty(fieldName));
+
+                string? fieldType = field[fieldName] as string;
+                Debug.Assert(!string.IsNullOrEmpty(fieldType));
+
+                FieldEntry entry = new FieldEntry();
+                entry.name = fieldName;
+                entry.type = fieldType;
+
+                typeInfo.fields.Add(entry);
+            }
+
+            types.Add(typeInfo);
+        }
+
+        return types;
+    }
 }
+
+

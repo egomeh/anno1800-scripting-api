@@ -9,6 +9,8 @@ List<Object> types;
 
 YamlDataReader.ReadYamlData("data", out functions, out types);
 
+List<TypeInfo> typeNames = YamlDataReader.GetTypeInfo(types);
+
 return 0;
 
 //List<string> GetAllYamlFiles(string directory)
