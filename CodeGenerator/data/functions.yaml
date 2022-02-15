@@ -21,3 +21,12 @@
             - x: float
             - y: float
 
+
+    - ShipCargo:
+        - fields:
+            - cargo: list(CargoSlot)
+
+    - CargoSlot:
+        - fields:
+            - item: uint64
+            - volume: int32

@@ -11,6 +11,15 @@ YamlDataReader.ReadYamlData("data", out functions, out types);
 
 List<TypeInfo> typeNames = YamlDataReader.GetTypeInfo(types);
 
+TypeTable table = new TypeTable();
+string validationError;
+
+if (!YamlDataReader.ValidateTypes(typeNames, table.GetRegisteredNames(), out validationError))
+{
+    Console.WriteLine(validationError);
+    return 1;
+}
+
 return 0;
 
 //List<string> GetAllYamlFiles(string directory)

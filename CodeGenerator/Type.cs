@@ -4,10 +4,13 @@ class Type
 {
 }
 
-class Int32 : Type
+class Bool : Type
 {
 }
 
+class Int32 : Type
+{
+}
 
 class UInt32 : Type
 {
@@ -43,10 +46,10 @@ class CompoundType
 {
     public CompoundType()
     {
-        m_Elements = new List<Type>();
+        m_Fields = new List<Type>();
     }
 
-    List<Type> m_Elements;
+    List<Type> m_Fields;
 }
 
 class TypeTable
@@ -55,6 +58,7 @@ class TypeTable
     {
         m_Types = new Dictionary<string, Type>();
 
+        m_Types["bool"] = new Bool();
         m_Types["int32"] = new Int32();
         m_Types["uint32"] = new UInt32();
         m_Types["int64"] = new UInt32();
@@ -66,6 +70,16 @@ class TypeTable
     public bool TypeNameInTable(string typeName)
     {
         return m_Types.ContainsKey(typeName);
+    }
+
+    public List<string> GetRegisteredNames()
+    {
+        return m_Types.Keys.ToList();
+    }
+
+    public bool AddTypes(List<TypeInfo> validatedTypes)
+    {
+        return true;
     }
 
     // name from yaml to types

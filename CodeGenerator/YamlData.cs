@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using YamlDotNet.Serialization;
 
 struct FieldEntry
@@ -140,6 +141,60 @@ class YamlDataReader
         }
 
         return types;
+    }
+
+    public static bool ValidateTypes(List<TypeInfo> customTypes, List<string> builtinTypes, out string error)
+    {
+        error = string.Empty;
+
+        var customTypeNames = customTypes.Select(x => x.name).ToList();
+
+        List<string> allTypesNames = customTypeNames;
+        allTypesNames.AddRange(builtinTypes);
+
+        foreach (string typeName in allTypesNames)
+        {
+            if (allTypesNames.Where(x => x.Equals(typeName)).Count() > 1)
+            {
+                error = String.Format("Type {0} defined multiple times", typeName);
+                return false;
+            }
+        }
+
+        foreach (TypeInfo typeInfo in customTypes)
+        {
+            foreach (var field in typeInfo.fields)
+            {
+                string typename = field.type;
+
+                Regex listTypeRegex = new Regex(@"list\((.*)\)");
+
+                // This is a bit hacky but it'll do for now.
+                while (true)
+                {
+                    Match m = listTypeRegex.Match(typename);
+
+                    if (!m.Success)
+                        break;
+
+                    typename = m.Groups[1].Value;
+                }
+
+                int timesDefined = allTypesNames.Where(x => x.Equals(typename)).Count();
+
+                if (timesDefined == 1)
+                    continue;
+
+                if (timesDefined == 0)
+                    error = String.Format("Type {0} has field {1} of undefnied type {2}", typeInfo.name, field.name, typename);
+                else
+                    error = String.Format("Type {0} has field {1} of type {2} defined more than once", typeInfo.name, field.name, typename);
+
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
