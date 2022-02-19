@@ -132,6 +132,30 @@ class CodeGenerator
             return false;
 
         code += String.Format("struct {0}\n{{\n", compoundType.name);
+
+        code += String.Format("    public {0}()\n", compoundType.name);
+        code += "    {\n";
+        
+        foreach (var fieldEntry in compoundType.GetFields())
+        {
+            if (fieldEntry.Value is ListType)
+            {
+                string csTypeName;
+                if (!GetCSTypeString(fieldEntry.Value, out csTypeName))
+                    return false;
+                code += string.Format("        {0} = new {1}();\n", fieldEntry.Key, csTypeName);
+            }
+            else if (fieldEntry.Value is StringType)
+            {
+                code += string.Format("        {0} = \"\";\n", fieldEntry.Key);
+            }
+            else
+            {
+                code += string.Format("        {0} = default;\n", fieldEntry.Key);
+            }
+        }
+
+        code += "    }\n\n";
         
         foreach (var fieldEntry in compoundType.GetFields())
         {
@@ -291,12 +315,21 @@ class CodeGenerator
             code += "    public bool Serialize(string data, List<byte> buffer)\n";
             code += "    {\n";
             code += "        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(data);\n";
-
             code += "        byte[] size = BitConverter.GetBytes((ulong)bytes.Length);\n";
-
             code += "        buffer.AddRange(size);\n";
             code += "        buffer.AddRange(bytes);\n";
+            code += "        return true;\n";
+            code += "    }\n\n";
 
+            code += "    public bool Deserialize(out string data, byte[] buffer, int offset, out int offsetAfter)\n";
+            code += "    {\n";
+            code += "        ulong size = 0;\n";
+            code += "        data = \"\";\n";
+            code += "        offsetAfter = 0;\n";
+            code += "        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))\n";
+            code += "            return false;\n";
+            code += "        data = System.Text.Encoding.UTF8.GetString(buffer, offsetAfter, (int)size);\n";
+            code += "        offsetAfter += (int)size;\n";
             code += "        return true;\n";
             code += "    }\n";
         }
@@ -318,6 +351,23 @@ class CodeGenerator
 
             code += "        return true;\n";
             code += "    }\n\n";
+
+            code += string.Format("    public bool Deserialize(out {0} data, byte[] buffer, int offset, out int offsetAfter)\n", csTypeName);
+            code += "    {\n";
+            code += String.Format("        data = new {0}();\n", csTypeName);
+            code += "        offsetAfter = offset;\n\n";
+
+            foreach (var fieldEntry in ct.GetFields())
+            {
+                code += string.Format("        if (!Deserialize(out data.{0}, buffer, offset, out offsetAfter))\n", fieldEntry.Key);
+                code += string.Format("            return false;\n");
+
+                if (!ct.GetFields().Last().Equals(fieldEntry))
+                    code += "        offset = offsetAfter;\n\n";
+            }
+
+            code += "\n        return true;\n";
+            code += "    }\n\n";
         }
         else if (type is ListType)
         {
@@ -325,6 +375,10 @@ class CodeGenerator
 
             if (lt == null)
                 return false;
+
+            string innerType;
+
+            GetCSTypeString(lt.GetElementType(), out innerType);
 
             code += string.Format("    public bool Serialize({0} data, List<byte> buffer)\n", csTypeName);
             code += "    {\n";
@@ -338,6 +392,26 @@ class CodeGenerator
             code += "        {\n";
             code += "            if (!Serialize(data[i], buffer))\n";
             code += "                return false;\n";
+            code += "        }\n\n";
+
+            code += "        return true;\n";
+            code += "    }\n\n";
+
+            code += string.Format("    public bool Deserialize(out {0} data, byte[] buffer, int offset, out int offsetAfter)\n", csTypeName);
+            code += "    {\n";
+
+            code += "        ulong size;\n";
+            code += String.Format("        data = new {0}();\n", csTypeName);
+            code += "        offsetAfter = offset;\n\n";
+            code += "        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))\n";
+            code += "                return false;\n\n";
+
+            code += "        for (ulong i = 0; i < size; ++i)\n";
+            code += "        {\n";
+            code += String.Format("            {0} element;\n", innerType);
+            code += "            if (!Deserialize(out element, buffer, offset, out offsetAfter))\n";
+            code += "                return false;\n";
+            code += "            data.Add(element);\n";
             code += "        }\n\n";
 
             code += "        return true;\n";

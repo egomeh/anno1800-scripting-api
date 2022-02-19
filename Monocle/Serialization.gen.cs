@@ -161,6 +161,18 @@ class Serializer
         return true;
     }
 
+    public bool Deserialize(out string data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        ulong size = 0;
+        data = "";
+        offsetAfter = 0;
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+            return false;
+        data = System.Text.Encoding.UTF8.GetString(buffer, offsetAfter, (int)size);
+        offsetAfter += (int)size;
+        return true;
+    }
+
 
     public bool Serialize(Coordinate data, List<byte> buffer)
     {
@@ -168,6 +180,21 @@ class Serializer
             return false;
 
         if (!Serialize(data.y, buffer))
+            return false;
+
+        return true;
+    }
+
+    public bool Deserialize(out Coordinate data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new Coordinate();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.x, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.y, buffer, offset, out offsetAfter))
             return false;
 
         return true;
@@ -181,6 +208,21 @@ class Serializer
             return false;
 
         if (!Serialize(data.volume, buffer))
+            return false;
+
+        return true;
+    }
+
+    public bool Deserialize(out CargoSlot data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new CargoSlot();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.itemID, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.volume, buffer, offset, out offsetAfter))
             return false;
 
         return true;
@@ -203,6 +245,26 @@ class Serializer
         return true;
     }
 
+    public bool Deserialize(out List<ulong> data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        ulong size;
+        data = new List<ulong>();
+        offsetAfter = offset;
+
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+        for (ulong i = 0; i < size; ++i)
+        {
+            ulong element;
+            if (!Deserialize(out element, buffer, offset, out offsetAfter))
+                return false;
+            data.Add(element);
+        }
+
+        return true;
+    }
+
 
 
     public bool Serialize(SomeListyBoi data, List<byte> buffer)
@@ -213,11 +275,33 @@ class Serializer
         return true;
     }
 
+    public bool Deserialize(out SomeListyBoi data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new SomeListyBoi();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.ids, buffer, offset, out offsetAfter))
+            return false;
+
+        return true;
+    }
+
 
 
     public bool Serialize(Ship data, List<byte> buffer)
     {
         if (!Serialize(data.name, buffer))
+            return false;
+
+        return true;
+    }
+
+    public bool Deserialize(out Ship data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new Ship();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.name, buffer, offset, out offsetAfter))
             return false;
 
         return true;
@@ -240,11 +324,42 @@ class Serializer
         return true;
     }
 
+    public bool Deserialize(out List<CargoSlot> data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        ulong size;
+        data = new List<CargoSlot>();
+        offsetAfter = offset;
+
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+        for (ulong i = 0; i < size; ++i)
+        {
+            CargoSlot element;
+            if (!Deserialize(out element, buffer, offset, out offsetAfter))
+                return false;
+            data.Add(element);
+        }
+
+        return true;
+    }
+
 
 
     public bool Serialize(ShipCargo data, List<byte> buffer)
     {
         if (!Serialize(data.cargo, buffer))
+            return false;
+
+        return true;
+    }
+
+    public bool Deserialize(out ShipCargo data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new ShipCargo();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.cargo, buffer, offset, out offsetAfter))
             return false;
 
         return true;
@@ -267,6 +382,26 @@ class Serializer
         return true;
     }
 
+    public bool Deserialize(out List<Coordinate> data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        ulong size;
+        data = new List<Coordinate>();
+        offsetAfter = offset;
+
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+        for (ulong i = 0; i < size; ++i)
+        {
+            Coordinate element;
+            if (!Deserialize(out element, buffer, offset, out offsetAfter))
+                return false;
+            data.Add(element);
+        }
+
+        return true;
+    }
+
 
 
     public bool Serialize(List<string> data, List<byte> buffer)
@@ -279,6 +414,26 @@ class Serializer
         {
             if (!Serialize(data[i], buffer))
                 return false;
+        }
+
+        return true;
+    }
+
+    public bool Deserialize(out List<string> data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        ulong size;
+        data = new List<string>();
+        offsetAfter = offset;
+
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+        for (ulong i = 0; i < size; ++i)
+        {
+            string element;
+            if (!Deserialize(out element, buffer, offset, out offsetAfter))
+                return false;
+            data.Add(element);
         }
 
         return true;
