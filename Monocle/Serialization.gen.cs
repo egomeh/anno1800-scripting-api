@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 
 
-class Serializer
+public class Serializer
 {
     public bool Serialize(bool data, List<byte> buffer)
     {
@@ -21,7 +21,7 @@ class Serializer
             return false;
 
         data = BitConverter.ToBoolean(buffer, offset);
-        offsetAfter = sizeof(bool);
+        offsetAfter += sizeof(bool);
         return true;
     }
 
@@ -42,7 +42,7 @@ class Serializer
             return false;
 
         data = BitConverter.ToInt32(buffer, offset);
-        offsetAfter = sizeof(int);
+        offsetAfter += sizeof(int);
         return true;
     }
 
@@ -63,7 +63,7 @@ class Serializer
             return false;
 
         data = BitConverter.ToUInt32(buffer, offset);
-        offsetAfter = sizeof(uint);
+        offsetAfter += sizeof(uint);
         return true;
     }
 
@@ -84,7 +84,7 @@ class Serializer
             return false;
 
         data = BitConverter.ToInt64(buffer, offset);
-        offsetAfter = sizeof(long);
+        offsetAfter += sizeof(long);
         return true;
     }
 
@@ -105,7 +105,7 @@ class Serializer
             return false;
 
         data = BitConverter.ToUInt64(buffer, offset);
-        offsetAfter = sizeof(ulong);
+        offsetAfter += sizeof(ulong);
         return true;
     }
 
@@ -126,7 +126,7 @@ class Serializer
             return false;
 
         data = BitConverter.ToSingle(buffer, offset);
-        offsetAfter = sizeof(float);
+        offsetAfter += sizeof(float);
         return true;
     }
 
@@ -147,7 +147,7 @@ class Serializer
             return false;
 
         data = BitConverter.ToDouble(buffer, offset);
-        offsetAfter = sizeof(double);
+        offsetAfter += sizeof(double);
         return true;
     }
 

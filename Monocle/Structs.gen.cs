@@ -1,7 +1,7 @@
 // Auto generated code
 using System.Collections.Generic;
 
-struct Coordinate
+public struct Coordinate
 {
     public Coordinate()
     {
@@ -14,7 +14,7 @@ struct Coordinate
 }
 
 
-struct CargoSlot
+public struct CargoSlot
 {
     public CargoSlot()
     {
@@ -27,7 +27,7 @@ struct CargoSlot
 }
 
 
-struct SomeListyBoi
+public struct SomeListyBoi
 {
     public SomeListyBoi()
     {
@@ -38,7 +38,7 @@ struct SomeListyBoi
 }
 
 
-struct Ship
+public struct Ship
 {
     public Ship()
     {
@@ -49,7 +49,7 @@ struct Ship
 }
 
 
-struct ShipCargo
+public struct ShipCargo
 {
     public ShipCargo()
     {

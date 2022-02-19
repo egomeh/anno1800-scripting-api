@@ -131,7 +131,7 @@ class CodeGenerator
         if (compoundType == null)
             return false;
 
-        code += String.Format("struct {0}\n{{\n", compoundType.name);
+        code += String.Format("public struct {0}\n{{\n", compoundType.name);
 
         code += String.Format("    public {0}()\n", compoundType.name);
         code += "    {\n";
@@ -303,7 +303,7 @@ class CodeGenerator
             code += String.Format("        if (buffer.Length + sizeof({0}) <= offset)\n", csTypeName);
             code += "            return false;\n\n";
             code += String.Format("        data = BitConverter.To{0}(buffer, offset);\n", bitConverterPostfix);
-            code += String.Format("        offsetAfter = sizeof({0});\n", csTypeName);
+            code += String.Format("        offsetAfter += sizeof({0});\n", csTypeName);
             code += "        return true;\n";
             code += "    }\n";
 
@@ -431,7 +431,7 @@ class CodeGenerator
         CSSerializationCode += "using System.Collections.Generic;\n";
         CSSerializationCode += "\n\n";
 
-        CSSerializationCode += "class Serializer\n{";
+        CSSerializationCode += "public class Serializer\n{";
 
         foreach (var typename in m_TypeTable.GetRegisteredNames())
         {
