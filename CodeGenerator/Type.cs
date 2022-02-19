@@ -1,55 +1,105 @@
 ﻿
 
+using System.Text.RegularExpressions;
+
 class Type
 {
+    protected string m_Name = "";
+
+    public string name { get { return m_Name; } }
 }
 
 class Bool : Type
 {
+    public Bool()
+    {
+        m_Name = "bool";
+    }
 }
 
 class Int32 : Type
 {
+    public Int32()
+    {
+        m_Name = "int32";
+    }
 }
 
 class UInt32 : Type
 {
+    public UInt32()
+    {
+        m_Name = "uint32";
+    }
 }
 
 class Int64 : Type
 {
+    public Int64()
+    {
+        m_Name = "int64";
+    }
 }
 
 class UInt64 : Type
 {
+    public UInt64()
+    {
+        m_Name = "uint64";
+    }
 }
 
 class Float : Type
 {
+    public Float()
+    {
+        m_Name = "float";
+    }
 }
 
 class Double : Type
 {
+    public Double()
+    {
+        m_Name = "double";
+    }
 }
 
-class List
+class ListType : Type
 {
-    public List(Type elementType)
+    public ListType(string name, Type elementType)
     {
+        m_Name = name;
         m_ElementType = elementType;
+    }
+
+    public Type GetElementType()
+    {
+        return m_ElementType;
     }
 
     Type m_ElementType;
 }
 
-class CompoundType
+class CompoundType : Type
 {
-    public CompoundType()
+    public CompoundType(string name)
     {
-        m_Fields = new List<Type>();
+        m_Name = name;
+        m_Fields = new Dictionary<string, Type>();
     }
 
-    List<Type> m_Fields;
+    public void AddField(string name, Type type)
+    {
+        m_Fields[name] = type;
+    }
+
+    public Dictionary<string, Type> GetFields()
+    {
+        return m_Fields;
+    }
+
+    Dictionary<string, Type> m_Fields;
 }
 
 class TypeTable
@@ -67,6 +117,11 @@ class TypeTable
         m_Types["double"] = new Double();
     }
 
+    public Type GetType(string typename)
+    {
+        return m_Types[typename];
+    }
+
     public bool TypeNameInTable(string typeName)
     {
         return m_Types.ContainsKey(typeName);
@@ -79,6 +134,90 @@ class TypeTable
 
     public bool AddTypes(List<TypeInfo> validatedTypes)
     {
+        while (validatedTypes.Count > 0)
+        {
+            TypeInfo TypeToAdd = validatedTypes.First();
+            validatedTypes.RemoveAt(0);
+             
+            if (m_Types.Keys.Contains(TypeToAdd.name))
+                continue;
+
+            CompoundType newType = new CompoundType(TypeToAdd.name);
+
+            bool allTypesAreReady = true;
+            foreach (var field in TypeToAdd.fields)
+            {
+                Regex listTypeRegex = new Regex(@"list\((.*)\)");
+
+                Match m = listTypeRegex.Match(field.type);
+
+                bool isList = m.Success;
+
+                if (isList)
+                {
+                    string innerType = m.Groups[1].Value;
+
+                    // If we don't have the inner type, skip until we do
+                    if (!m_Types.Keys.Contains(innerType))
+                    {
+                        allTypesAreReady = false;
+                        break;
+                    }
+
+                    // If we have the inner type, but not the list type then make the list type
+                    if (!m_Types.Keys.Contains(field.type))
+                    {
+                        ListType newListType = new ListType(TypeToAdd.name, m_Types[innerType]);
+                        m_Types.Add(field.type, newListType);
+                    }
+                }
+                else if (!m_Types.Keys.Contains(field.type))
+                {
+                    allTypesAreReady = false;
+                    break;
+                }
+
+                newType.AddField(field.name, m_Types[field.type]);
+            }
+            
+            // This type depends on types that are not added yet,
+            // so it goes back in the list.
+            if (!allTypesAreReady)
+            {
+                validatedTypes.Add(TypeToAdd);
+                continue;
+            }
+
+            m_Types.Add(TypeToAdd.name, newType);
+        }
+
+        return true;
+    }
+    
+    // Make sure we have these types or make them if we can
+    public bool EnsureTypes(List<string> types)
+    {
+        foreach (string type in types)
+        {
+            if (m_Types.Keys.Contains(type))
+                continue;
+
+            Regex listTypeRegex = new Regex(@"list\((.*)\)");
+
+            Match m = listTypeRegex.Match(type);
+
+            if (m.Success)
+            {
+                string innerType = m.Groups[1].Value;
+
+                if (!m_Types.Keys.Contains(innerType))
+                    return false;
+
+                ListType newType = new ListType(type, m_Types[innerType]);
+                m_Types.Add(type, newType);
+            }
+        }
+
         return true;
     }
 

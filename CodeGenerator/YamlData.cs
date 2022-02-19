@@ -21,19 +21,6 @@ class TypeInfo
     public List<FieldEntry> fields;
 }
 
-//class FunctionInfo
-//{
-//    public FunctionInfo()
-//    {
-//        input = new List<string>();
-//        output = new List<string>();
-//    }
-
-//    public string name;
-//    public List<string> input;
-//    public List<string> output;
-//}
-
 class YamlDataReader
 {
     static List<string> GetAllYamlFiles(string directory)
@@ -70,6 +57,9 @@ class YamlDataReader
             var deserializer = new Deserializer();
             string yamlContent = File.ReadAllText(yamlFile);
             var result = deserializer.Deserialize<List<Hashtable>>(new StringReader(yamlContent));
+
+            if (result == null)
+                continue;
 
             foreach (var item in result)
             {
@@ -138,6 +128,68 @@ class YamlDataReader
             }
 
             types.Add(typeInfo);
+        }
+
+        return types;
+    }
+
+    public static List<string> GetReferencedTypes(List<Object> functions)
+    {
+        List<string> types = new List<string>();
+
+        // This is quite awful and probably should have a fair bunch of rework :/
+        foreach (Object item in functions)
+        {
+            var type = item as Dictionary<Object, Object>;
+            Debug.Assert(type != null);
+            string? name = type.Keys.First() as string;
+            Debug.Assert(!string.IsNullOrEmpty(name));
+
+            var fieldsSection = type[name] as List<Object>;
+            Debug.Assert(fieldsSection != null);
+
+            foreach (Object section in fieldsSection)
+            {
+                Dictionary<Object, Object>? actualSection = section as Dictionary<Object, Object>;
+
+                if (actualSection == null)
+                    continue;
+
+                foreach (Object key in actualSection.Keys)
+                {
+                    string? keyString = key as string;
+
+                    if (string.IsNullOrEmpty(keyString))
+                        continue;
+
+                    if (!(keyString.Equals("in") || keyString.Equals("out")))
+                        continue;
+
+                    var items = actualSection[key];
+
+                    List<Object>? itemList = items as List<Object>;
+
+                    if (itemList == null)
+                        continue;
+
+                    foreach (var parameter in itemList)
+                    {
+                        Dictionary<Object, Object>? entry = parameter as Dictionary<Object, Object>;
+
+                        if (entry == null)
+                            continue;
+
+                        foreach (Object parameterKey in entry.Keys)
+                        {
+                            Object intermediate = entry[parameterKey];
+                            string? referencedType = intermediate as string;
+
+                            if (!string.IsNullOrEmpty(referencedType) && !types.Contains(referencedType))
+                                types.Add(referencedType);
+                        }
+                    }
+                }
+            }
         }
 
         return types;

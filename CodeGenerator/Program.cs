@@ -2,7 +2,7 @@
 using System.Collections;
 using YamlDotNet.Serialization;
 
-Console.WriteLine("Hello world");
+Console.WriteLine("Generating type and function code...");
 
 List<Object> functions;
 List<Object> types;
@@ -11,62 +11,38 @@ YamlDataReader.ReadYamlData("data", out functions, out types);
 
 List<TypeInfo> typeNames = YamlDataReader.GetTypeInfo(types);
 
-TypeTable table = new TypeTable();
+TypeTable typeTable = new TypeTable();
 string validationError;
 
-if (!YamlDataReader.ValidateTypes(typeNames, table.GetRegisteredNames(), out validationError))
+if (!YamlDataReader.ValidateTypes(typeNames, typeTable.GetRegisteredNames(), out validationError))
 {
     Console.WriteLine(validationError);
     return 1;
 }
 
+List<string> referencedTypeNames = YamlDataReader.GetReferencedTypes(functions);
+
+if (!typeTable.AddTypes(typeNames))
+    return 1;
+
+if (!typeTable.EnsureTypes(referencedTypeNames))
+    return 1;
+
+string currentDirectory = Directory.GetCurrentDirectory();
+
+string MonocleSourcePath = Path.GetFullPath(Path.Join(currentDirectory, "..", "Monocle"));
+string InjectedSourcePath = Path.GetFullPath(Path.Join(currentDirectory, "..", "Injected"));
+
+CodeGenerator codeGenerator = new CodeGenerator(InjectedSourcePath, MonocleSourcePath, typeTable);
+codeGenerator.GenerateCode();
+
+File.WriteAllText(Path.Combine(MonocleSourcePath, "Serializations.gen.cs"), "");
+
+File.WriteAllText(Path.Combine(InjectedSourcePath, "serialization.gen.h"), "#pragma once");
+File.WriteAllText(Path.Combine(InjectedSourcePath, "serialization.gen.cpp"), "#include \"serialization.gen.h\"");
+
+Console.WriteLine("Done generating type and function code");
+
 return 0;
 
-//List<string> GetAllYamlFiles(string directory)
-//{
-//    var files = new List<string>();
-
-//    string[] fileEntries = Directory.GetFiles(directory);
-
-//    foreach (string fileName in fileEntries)
-//    {
-//        if (fileName.EndsWith(".yaml"))
-//            files.Add(fileName);
-//    }
-
-//    string[] subdirectoryEntries = Directory.GetDirectories(directory);
-//    foreach (string subdirectory in subdirectoryEntries)
-//    {
-//        List<string> subDirectoryFiles = GetAllYamlFiles(subdirectory);
-//        files.AddRange(subDirectoryFiles);
-//    }
-
-//    return files;
-//}
-
-//List<string> commandlineArgs = Environment.GetCommandLineArgs().ToList();
-//string dataFolder = commandlineArgs[1];
-//string outputFolder = commandlineArgs[2];
-
-//List<string> yamlFiles = GetAllYamlFiles(dataFolder);
-
-//foreach (string yamlFile in yamlFiles)
-//{
-//    var deserializer = new Deserializer();
-//    string yamlContent = File.ReadAllText(yamlFile);
-//    var result = deserializer.Deserialize<List<Hashtable>>(new StringReader(yamlContent));
-
-//    foreach (var item in result)
-//    {
-//        Console.WriteLine("Item:");
-//        foreach (DictionaryEntry entry in item)
-//        {
-//            Console.WriteLine("- {0} = {1}", entry.Key, entry.Value);
-//        }
-//    }
-//}
-
-//File.WriteAllText(String.Format(@"{0}/Types.gen.cs", outputFolder), "class Coordinate {}");
-
-//return 0;
 

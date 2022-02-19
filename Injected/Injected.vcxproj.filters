@@ -18,9 +18,18 @@
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="structs.gen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="serialization.gen.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="serialization.gen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
