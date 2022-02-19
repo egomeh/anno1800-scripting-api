@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <inttypes.h>
+#include <string>
 
 struct Coordinate
 {
@@ -11,14 +12,20 @@ struct Coordinate
 
 struct CargoSlot
 {
-    uint32_t item;
-    int32_t volume;
+    uint64_t itemID;
+    uint32_t volume;
 };
 
 
 struct SomeListyBoi
 {
     std::vector<uint64_t> ids;
+};
+
+
+struct Ship
+{
+    std::string name;
 };
 
 

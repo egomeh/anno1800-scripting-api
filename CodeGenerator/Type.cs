@@ -2,14 +2,17 @@
 
 using System.Text.RegularExpressions;
 
-class Type
+abstract class Type
 {
     protected string m_Name = "";
 
     public string name { get { return m_Name; } }
 }
 
-class Bool : Type
+abstract class BaseType : Type
+{ }
+
+class Bool : BaseType
 {
     public Bool()
     {
@@ -17,7 +20,7 @@ class Bool : Type
     }
 }
 
-class Int32 : Type
+class Int32 : BaseType
 {
     public Int32()
     {
@@ -25,7 +28,7 @@ class Int32 : Type
     }
 }
 
-class UInt32 : Type
+class UInt32 : BaseType
 {
     public UInt32()
     {
@@ -33,7 +36,7 @@ class UInt32 : Type
     }
 }
 
-class Int64 : Type
+class Int64 : BaseType
 {
     public Int64()
     {
@@ -41,7 +44,7 @@ class Int64 : Type
     }
 }
 
-class UInt64 : Type
+class UInt64 : BaseType
 {
     public UInt64()
     {
@@ -49,7 +52,7 @@ class UInt64 : Type
     }
 }
 
-class Float : Type
+class Float : BaseType
 {
     public Float()
     {
@@ -57,11 +60,19 @@ class Float : Type
     }
 }
 
-class Double : Type
+class Double : BaseType
 {
     public Double()
     {
         m_Name = "double";
+    }
+}
+
+class StringType : Type
+{
+    public StringType()
+    {
+        m_Name = "string";
     }
 }
 
@@ -111,10 +122,11 @@ class TypeTable
         m_Types["bool"] = new Bool();
         m_Types["int32"] = new Int32();
         m_Types["uint32"] = new UInt32();
-        m_Types["int64"] = new UInt32();
+        m_Types["int64"] = new Int64();
         m_Types["uint64"] = new UInt64();
         m_Types["float"] = new Float();
         m_Types["double"] = new Double();
+        m_Types["string"] = new StringType();
     }
 
     public Type GetType(string typename)

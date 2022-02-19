@@ -3,26 +3,32 @@ using System.Collections.Generic;
 
 struct Coordinate
 {
-    float x;
-    float y;
+    public float x;
+    public float y;
 }
 
 
 struct CargoSlot
 {
-    uint item;
-    int volume;
+    public ulong itemID;
+    public uint volume;
 }
 
 
 struct SomeListyBoi
 {
-    List<ulong> ids;
+    public List<ulong> ids;
+}
+
+
+struct Ship
+{
+    public string name;
 }
 
 
 struct ShipCargo
 {
-    List<CargoSlot> cargo;
+    public List<CargoSlot> cargo;
 }
 

@@ -16,6 +16,10 @@
         - out:
             - ids: list(uint64)
 
+    - GetIslandNames:
+        - out:
+            - names: list(string)
+
 - types:
 
     - Coordinate:
@@ -29,9 +33,13 @@
 
     - CargoSlot:
         - fields:
-            - item: uint32
-            - volume: int32
+            - itemID: uint64
+            - volume: uint32
 
     - SomeListyBoi:
         - fields:
             - ids: list(uint64)
+
+    - Ship:
+        - fields:
+            - name: string

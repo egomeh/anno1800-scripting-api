@@ -17,7 +17,10 @@ class CodeGenerator
 
     public bool GenerateCode()
     {
-        if (!GenerateCSCode())
+        if (!GenerateCSTypes())
+            return false;
+
+        if (!GenerateCSSerializationCode())
             return false;
 
         if (!GenerateCPPCode())
@@ -44,6 +47,8 @@ class CodeGenerator
             typeString = "float";
         else if (type is Double)
             typeString = "double";
+        else if (type is StringType)
+            typeString = "std::string";
         else if (type is ListType)
         {
             ListType? lt = type as ListType;
@@ -89,6 +94,8 @@ class CodeGenerator
             typeString = "float";
         else if (type is Double)
             typeString = "double";
+        else if (type is StringType)
+            typeString = "string";
         else if (type is ListType)
         {
             ListType? lt = type as ListType;
@@ -133,7 +140,7 @@ class CodeGenerator
             if (!GetCSTypeString(fieldEntry.Value, out CSTypeString))
                 return false;
 
-            code += string.Format("    {0} {1};\n", CSTypeString, fieldEntry.Key);
+            code += string.Format("    public {0} {1};\n", CSTypeString, fieldEntry.Key);
         }
 
         code += "}\n";
@@ -167,7 +174,7 @@ class CodeGenerator
         return true;
     }
 
-    bool GenerateCSCode()
+    bool GenerateCSTypes()
     {
         string CSTypesFile = Path.Combine(m_CsPath, "Structs.gen.cs");
 
@@ -200,6 +207,7 @@ class CodeGenerator
         string CPPTypeCode = "#pragma once\n";
         CPPTypeCode += "#include <vector>\n";
         CPPTypeCode += "#include <inttypes.h>\n";
+        CPPTypeCode += "#include <string>\n";
 
         foreach (var typename in m_TypeTable.GetRegisteredNames())
         {
@@ -216,6 +224,155 @@ class CodeGenerator
         }
 
         File.WriteAllText(CPPTypesFile, CPPTypeCode);
+
+        return true;
+    }
+
+    bool GetCSBitConverterPostFix(Type type, out string postfix)
+    {
+        postfix = "";
+
+        if (type is Bool)
+            postfix = "Boolean";
+        else if (type is Int32)
+            postfix = "Int32";
+        else if (type is UInt32)
+            postfix = "UInt32";
+        else if (type is Int64)
+            postfix = "Int64";
+        else if (type is UInt64)
+            postfix = "UInt64";
+        else if (type is Float)
+            postfix = "Single";
+        else if (type is Double)
+            postfix = "Double";
+
+        return !String.IsNullOrEmpty(postfix);
+    }
+
+    bool GenerateCSSerializationForType(TypeTable typetable, Type type, out string code)
+    {
+        code = "";
+
+        string csTypeName;
+
+        if (!GetCSTypeString(type, out csTypeName))
+            return false;
+
+        if (type is BaseType)
+        {
+            string bitConverterPostfix;
+            if (!GetCSBitConverterPostFix(type, out bitConverterPostfix))
+                return false;
+
+            code += string.Format("    public bool Serialize({0} data, List<byte> buffer)\n", csTypeName);
+            code += "    {\n";
+            code += "        var bytes = BitConverter.GetBytes(data);\n";
+            code += "        buffer.AddRange(bytes);\n";
+            code += "        return true;\n";
+            code += "    }\n\n";
+
+            code += string.Format("    public bool Deserialize(out {0} data, byte[] buffer, int offset, out int offsetAfter)\n", csTypeName);
+            code += "    {\n";
+            code += "        data = default;\n";
+            code += "        offsetAfter = offset;\n\n";
+            code += String.Format("        if (buffer.Length + sizeof({0}) <= offset)\n", csTypeName);
+            code += "            return false;\n\n";
+            code += String.Format("        data = BitConverter.To{0}(buffer, offset);\n", bitConverterPostfix);
+            code += String.Format("        offsetAfter = sizeof({0});\n", csTypeName);
+            code += "        return true;\n";
+            code += "    }\n";
+
+
+            return true;
+        }
+        else if (type is StringType)
+        {
+            code += "    public bool Serialize(string data, List<byte> buffer)\n";
+            code += "    {\n";
+            code += "        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(data);\n";
+
+            code += "        byte[] size = BitConverter.GetBytes((ulong)bytes.Length);\n";
+
+            code += "        buffer.AddRange(size);\n";
+            code += "        buffer.AddRange(bytes);\n";
+
+            code += "        return true;\n";
+            code += "    }\n";
+        }
+        else if (type is CompoundType)
+        {
+            CompoundType? ct = type as CompoundType;
+
+            if (ct == null)
+                return false;
+
+            code += string.Format("    public bool Serialize({0} data, List<byte> buffer)\n", csTypeName);
+            code += "    {\n";
+
+            foreach (var fieldEntry in ct.GetFields())
+            {
+                code += string.Format("        if (!Serialize(data.{0}, buffer))\n", fieldEntry.Key);
+                code += string.Format("            return false;\n\n");
+            }
+
+            code += "        return true;\n";
+            code += "    }\n\n";
+        }
+        else if (type is ListType)
+        {
+            ListType? lt = type as ListType;
+
+            if (lt == null)
+                return false;
+
+            code += string.Format("    public bool Serialize({0} data, List<byte> buffer)\n", csTypeName);
+            code += "    {\n";
+
+            code += "        ulong size = (ulong)data.Count;\n";
+            code += "        if (!Serialize(size, buffer))\n";
+            code += "                return false;\n\n";
+
+
+            code += "        for (int i = 0; i < data.Count; ++i)\n";
+            code += "        {\n";
+            code += "            if (!Serialize(data[i], buffer))\n";
+            code += "                return false;\n";
+            code += "        }\n\n";
+
+            code += "        return true;\n";
+            code += "    }\n\n";
+        }
+
+
+        return true;
+    }
+
+    bool GenerateCSSerializationCode()
+    {
+        string CSSerializationFile = Path.Combine(m_CsPath, "Serialization.gen.cs");
+
+        string CSSerializationCode = "// Auto generated code\n";
+        CSSerializationCode += "using System;\n";
+        CSSerializationCode += "using System.Collections.Generic;\n";
+        CSSerializationCode += "\n\n";
+
+        CSSerializationCode += "class Serializer\n{";
+
+        foreach (var typename in m_TypeTable.GetRegisteredNames())
+        {
+            Type type = m_TypeTable.GetType(typename);
+
+            string code;
+            if (!GenerateCSSerializationForType(m_TypeTable, type, out code))
+                continue;
+
+            CSSerializationCode += "\n" + code + "\n";
+        }
+
+        CSSerializationCode += "}\n";
+
+        File.WriteAllText(CSSerializationFile, CSSerializationCode);
 
         return true;
     }
