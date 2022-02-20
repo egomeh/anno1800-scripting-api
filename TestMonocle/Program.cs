@@ -3,17 +3,23 @@
 Serializer serializer = new Serializer();
 
 
-Coordinate c = new Coordinate();
-c.x = 5.4f;
-c.y = 1.23f;
+var object1 = new Ship();
+object1.name = "ooooookay lets go";
+var object2 = new SomeListyBoi();
+object2.ids.Add(2);
+object2.ids.Add(1);
+object2.ids.Add(3);
 
 List<byte> buffer = new List<byte>();
 
-serializer.Serialize(c, buffer);
+serializer.Serialize(object1, buffer);
+serializer.Serialize(object2, buffer);
 
-Coordinate c2;
+object1 = new Ship();
+object2 = new SomeListyBoi();
 
 int offsetAfter;
-serializer.Deserialize(out c2, buffer.ToArray(), 0, out offsetAfter);
+serializer.Deserialize(out object1, buffer.ToArray(), 0, out offsetAfter);
+serializer.Deserialize(out object2, buffer.ToArray(), offsetAfter, out offsetAfter);
 
-Console.WriteLine("hello world");
+Console.WriteLine("I'm here so you have something to break on :)");

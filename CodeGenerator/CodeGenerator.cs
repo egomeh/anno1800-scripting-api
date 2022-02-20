@@ -23,7 +23,13 @@ class CodeGenerator
         if (!GenerateCSSerializationCode())
             return false;
 
-        if (!GenerateCPPCode())
+        if (!GenerateCPPTypes())
+            return false;
+
+        if (!GenerateCPPSerializationHeaderCode())
+            return false;
+
+        if (!GenerateCPPSerializationImplementationCode())
             return false;
 
         return true;
@@ -34,7 +40,7 @@ class CodeGenerator
         typeString = "";
 
         if (type is Bool)
-            typeString = "bool";
+            typeString = "char";
         else if (type is Int32)
             typeString = "int32_t";
         else if (type is UInt32)
@@ -224,7 +230,7 @@ class CodeGenerator
         return true;
     }
 
-    bool GenerateCPPCode()
+    bool GenerateCPPTypes()
     {
         string CPPTypesFile = Path.Combine(m_CppPath, "structs.gen.h");
 
@@ -409,7 +415,7 @@ class CodeGenerator
             code += "        for (ulong i = 0; i < size; ++i)\n";
             code += "        {\n";
             code += String.Format("            {0} element;\n", innerType);
-            code += "            if (!Deserialize(out element, buffer, offset, out offsetAfter))\n";
+            code += "            if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))\n";
             code += "                return false;\n";
             code += "            data.Add(element);\n";
             code += "        }\n\n";
@@ -447,6 +453,93 @@ class CodeGenerator
         CSSerializationCode += "}\n";
 
         File.WriteAllText(CSSerializationFile, CSSerializationCode);
+
+        return true;
+    }
+
+    bool GenerateCPPSerializationSignature(TypeTable typeTable, Type type, out string code)
+    {
+        code = "";
+
+        string cppTypeName;
+
+        if (!GetCPPTypeString(type, out cppTypeName))
+            return false;
+
+        code += string.Format("bool Serialize(const {0}& data, std::vector<uint8_t>& stream);\n", cppTypeName);
+        code += string.Format("bool Deserialize({0}* data, const std::vector<uint8_t>& stream, size_t* offset);", cppTypeName);
+
+        return true;
+    }
+
+    bool GenerateCPPSerializationHeaderCode()
+    {
+        string CPPHeaderSerializationFile = Path.Combine(m_CppPath, "serialization.gen.h");
+
+        string CPPSerializationCode = "// Auto generated code\n";
+        CPPSerializationCode += "#include \"structs.gen.h\"\n";
+
+        foreach (var typename in m_TypeTable.GetRegisteredNames())
+        {
+            Type type = m_TypeTable.GetType(typename);
+
+            string code;
+            if (!GenerateCPPSerializationSignature(m_TypeTable, type, out code))
+                continue;
+
+            CPPSerializationCode += "\n" + code + "\n";
+        }
+
+        File.WriteAllText(CPPHeaderSerializationFile, CPPSerializationCode);
+
+        return true;
+    }
+
+    bool GenerateCPPSerializationImplementation(TypeTable typeTable, Type type, out string code)
+    {
+        code = "";
+
+        string cppTypeName;
+
+        if (!GetCPPTypeString(type, out cppTypeName))
+            return false;
+
+        code += string.Format("bool Serialize(const {0}& data, std::vector<uint8_t>& stream)\n{{\n", cppTypeName);
+
+        code += string.Format("    return true;\n");
+
+        code += string.Format("}}\n\n");
+
+
+        code += string.Format("bool Deserialize({0}* data, const std::vector<uint8_t>& stream, size_t* offset)\n{{\n", cppTypeName);
+
+        code += string.Format("    return true;\n");
+
+        code += string.Format("}}\n", cppTypeName);
+
+        return true;
+    }
+
+    bool GenerateCPPSerializationImplementationCode()
+    {
+        string CPPHeaderSerializationFile = Path.Combine(m_CppPath, "serialization.gen.cpp");
+
+        string CPPSerializationCode = "// Auto generated code\n";
+        CPPSerializationCode += "#include \"structs.gen.h\"\n";
+        CPPSerializationCode += "#include \"serialization.gen.h\"\n";
+
+        foreach (var typename in m_TypeTable.GetRegisteredNames())
+        {
+            Type type = m_TypeTable.GetType(typename);
+
+            string code;
+            if (!GenerateCPPSerializationImplementation(m_TypeTable, type, out code))
+                continue;
+
+            CPPSerializationCode += "\n" + code + "\n";
+        }
+
+        File.WriteAllText(CPPHeaderSerializationFile, CPPSerializationCode);
 
         return true;
     }

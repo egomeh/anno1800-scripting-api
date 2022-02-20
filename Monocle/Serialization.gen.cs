@@ -257,7 +257,7 @@ public class Serializer
         for (ulong i = 0; i < size; ++i)
         {
             ulong element;
-            if (!Deserialize(out element, buffer, offset, out offsetAfter))
+            if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
                 return false;
             data.Add(element);
         }
@@ -336,7 +336,7 @@ public class Serializer
         for (ulong i = 0; i < size; ++i)
         {
             CargoSlot element;
-            if (!Deserialize(out element, buffer, offset, out offsetAfter))
+            if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
                 return false;
             data.Add(element);
         }
@@ -394,7 +394,7 @@ public class Serializer
         for (ulong i = 0; i < size; ++i)
         {
             Coordinate element;
-            if (!Deserialize(out element, buffer, offset, out offsetAfter))
+            if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
                 return false;
             data.Add(element);
         }
@@ -431,7 +431,7 @@ public class Serializer
         for (ulong i = 0; i < size; ++i)
         {
             string element;
-            if (!Deserialize(out element, buffer, offset, out offsetAfter))
+            if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
                 return false;
             data.Add(element);
         }

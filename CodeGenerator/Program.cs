@@ -36,9 +36,6 @@ string InjectedSourcePath = Path.GetFullPath(Path.Join(currentDirectory, "..", "
 CodeGenerator codeGenerator = new CodeGenerator(InjectedSourcePath, MonocleSourcePath, typeTable);
 codeGenerator.GenerateCode();
 
-File.WriteAllText(Path.Combine(InjectedSourcePath, "serialization.gen.h"), "#pragma once");
-File.WriteAllText(Path.Combine(InjectedSourcePath, "serialization.gen.cpp"), "#include \"serialization.gen.h\"");
-
 Console.WriteLine("Done generating type and function code");
 
 return 0;
