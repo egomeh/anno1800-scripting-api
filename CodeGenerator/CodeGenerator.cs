@@ -40,7 +40,9 @@ class CodeGenerator
         typeString = "";
 
         if (type is Bool)
-            typeString = "char";
+            typeString = "bool";
+        if (type is UInt8)
+            typeString = "uint8_t";
         else if (type is Int32)
             typeString = "int32_t";
         else if (type is UInt32)
@@ -88,6 +90,8 @@ class CodeGenerator
 
         if (type is Bool)
             typeString = "bool";
+        if (type is UInt8)
+            typeString = "byte";
         else if (type is Int32)
             typeString = "int";
         else if (type is UInt32)
@@ -506,12 +510,144 @@ class CodeGenerator
 
         code += string.Format("bool Serialize(const {0}& data, std::vector<uint8_t>& stream)\n{{\n", cppTypeName);
 
+        if (type is  Bool)
+        {
+            code += string.Format("    uint8_t value = (uint8_t)data;\n");
+            code += string.Format("    stream.insert(stream.end(), value);\n");
+        }
+        else if (type is BaseType)
+        {
+            code += string.Format("    for (int i = 0; i < sizeof({0}); ++i)\n", cppTypeName);
+            code += string.Format("    {{\n");
+            code += string.Format("        stream.insert(stream.end(), *(((uint8_t*)&data) + i));\n");
+            code += string.Format("    }}\n\n");
+        }
+        else if (type is StringType)
+        {
+            code += string.Format("    uint64_t size = data.size();\n");
+            code += string.Format("    if (!Serialize(size, stream))\n");
+            code += string.Format("        return false;\n");
+            code += string.Format("    for (const char& item : data)\n");
+            code += string.Format("    {{\n");
+            code += string.Format("        if (!Serialize((uint8_t)item, stream))\n");
+            code += string.Format("            return false;\n");
+            code += string.Format("    }}\n");
+        }
+        else if (type is CompoundType)
+        {
+            CompoundType? ct = type as CompoundType;
+
+            if (ct == null)
+                return false;
+
+            foreach (var fieldEntry in ct.GetFields())
+            {
+                code += string.Format("    if (!Serialize(data.{0}, stream))\n", fieldEntry.Key);
+                code += string.Format("        return false;\n\n");
+            }
+        }
+        else if (type is ListType)
+        {
+            ListType? lt = type as ListType;
+
+            if (lt == null)
+                return false;
+
+            string innerType;
+            if (!GetCPPTypeString(lt.GetElementType(), out innerType))
+                return false;
+
+            code += string.Format("    uint64_t size = data.size();\n\n");
+
+            code += string.Format("    if (!Serialize(size, stream))\n");
+            code += string.Format("        return false;\n\n");
+
+            code += string.Format("    for (const {0}& item : data)\n", innerType);
+            code += string.Format("    {{\n");
+            code += string.Format("        if (!Serialize(item, stream))\n");
+            code += string.Format("            return false;\n");
+            code += string.Format("    }}\n\n");
+        }
+        
         code += string.Format("    return true;\n");
 
         code += string.Format("}}\n\n");
 
-
         code += string.Format("bool Deserialize({0}* data, const std::vector<uint8_t>& stream, size_t* offset)\n{{\n", cppTypeName);
+
+        if (type is Bool)
+        {
+            code += string.Format("    if (stream.size() < *offset + 1)\n");
+            code += string.Format("        return false;\n\n");
+
+            code += string.Format("    uint8_t imm = 0;\n");
+            code += string.Format("    imm = *(uint8_t*)(stream.data() + *offset);\n");
+            code += string.Format("    *offset += 1;\n");
+            code += string.Format("    *data = imm;\n\n");
+        }
+        else if (type is BaseType)
+        {
+            code += string.Format("    if (stream.size() < (*offset + sizeof({0})))\n", cppTypeName);
+            code += string.Format("        return false;\n\n");
+            code += string.Format("    *data = *({0}*)(stream.data() + *offset);\n", cppTypeName);
+            code += string.Format("    *offset += sizeof({0});\n\n", cppTypeName);
+        }
+        else if (type is StringType)
+        {
+            code += string.Format("    data->clear();\n\n");
+
+            code += string.Format("    uint64_t size = 0;\n\n");
+
+            code += string.Format("    if (!Deserialize(&size, stream, offset))\n");
+            code += string.Format("        return false;\n\n");
+
+            code += string.Format("    for (size_t i = 0; i < size; ++i)\n");
+            code += string.Format("    {{\n");
+            code += string.Format("        uint8_t item;\n");
+            code += string.Format("        if (!Deserialize(&item, stream, offset))\n");
+            code += string.Format("            return false;\n\n");
+            code += string.Format("        data->push_back((char)item);\n");
+            code += string.Format("    }}\n\n");
+        }
+        else if (type is CompoundType)
+        {
+            CompoundType? ct = type as CompoundType;
+
+            if (ct == null)
+                return false;
+
+            foreach (var fieldEntry in ct.GetFields())
+            {
+                code += string.Format("    if (!Deserialize(&data->{0}, stream, offset))\n", fieldEntry.Key);
+                code += string.Format("        return false;\n\n");
+            }
+        }
+        else if (type is ListType)
+        {
+            ListType? lt = type as ListType;
+
+            if (lt == null)
+                return false;
+
+            string innerType;
+            if (!GetCPPTypeString(lt.GetElementType(), out innerType))
+                return false;
+
+            code += string.Format("    data->clear();\n\n");
+
+            code += string.Format("    uint64_t size = 0;\n\n");
+
+            code += string.Format("    if (!Deserialize(&size, stream, offset))\n");
+            code += string.Format("        return false;\n\n");
+
+            code += string.Format("    for (size_t i = 0; i < size; ++i)\n");
+            code += string.Format("    {{\n");
+            code += string.Format("        {0} item;\n", innerType);
+            code += string.Format("        if (!Deserialize(&item, stream, offset))\n");
+            code += string.Format("            return false;\n\n");
+            code += string.Format("        data->push_back(item);\n");
+            code += string.Format("    }}\n\n");
+        }
 
         code += string.Format("    return true;\n");
 

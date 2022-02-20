@@ -20,6 +20,14 @@ class Bool : BaseType
     }
 }
 
+class UInt8 : BaseType
+{
+    public UInt8()
+    {
+        m_Name = "uint8";
+    }
+}
+
 class Int32 : BaseType
 {
     public Int32()
@@ -120,6 +128,7 @@ class TypeTable
         m_Types = new Dictionary<string, Type>();
 
         m_Types["bool"] = new Bool();
+        m_Types["uint8"] = new UInt8();
         m_Types["int32"] = new Int32();
         m_Types["uint32"] = new UInt32();
         m_Types["int64"] = new Int64();
