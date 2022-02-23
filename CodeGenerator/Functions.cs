@@ -2,12 +2,14 @@
 
 struct MonocleFunction
 {
+    public int index;
     public string name;
     public List<FieldEntry> functionInput;
     public List<FieldEntry> functionOutput;
 
     public MonocleFunction()
     {
+        index = 0;
         name = "";
         functionInput = new List<FieldEntry>();
         functionOutput = new List<FieldEntry>();
@@ -30,6 +32,8 @@ class FunctionTable
 
     public bool AddFunctions(TypeTable typeTable, List<Object> rawFunctionData)
     {
+        int index = 0;
+
         foreach (Object functionData in rawFunctionData)
         {
             var functionDict = functionData as Dictionary<Object, Object>;
@@ -88,6 +92,7 @@ class FunctionTable
                 }
             }
 
+            newFunction.index = ++index;
             m_Functions.Add(newFunction);
         }
 

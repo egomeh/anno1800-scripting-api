@@ -826,6 +826,10 @@ class CodeGenerator
             }
 
             functionCode += "        List<byte> outgoingData = new List<byte>();\n\n";
+            functionCode += String.Format("        ulong functionIndex = {0};\n\n", function.index);
+
+            functionCode += string.Format("        if (!Serializer.Serialize(functionIndex, outgoingData))\n", function.index);
+            functionCode += "            return false;\n\n";
 
             foreach (FieldEntry inputEntry in function.functionInput)
             {
@@ -837,14 +841,17 @@ class CodeGenerator
             functionCode += "        if (!Exchange(outgoingData, out response))\n";
             functionCode += "            return false;\n\n";
 
-            functionCode += "        byte[] inData = response.ToArray();\n\n";
-
-            functionCode += "        int offset = 0;\n";
-
-            foreach (FieldEntry outputEntry in function.functionOutput)
+            if (function.functionOutput.Count > 0)
             {
-                functionCode += string.Format("        if (!Serializer.Deserialize(out {0}, inData, offset, out offset))\n", outputEntry.name);
-                functionCode += "            return false;\n\n";
+                functionCode += "        byte[] inData = response.ToArray();\n\n";
+
+                functionCode += "        int offset = 0;\n";
+
+                foreach (FieldEntry outputEntry in function.functionOutput)
+                {
+                    functionCode += string.Format("        if (!Serializer.Deserialize(out {0}, inData, offset, out offset))\n", outputEntry.name);
+                    functionCode += "            return false;\n\n";
+                }
             }
 
             functionCode += "        return true;\n";

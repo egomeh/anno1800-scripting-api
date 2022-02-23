@@ -72,6 +72,11 @@ class Telegraph
     {
         List<byte> outgoingData = new List<byte>();
 
+        ulong functionIndex = 1;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
         if (!Serializer.Serialize(message, outgoingData))
             return false;
 
@@ -80,9 +85,6 @@ class Telegraph
         if (!Exchange(outgoingData, out response))
             return false;
 
-        byte[] inData = response.ToArray();
-
-        int offset = 0;
         return true;
     }
 
@@ -91,6 +93,11 @@ class Telegraph
         time = default;
         frame = default;
         List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 2;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
 
         List<byte> response;
 
@@ -114,6 +121,11 @@ class Telegraph
         waypoints = new List<Coordinate>();
         List<byte> outgoingData = new List<byte>();
 
+        ulong functionIndex = 3;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
         if (!Serializer.Serialize(shipID, outgoingData))
             return false;
 
@@ -136,6 +148,11 @@ class Telegraph
         ids = new List<ulong>();
         List<byte> outgoingData = new List<byte>();
 
+        ulong functionIndex = 4;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
         List<byte> response;
 
         if (!Exchange(outgoingData, out response))
@@ -154,6 +171,11 @@ class Telegraph
     {
         names = new List<string>();
         List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 5;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
 
         List<byte> response;
 
