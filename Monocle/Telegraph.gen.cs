@@ -75,6 +75,14 @@ class Telegraph
         if (!Serializer.Serialize(message, outgoingData))
             return false;
 
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
         return true;
     }
 
@@ -83,6 +91,20 @@ class Telegraph
         time = default;
         frame = default;
         List<byte> outgoingData = new List<byte>();
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out time, inData, offset, out offset))
+            return false;
+
+        if (!Serializer.Deserialize(out frame, inData, offset, out offset))
+            return false;
 
         return true;
     }
@@ -95,6 +117,17 @@ class Telegraph
         if (!Serializer.Serialize(shipID, outgoingData))
             return false;
 
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out waypoints, inData, offset, out offset))
+            return false;
+
         return true;
     }
 
@@ -103,6 +136,17 @@ class Telegraph
         ids = new List<ulong>();
         List<byte> outgoingData = new List<byte>();
 
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out ids, inData, offset, out offset))
+            return false;
+
         return true;
     }
 
@@ -110,6 +154,17 @@ class Telegraph
     {
         names = new List<string>();
         List<byte> outgoingData = new List<byte>();
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out names, inData, offset, out offset))
+            return false;
 
         return true;
     }

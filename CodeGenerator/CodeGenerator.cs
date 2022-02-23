@@ -833,6 +833,20 @@ class CodeGenerator
                 functionCode += "            return false;\n\n";
             }
 
+            functionCode += "        List<byte> response;\n\n";
+            functionCode += "        if (!Exchange(outgoingData, out response))\n";
+            functionCode += "            return false;\n\n";
+
+            functionCode += "        byte[] inData = response.ToArray();\n\n";
+
+            functionCode += "        int offset = 0;\n";
+
+            foreach (FieldEntry outputEntry in function.functionOutput)
+            {
+                functionCode += string.Format("        if (!Serializer.Deserialize(out {0}, inData, offset, out offset))\n", outputEntry.name);
+                functionCode += "            return false;\n\n";
+            }
+
             functionCode += "        return true;\n";
             functionCode += "    }\n\n";
 

@@ -230,7 +230,7 @@ public class Serializer
 
 
 
-    public bool Serialize(List<ulong> data, List<byte> buffer)
+    public static bool Serialize(List<ulong> data, List<byte> buffer)
     {
         ulong size = (ulong)data.Count;
         if (!Serialize(size, buffer))
@@ -245,7 +245,7 @@ public class Serializer
         return true;
     }
 
-    public bool Deserialize(out List<ulong> data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out List<ulong> data, byte[] buffer, int offset, out int offsetAfter)
     {
         ulong size;
         data = new List<ulong>();
@@ -288,7 +288,7 @@ public class Serializer
 
 
 
-    public bool Serialize(List<CargoSlot> data, List<byte> buffer)
+    public static bool Serialize(List<CargoSlot> data, List<byte> buffer)
     {
         ulong size = (ulong)data.Count;
         if (!Serialize(size, buffer))
@@ -303,7 +303,7 @@ public class Serializer
         return true;
     }
 
-    public bool Deserialize(out List<CargoSlot> data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out List<CargoSlot> data, byte[] buffer, int offset, out int offsetAfter)
     {
         ulong size;
         data = new List<CargoSlot>();
@@ -374,7 +374,7 @@ public class Serializer
 
 
 
-    public bool Serialize(List<Coordinate> data, List<byte> buffer)
+    public static bool Serialize(List<Coordinate> data, List<byte> buffer)
     {
         ulong size = (ulong)data.Count;
         if (!Serialize(size, buffer))
@@ -389,7 +389,7 @@ public class Serializer
         return true;
     }
 
-    public bool Deserialize(out List<Coordinate> data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out List<Coordinate> data, byte[] buffer, int offset, out int offsetAfter)
     {
         ulong size;
         data = new List<Coordinate>();
@@ -411,7 +411,7 @@ public class Serializer
 
 
 
-    public bool Serialize(List<string> data, List<byte> buffer)
+    public static bool Serialize(List<string> data, List<byte> buffer)
     {
         ulong size = (ulong)data.Count;
         if (!Serialize(size, buffer))
@@ -426,7 +426,7 @@ public class Serializer
         return true;
     }
 
-    public bool Deserialize(out List<string> data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out List<string> data, byte[] buffer, int offset, out int offsetAfter)
     {
         ulong size;
         data = new List<string>();
