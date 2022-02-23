@@ -51,7 +51,7 @@ class FunctionTable
 
             foreach (Object section in fieldsSections)
             {
-                Dictionary<Object, Object> sectionAsDict = section as Dictionary<Object, Object>;
+                Dictionary<Object, Object>? sectionAsDict = section as Dictionary<Object, Object>;
                 Debug.Assert(sectionAsDict != null);
                 Debug.Assert(sectionAsDict.Keys.Count == 1);
 

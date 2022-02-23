@@ -403,7 +403,7 @@ class CodeGenerator
 
             GetCSTypeString(lt.GetElementType(), out innerType);
 
-            code += string.Format("    public bool Serialize({0} data, List<byte> buffer)\n", csTypeName);
+            code += string.Format("    public static bool Serialize({0} data, List<byte> buffer)\n", csTypeName);
             code += "    {\n";
 
             code += "        ulong size = (ulong)data.Count;\n";
@@ -420,7 +420,7 @@ class CodeGenerator
             code += "        return true;\n";
             code += "    }\n\n";
 
-            code += string.Format("    public bool Deserialize(out {0} data, byte[] buffer, int offset, out int offsetAfter)\n", csTypeName);
+            code += string.Format("    public static bool Deserialize(out {0} data, byte[] buffer, int offset, out int offsetAfter)\n", csTypeName);
             code += "    {\n";
 
             code += "        ulong size;\n";

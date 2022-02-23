@@ -11,8 +11,8 @@ DWORD entry(HMODULE module)
 
     size_t fullSize = strlen(filename);
 
-    int lastSeperator = 0;
-    int exeStart = 0;
+    size_t lastSeperator = 0;
+    size_t exeStart = 0;
     for (size_t i = 0; i < fullSize; ++i)
     {
         if (filename[i] == '\\' || filename[i] == '/')
