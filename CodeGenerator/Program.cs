@@ -28,12 +28,15 @@ if (!typeTable.AddTypes(typeNames))
 if (!typeTable.EnsureTypes(referencedTypeNames))
     return 1;
 
+FunctionTable functionTable = new FunctionTable();
+functionTable.AddFunctions(typeTable, functions);
+
 string currentDirectory = Directory.GetCurrentDirectory();
 
 string MonocleSourcePath = Path.GetFullPath(Path.Join(currentDirectory, "..", "Monocle"));
 string InjectedSourcePath = Path.GetFullPath(Path.Join(currentDirectory, "..", "Injected"));
 
-CodeGenerator codeGenerator = new CodeGenerator(InjectedSourcePath, MonocleSourcePath, typeTable);
+CodeGenerator codeGenerator = new CodeGenerator(InjectedSourcePath, MonocleSourcePath, typeTable, functionTable);
 codeGenerator.GenerateCode();
 
 Console.WriteLine("Done generating type and function code");

@@ -313,23 +313,6 @@ bool Deserialize(SomeListyBoi* data, const std::vector<uint8_t>& stream, size_t*
 }
 
 
-bool Serialize(const Ship& data, std::vector<uint8_t>& stream)
-{
-    if (!Serialize(data.name, stream))
-        return false;
-
-    return true;
-}
-
-bool Deserialize(Ship* data, const std::vector<uint8_t>& stream, size_t* offset)
-{
-    if (!Deserialize(&data->name, stream, offset))
-        return false;
-
-    return true;
-}
-
-
 bool Serialize(const std::vector<CargoSlot>& data, std::vector<uint8_t>& stream)
 {
     uint64_t size = data.size();
@@ -378,6 +361,29 @@ bool Serialize(const ShipCargo& data, std::vector<uint8_t>& stream)
 
 bool Deserialize(ShipCargo* data, const std::vector<uint8_t>& stream, size_t* offset)
 {
+    if (!Deserialize(&data->cargo, stream, offset))
+        return false;
+
+    return true;
+}
+
+
+bool Serialize(const Ship& data, std::vector<uint8_t>& stream)
+{
+    if (!Serialize(data.name, stream))
+        return false;
+
+    if (!Serialize(data.cargo, stream))
+        return false;
+
+    return true;
+}
+
+bool Deserialize(Ship* data, const std::vector<uint8_t>& stream, size_t* offset)
+{
+    if (!Deserialize(&data->name, stream, offset))
+        return false;
+
     if (!Deserialize(&data->cargo, stream, offset))
         return false;
 

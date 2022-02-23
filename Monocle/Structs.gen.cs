@@ -38,17 +38,6 @@ public struct SomeListyBoi
 }
 
 
-public struct Ship
-{
-    public Ship()
-    {
-        name = "";
-    }
-
-    public string name;
-}
-
-
 public struct ShipCargo
 {
     public ShipCargo()
@@ -57,5 +46,18 @@ public struct ShipCargo
     }
 
     public List<CargoSlot> cargo;
+}
+
+
+public struct Ship
+{
+    public Ship()
+    {
+        name = "";
+        cargo = new ShipCargo();
+    }
+
+    public string name;
+    public ShipCargo cargo;
 }
 

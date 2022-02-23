@@ -23,14 +23,15 @@ struct SomeListyBoi
 };
 
 
-struct Ship
-{
-    std::string name;
-};
-
-
 struct ShipCargo
 {
     std::vector<CargoSlot> cargo;
+};
+
+
+struct Ship
+{
+    std::string name;
+    ShipCargo cargo;
 };
 

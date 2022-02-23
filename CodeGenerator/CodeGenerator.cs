@@ -6,12 +6,14 @@ class CodeGenerator
     string m_CsPath = "";
 
     TypeTable m_TypeTable;
+    FunctionTable m_FunctionTable;
 
-    public CodeGenerator(string cppPath, string csPath, TypeTable typeTable)
+    public CodeGenerator(string cppPath, string csPath, TypeTable typeTable, FunctionTable functionTable)
     {
         m_CppPath = cppPath;
         m_CsPath = csPath;
         m_TypeTable = typeTable;
+        m_FunctionTable = functionTable;
     }
 
 
@@ -30,6 +32,9 @@ class CodeGenerator
             return false;
 
         if (!GenerateCPPSerializationImplementationCode())
+            return false;
+
+        if (GenerateCSRemoteCallCode())
             return false;
 
         return true;
@@ -145,14 +150,15 @@ class CodeGenerator
 
         code += String.Format("    public {0}()\n", compoundType.name);
         code += "    {\n";
-        
+
         foreach (var fieldEntry in compoundType.GetFields())
         {
+            string csTypeName;
+            if (!GetCSTypeString(fieldEntry.Value, out csTypeName))
+                return false;
+
             if (fieldEntry.Value is ListType)
             {
-                string csTypeName;
-                if (!GetCSTypeString(fieldEntry.Value, out csTypeName))
-                    return false;
                 code += string.Format("        {0} = new {1}();\n", fieldEntry.Key, csTypeName);
             }
             else if (fieldEntry.Value is StringType)
@@ -161,12 +167,19 @@ class CodeGenerator
             }
             else
             {
-                code += string.Format("        {0} = default;\n", fieldEntry.Key);
+                if (fieldEntry.Value is CompoundType)
+                {
+                    code += string.Format("        {0} = new {1}();\n", fieldEntry.Key, csTypeName);
+                }
+                else
+                {
+                    code += string.Format("        {0} = default;\n", fieldEntry.Key);
+                }
             }
         }
 
         code += "    }\n\n";
-        
+
         foreach (var fieldEntry in compoundType.GetFields())
         {
             string CSTypeString;
@@ -299,14 +312,14 @@ class CodeGenerator
             if (!GetCSBitConverterPostFix(type, out bitConverterPostfix))
                 return false;
 
-            code += string.Format("    public bool Serialize({0} data, List<byte> buffer)\n", csTypeName);
+            code += string.Format("    public static bool Serialize({0} data, List<byte> buffer)\n", csTypeName);
             code += "    {\n";
             code += "        var bytes = BitConverter.GetBytes(data);\n";
             code += "        buffer.AddRange(bytes);\n";
             code += "        return true;\n";
             code += "    }\n\n";
 
-            code += string.Format("    public bool Deserialize(out {0} data, byte[] buffer, int offset, out int offsetAfter)\n", csTypeName);
+            code += string.Format("    public static bool Deserialize(out {0} data, byte[] buffer, int offset, out int offsetAfter)\n", csTypeName);
             code += "    {\n";
             code += "        data = default;\n";
             code += "        offsetAfter = offset;\n\n";
@@ -322,7 +335,7 @@ class CodeGenerator
         }
         else if (type is StringType)
         {
-            code += "    public bool Serialize(string data, List<byte> buffer)\n";
+            code += "    public static bool Serialize(string data, List<byte> buffer)\n";
             code += "    {\n";
             code += "        byte[] bytes = System.Text.Encoding.UTF8.GetBytes(data);\n";
             code += "        byte[] size = BitConverter.GetBytes((ulong)bytes.Length);\n";
@@ -331,7 +344,7 @@ class CodeGenerator
             code += "        return true;\n";
             code += "    }\n\n";
 
-            code += "    public bool Deserialize(out string data, byte[] buffer, int offset, out int offsetAfter)\n";
+            code += "    public static bool Deserialize(out string data, byte[] buffer, int offset, out int offsetAfter)\n";
             code += "    {\n";
             code += "        ulong size = 0;\n";
             code += "        data = \"\";\n";
@@ -350,7 +363,7 @@ class CodeGenerator
             if (ct == null)
                 return false;
 
-            code += string.Format("    public bool Serialize({0} data, List<byte> buffer)\n", csTypeName);
+            code += string.Format("    public static bool Serialize({0} data, List<byte> buffer)\n", csTypeName);
             code += "    {\n";
 
             foreach (var fieldEntry in ct.GetFields())
@@ -362,7 +375,7 @@ class CodeGenerator
             code += "        return true;\n";
             code += "    }\n\n";
 
-            code += string.Format("    public bool Deserialize(out {0} data, byte[] buffer, int offset, out int offsetAfter)\n", csTypeName);
+            code += string.Format("    public static bool Deserialize(out {0} data, byte[] buffer, int offset, out int offsetAfter)\n", csTypeName);
             code += "    {\n";
             code += String.Format("        data = new {0}();\n", csTypeName);
             code += "        offsetAfter = offset;\n\n";
@@ -510,7 +523,7 @@ class CodeGenerator
 
         code += string.Format("bool Serialize(const {0}& data, std::vector<uint8_t>& stream)\n{{\n", cppTypeName);
 
-        if (type is  Bool)
+        if (type is Bool)
         {
             code += string.Format("    uint8_t value = (uint8_t)data;\n");
             code += string.Format("    stream.insert(stream.end(), value);\n");
@@ -568,7 +581,7 @@ class CodeGenerator
             code += string.Format("            return false;\n");
             code += string.Format("    }}\n\n");
         }
-        
+
         code += string.Format("    return true;\n");
 
         code += string.Format("}}\n\n");
@@ -676,6 +689,159 @@ class CodeGenerator
         }
 
         File.WriteAllText(CPPHeaderSerializationFile, CPPSerializationCode);
+
+        return true;
+    }
+
+    bool GenerateCSRemoteCallCode()
+    {
+        string CSRemoteCallFile = Path.Combine(m_CsPath, "Telegraph.gen.cs");
+
+        string CSRemoteCallCode = "// Auto generated code\n";
+        CSRemoteCallCode += "using System;\n";
+        CSRemoteCallCode += "using System.Collections.Generic;\n";
+        CSRemoteCallCode += "using System.Net.Sockets;\n";
+        CSRemoteCallCode += "using System.Runtime.Serialization;\n";
+        CSRemoteCallCode += "\n";
+
+        CSRemoteCallCode += "class Telegraph\n{\n";
+
+        CSRemoteCallCode += "    Socket m_Socket;\n";
+        CSRemoteCallCode += "\n";
+        CSRemoteCallCode += "    public Telegraph()\n";
+        CSRemoteCallCode += "    {\n";
+        CSRemoteCallCode += "        m_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);\n";
+        CSRemoteCallCode += "        m_Socket.Connect(\"localhost\", 1800);\n";
+        CSRemoteCallCode += "    }\n\n";
+
+        CSRemoteCallCode +=
+@"
+    public bool Exchange(List<byte> payload, out List<byte> response)
+    {
+        response = new List<byte>();
+
+        ulong payloadSize = (ulong)payload.Count + 8uL;
+
+        List<byte> finalPayload = new List<byte>();
+
+        if (!Serializer.Serialize(payloadSize, finalPayload))
+            return false;
+
+        finalPayload.AddRange(payload);
+
+        int sentBytes = m_Socket.Send(finalPayload.ToArray());
+
+        if (sentBytes != finalPayload.Count)
+            return false;
+
+        byte[] tempBuffer = new byte[512];
+
+        int readBytes = m_Socket.Receive(tempBuffer);
+
+        for (int i = 0; i < readBytes; ++i)
+            response.Add(tempBuffer[i]);
+
+        ulong expectedSize = 0;
+        int offset = 0;
+
+        if (!Serializer.Deserialize(out expectedSize, tempBuffer, offset, out offset))
+            return false;
+
+        while (response.Count < (int)expectedSize)
+        {
+            readBytes = m_Socket.Receive(tempBuffer);
+
+            for (int i = 0; i < readBytes; ++i)
+                response.Add(tempBuffer[i]);
+        }
+
+        bool success = false;
+        offset = 8;
+
+        if (!Serializer.Deserialize(out success, response.ToArray(), offset, out offset))
+            return false;
+
+        if (!success)
+            return false;
+
+        // If we succeeded, cut out the size and succes values form the stream
+        response.RemoveRange(0, 9);
+
+        return true;
+    }
+".Replace(System.Environment.NewLine, "\n");
+
+        foreach (MonocleFunction function in m_FunctionTable.GetFunctions())
+        {
+            string functionCode = "    public bool ";
+            functionCode += function.name;
+            functionCode += "(";
+
+
+            List<string> parameters = new List<string>();
+
+            foreach (FieldEntry inputEntry in function.functionInput)
+            {
+                Type parameterType = m_TypeTable.GetType(inputEntry.type);
+
+                string typename;
+                if (!GetCSTypeString(parameterType, out typename))
+                    return false;
+
+                parameters.Add(string.Format("{0} {1}", typename, inputEntry.name));
+            }
+
+            foreach (FieldEntry outputEntry in function.functionOutput)
+            {
+                Type parameterType = m_TypeTable.GetType(outputEntry.type);
+
+                string typename;
+                if (!GetCSTypeString(parameterType, out typename))
+                    return false;
+
+                parameters.Add(string.Format("out {0} {1}", typename, outputEntry.name));
+            }
+
+            functionCode += String.Join(", ", parameters.ToArray());
+
+            functionCode += ")\n";
+
+            functionCode += "    {\n";
+
+            foreach (FieldEntry outputEntry in function.functionOutput)
+            {
+                Type parameterType = m_TypeTable.GetType(outputEntry.type);
+
+                string typename;
+                if (!GetCSTypeString(parameterType, out typename))
+                    return false;
+
+                string initialization = "default";
+                if (parameterType is ListType)
+                {
+                    initialization = string.Format("new {0}()", typename);
+                }
+
+                functionCode += string.Format("        {0} = {1};\n", outputEntry.name, initialization);
+            }
+
+            functionCode += "        List<byte> outgoingData = new List<byte>();\n\n";
+
+            foreach (FieldEntry inputEntry in function.functionInput)
+            {
+                functionCode += string.Format("        if (!Serializer.Serialize({0}, outgoingData))\n", inputEntry.name);
+                functionCode += "            return false;\n\n";
+            }
+
+            functionCode += "        return true;\n";
+            functionCode += "    }\n\n";
+
+            CSRemoteCallCode += functionCode;
+        }
+
+        CSRemoteCallCode += "}";
+
+        File.WriteAllText(CSRemoteCallFile, CSRemoteCallCode);
 
         return true;
     }

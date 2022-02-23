@@ -40,14 +40,14 @@ bool Deserialize(std::vector<uint64_t>* data, const std::vector<uint8_t>& stream
 bool Serialize(const SomeListyBoi& data, std::vector<uint8_t>& stream);
 bool Deserialize(SomeListyBoi* data, const std::vector<uint8_t>& stream, size_t* offset);
 
-bool Serialize(const Ship& data, std::vector<uint8_t>& stream);
-bool Deserialize(Ship* data, const std::vector<uint8_t>& stream, size_t* offset);
-
 bool Serialize(const std::vector<CargoSlot>& data, std::vector<uint8_t>& stream);
 bool Deserialize(std::vector<CargoSlot>* data, const std::vector<uint8_t>& stream, size_t* offset);
 
 bool Serialize(const ShipCargo& data, std::vector<uint8_t>& stream);
 bool Deserialize(ShipCargo* data, const std::vector<uint8_t>& stream, size_t* offset);
+
+bool Serialize(const Ship& data, std::vector<uint8_t>& stream);
+bool Deserialize(Ship* data, const std::vector<uint8_t>& stream, size_t* offset);
 
 bool Serialize(const std::vector<Coordinate>& data, std::vector<uint8_t>& stream);
 bool Deserialize(std::vector<Coordinate>* data, const std::vector<uint8_t>& stream, size_t* offset);

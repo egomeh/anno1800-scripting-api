@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 public class Serializer
 {
-    public bool Serialize(bool data, List<byte> buffer)
+    public static bool Serialize(bool data, List<byte> buffer)
     {
         var bytes = BitConverter.GetBytes(data);
         buffer.AddRange(bytes);
         return true;
     }
 
-    public bool Deserialize(out bool data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out bool data, byte[] buffer, int offset, out int offsetAfter)
     {
         data = default;
         offsetAfter = offset;
@@ -26,14 +26,14 @@ public class Serializer
     }
 
 
-    public bool Serialize(int data, List<byte> buffer)
+    public static bool Serialize(int data, List<byte> buffer)
     {
         var bytes = BitConverter.GetBytes(data);
         buffer.AddRange(bytes);
         return true;
     }
 
-    public bool Deserialize(out int data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out int data, byte[] buffer, int offset, out int offsetAfter)
     {
         data = default;
         offsetAfter = offset;
@@ -47,14 +47,14 @@ public class Serializer
     }
 
 
-    public bool Serialize(uint data, List<byte> buffer)
+    public static bool Serialize(uint data, List<byte> buffer)
     {
         var bytes = BitConverter.GetBytes(data);
         buffer.AddRange(bytes);
         return true;
     }
 
-    public bool Deserialize(out uint data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out uint data, byte[] buffer, int offset, out int offsetAfter)
     {
         data = default;
         offsetAfter = offset;
@@ -68,14 +68,14 @@ public class Serializer
     }
 
 
-    public bool Serialize(long data, List<byte> buffer)
+    public static bool Serialize(long data, List<byte> buffer)
     {
         var bytes = BitConverter.GetBytes(data);
         buffer.AddRange(bytes);
         return true;
     }
 
-    public bool Deserialize(out long data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out long data, byte[] buffer, int offset, out int offsetAfter)
     {
         data = default;
         offsetAfter = offset;
@@ -89,14 +89,14 @@ public class Serializer
     }
 
 
-    public bool Serialize(ulong data, List<byte> buffer)
+    public static bool Serialize(ulong data, List<byte> buffer)
     {
         var bytes = BitConverter.GetBytes(data);
         buffer.AddRange(bytes);
         return true;
     }
 
-    public bool Deserialize(out ulong data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out ulong data, byte[] buffer, int offset, out int offsetAfter)
     {
         data = default;
         offsetAfter = offset;
@@ -110,14 +110,14 @@ public class Serializer
     }
 
 
-    public bool Serialize(float data, List<byte> buffer)
+    public static bool Serialize(float data, List<byte> buffer)
     {
         var bytes = BitConverter.GetBytes(data);
         buffer.AddRange(bytes);
         return true;
     }
 
-    public bool Deserialize(out float data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out float data, byte[] buffer, int offset, out int offsetAfter)
     {
         data = default;
         offsetAfter = offset;
@@ -131,14 +131,14 @@ public class Serializer
     }
 
 
-    public bool Serialize(double data, List<byte> buffer)
+    public static bool Serialize(double data, List<byte> buffer)
     {
         var bytes = BitConverter.GetBytes(data);
         buffer.AddRange(bytes);
         return true;
     }
 
-    public bool Deserialize(out double data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out double data, byte[] buffer, int offset, out int offsetAfter)
     {
         data = default;
         offsetAfter = offset;
@@ -152,7 +152,7 @@ public class Serializer
     }
 
 
-    public bool Serialize(string data, List<byte> buffer)
+    public static bool Serialize(string data, List<byte> buffer)
     {
         byte[] bytes = System.Text.Encoding.UTF8.GetBytes(data);
         byte[] size = BitConverter.GetBytes((ulong)bytes.Length);
@@ -161,7 +161,7 @@ public class Serializer
         return true;
     }
 
-    public bool Deserialize(out string data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out string data, byte[] buffer, int offset, out int offsetAfter)
     {
         ulong size = 0;
         data = "";
@@ -174,7 +174,7 @@ public class Serializer
     }
 
 
-    public bool Serialize(Coordinate data, List<byte> buffer)
+    public static bool Serialize(Coordinate data, List<byte> buffer)
     {
         if (!Serialize(data.x, buffer))
             return false;
@@ -185,7 +185,7 @@ public class Serializer
         return true;
     }
 
-    public bool Deserialize(out Coordinate data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out Coordinate data, byte[] buffer, int offset, out int offsetAfter)
     {
         data = new Coordinate();
         offsetAfter = offset;
@@ -202,7 +202,7 @@ public class Serializer
 
 
 
-    public bool Serialize(CargoSlot data, List<byte> buffer)
+    public static bool Serialize(CargoSlot data, List<byte> buffer)
     {
         if (!Serialize(data.itemID, buffer))
             return false;
@@ -213,7 +213,7 @@ public class Serializer
         return true;
     }
 
-    public bool Deserialize(out CargoSlot data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out CargoSlot data, byte[] buffer, int offset, out int offsetAfter)
     {
         data = new CargoSlot();
         offsetAfter = offset;
@@ -267,7 +267,7 @@ public class Serializer
 
 
 
-    public bool Serialize(SomeListyBoi data, List<byte> buffer)
+    public static bool Serialize(SomeListyBoi data, List<byte> buffer)
     {
         if (!Serialize(data.ids, buffer))
             return false;
@@ -275,33 +275,12 @@ public class Serializer
         return true;
     }
 
-    public bool Deserialize(out SomeListyBoi data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out SomeListyBoi data, byte[] buffer, int offset, out int offsetAfter)
     {
         data = new SomeListyBoi();
         offsetAfter = offset;
 
         if (!Deserialize(out data.ids, buffer, offset, out offsetAfter))
-            return false;
-
-        return true;
-    }
-
-
-
-    public bool Serialize(Ship data, List<byte> buffer)
-    {
-        if (!Serialize(data.name, buffer))
-            return false;
-
-        return true;
-    }
-
-    public bool Deserialize(out Ship data, byte[] buffer, int offset, out int offsetAfter)
-    {
-        data = new Ship();
-        offsetAfter = offset;
-
-        if (!Deserialize(out data.name, buffer, offset, out offsetAfter))
             return false;
 
         return true;
@@ -346,7 +325,7 @@ public class Serializer
 
 
 
-    public bool Serialize(ShipCargo data, List<byte> buffer)
+    public static bool Serialize(ShipCargo data, List<byte> buffer)
     {
         if (!Serialize(data.cargo, buffer))
             return false;
@@ -354,10 +333,38 @@ public class Serializer
         return true;
     }
 
-    public bool Deserialize(out ShipCargo data, byte[] buffer, int offset, out int offsetAfter)
+    public static bool Deserialize(out ShipCargo data, byte[] buffer, int offset, out int offsetAfter)
     {
         data = new ShipCargo();
         offsetAfter = offset;
+
+        if (!Deserialize(out data.cargo, buffer, offset, out offsetAfter))
+            return false;
+
+        return true;
+    }
+
+
+
+    public static bool Serialize(Ship data, List<byte> buffer)
+    {
+        if (!Serialize(data.name, buffer))
+            return false;
+
+        if (!Serialize(data.cargo, buffer))
+            return false;
+
+        return true;
+    }
+
+    public static bool Deserialize(out Ship data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new Ship();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.name, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
 
         if (!Deserialize(out data.cargo, buffer, offset, out offsetAfter))
             return false;

@@ -1,6 +1,10 @@
 
 - functions:
 
+    - WriteToLog:
+        - in:
+            - message: string
+
     - GetGameTime:
         - out:
             - time: uint64
@@ -43,3 +47,4 @@
     - Ship:
         - fields:
             - name: string
+            - cargo: ShipCargo
