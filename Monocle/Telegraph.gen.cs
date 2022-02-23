@@ -167,7 +167,7 @@ class Telegraph
         return true;
     }
 
-    public bool GetIslandNames(out List<string> names)
+    public bool GetIslandNames(int Area, out List<string> names)
     {
         names = new List<string>();
         List<byte> outgoingData = new List<byte>();
@@ -175,6 +175,9 @@ class Telegraph
         ulong functionIndex = 5;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(Area, outgoingData))
             return false;
 
         List<byte> response;

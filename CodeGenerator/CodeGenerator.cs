@@ -34,7 +34,10 @@ class CodeGenerator
         if (!GenerateCPPSerializationImplementationCode())
             return false;
 
-        if (GenerateCSRemoteCallCode())
+        if (!GenerateCSRemoteCallCode())
+            return false;
+
+        if (!GenerateCPPRemoteCallCode())
             return false;
 
         return true;
@@ -867,5 +870,57 @@ class CodeGenerator
         return true;
     }
 
+    bool GenerateCPPRemoteCallCode()
+    {
+        string CPPRemoteCallHandlerBase = Path.Combine(m_CppPath, "remote_call_handler_base.gen.h");
+
+        // Generate base class for handling remote calls
+        {
+            string code = "// Auto generated code\n";
+            code += "#include <inttypes.h>\n";
+            code += "#include <string>\n";
+            code += "#include <vector>\n";
+            code += "#include \"structs.gen.h\"\n\n";
+
+            code += "class RemoteCallHandlerBase\n{\n";
+
+            foreach (MonocleFunction function in m_FunctionTable.GetFunctions())
+            {
+                List<string> parameters = new List<string>();
+
+                foreach (FieldEntry inputEntry in function.functionInput)
+                {
+                    Type parameterType = m_TypeTable.GetType(inputEntry.type);
+
+                    string typename;
+                    if (!GetCPPTypeString(parameterType, out typename))
+                        return false;
+
+                    parameters.Add(string.Format("const {0}& {1}", typename, inputEntry.name));
+                }
+
+                foreach (FieldEntry outputEntry in function.functionOutput)
+                {
+                    Type parameterType = m_TypeTable.GetType(outputEntry.type);
+
+                    string typename;
+                    if (!GetCPPTypeString(parameterType, out typename))
+                        return false;
+
+                    parameters.Add(string.Format("{0}* {1}", typename, outputEntry.name));
+                }
+
+                string innerParameterString = String.Join(", ", parameters.ToArray());
+
+                code += string.Format("    virtual bool {0}({1}) = 0;\n", function.name, innerParameterString);
+            }
+
+            code += "};\n";
+
+            File.WriteAllText(CPPRemoteCallHandlerBase, code);
+        }
+
+        return true;
+    }
 }
 

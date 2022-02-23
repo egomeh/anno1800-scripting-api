@@ -1,6 +1,7 @@
 #include "testing.h"
 #include "serialization.gen.h"
 #include "structs.gen.h"
+#include "remote_call_handler_test.h"
 
 #include <vector>
 
@@ -28,5 +29,7 @@ void testing()
 
 	size_t cursor = 0;
 	Deserialize(&deserializedShip, data, &cursor);
+
+	RemoteCallHandlerTest handler;
 }
 

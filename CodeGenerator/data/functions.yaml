@@ -21,6 +21,8 @@
             - ids: list(uint64)
 
     - GetIslandNames:
+        - in:
+            - Area: int32
         - out:
             - names: list(string)
 
