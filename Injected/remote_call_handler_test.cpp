@@ -10,9 +10,13 @@ bool RemoteCallHandlerTest::GetGameTime(uint64_t* time, uint64_t* frame)
 	return false;
 }
 
-bool RemoteCallHandlerTest::GetShipWaypoints(const uint64_t& shipID, std::vector<Coordinate>* waypoints)
+bool RemoteCallHandlerTest::GetShipWaypoints(const std::string& something, const uint64_t& shipID, std::vector<Coordinate>* waypoints)
 {
-	return false;
+	Coordinate c;
+	c.x = 5.2f;
+	c.y = 6.2f;
+	waypoints->push_back(c);
+	return true;
 }
 
 bool RemoteCallHandlerTest::GetIslandIds(std::vector<uint64_t>* ids)

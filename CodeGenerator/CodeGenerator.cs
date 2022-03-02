@@ -704,17 +704,40 @@ class CodeGenerator
         CSRemoteCallCode += "using System;\n";
         CSRemoteCallCode += "using System.Collections.Generic;\n";
         CSRemoteCallCode += "using System.Net.Sockets;\n";
+        CSRemoteCallCode += "using System.Net;\n";
         CSRemoteCallCode += "using System.Runtime.Serialization;\n";
+        CSRemoteCallCode += "using System.Runtime.InteropServices;\n";
         CSRemoteCallCode += "\n";
 
-        CSRemoteCallCode += "class Telegraph\n{\n";
+        CSRemoteCallCode += "class Windows\n";
+        CSRemoteCallCode += "{\n";
+        CSRemoteCallCode += "    [DllImport(\"kernel32.dll\")]\n";
+        CSRemoteCallCode += "    public static extern IntPtr LoadLibrary(string dllToLoad);\n";
+        CSRemoteCallCode += "};\n\n";
+
+        CSRemoteCallCode += "public class Telegraph\n{\n";
 
         CSRemoteCallCode += "    Socket m_Socket;\n";
         CSRemoteCallCode += "\n";
         CSRemoteCallCode += "    public Telegraph()\n";
         CSRemoteCallCode += "    {\n";
-        CSRemoteCallCode += "        m_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);\n";
-        CSRemoteCallCode += "        m_Socket.Connect(\"localhost\", 1800);\n";
+
+        CSRemoteCallCode += "        IPHostEntry ipHostInfo = Dns.GetHostEntry(\"localhost\");\n";
+        CSRemoteCallCode += "        IPAddress ipAddress = ipHostInfo.AddressList[0];\n";
+        CSRemoteCallCode += "        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 4050);\n";
+        CSRemoteCallCode += "        Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);\n\n";
+
+        CSRemoteCallCode += "        listener.Bind(localEndPoint);\n";
+        CSRemoteCallCode += "        listener.Listen(1);\n\n";
+
+        CSRemoteCallCode += "        Task<Socket> acceptedSocket = listener.AcceptAsync();\n\n";
+
+        CSRemoteCallCode += "        IntPtr result = Windows.LoadLibrary(\"../x64/Debug/Injected.dll\");\n\n";
+
+        CSRemoteCallCode += "        acceptedSocket.Wait();\n";
+        CSRemoteCallCode += "        m_Socket = acceptedSocket.Result;\n";
+
+
         CSRemoteCallCode += "    }\n\n";
 
         CSRemoteCallCode +=
@@ -873,16 +896,20 @@ class CodeGenerator
     bool GenerateCPPRemoteCallCode()
     {
         string CPPRemoteCallHandlerBase = Path.Combine(m_CppPath, "remote_call_handler_base.gen.h");
+        string CPPRemoteCallHandlerBaseImpl = Path.Combine(m_CppPath, "remote_call_handler_base.gen.cpp");
 
         // Generate base class for handling remote calls
         {
             string code = "// Auto generated code\n";
+            code += "#pragma once\n";
             code += "#include <inttypes.h>\n";
             code += "#include <string>\n";
             code += "#include <vector>\n";
-            code += "#include \"structs.gen.h\"\n\n";
+            code += "#include \"structs.gen.h\"\n";
+            code += "#include \"socket.h\"\n\n";
 
             code += "class RemoteCallHandlerBase\n{\n";
+            code += "public:\n";
 
             foreach (MonocleFunction function in m_FunctionTable.GetFunctions())
             {
@@ -917,7 +944,107 @@ class CodeGenerator
 
             code += "};\n";
 
+            code += "\n";
+
+            code += "bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callHandler);\n";
+
             File.WriteAllText(CPPRemoteCallHandlerBase, code);
+        }
+
+        {
+            string code = "// Auto generated code\n";
+            code += "#include \"remote_call_handler_base.gen.h\"\n";
+            code += "#include \"serialization.gen.h\"\n\n";
+
+            code += "bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callHandler)\n";
+            code += "{\n";
+            code += "    std::vector<uint8_t> buffer_in;\n";
+            code += "    std::vector<uint8_t> buffer_out;\n\n";
+
+            code += "    socketHandler.Receive(buffer_in);\n\n";
+
+            code += "    uint64_t function_id = 0;\n";
+            code += "    size_t offset = 0;\n\n";
+            code += "    if (!Deserialize(&function_id, buffer_in, &offset)) return false;\n\n";
+
+            code += "    bool success = false;\n\n";
+
+            code += "    switch (function_id)\n";
+            code += "    {\n";
+
+            foreach (MonocleFunction function in m_FunctionTable.GetFunctions())
+            {
+                code += String.Format("        case ({0}): // {1}\n", function.index, function.name);
+                code += String.Format("        {{\n");
+
+                List<string> functionCallInner = new List<string>();
+
+                List<string> deserialization = new List<string>();
+                List<string> serialization = new List<string>();
+
+                string baseIndentation = "            ";
+
+                foreach (FieldEntry inputEntry in function.functionInput)
+                {
+                    Type type = m_TypeTable.GetType(inputEntry.type);
+
+                    string typename;
+                    if (!GetCPPTypeString(type, out typename))
+                        return false;
+
+                    string deserializeThis = string.Format("{0}{1} {2};\n", baseIndentation, typename, inputEntry.name);
+                    deserializeThis += string.Format("{0}if (!Deserialize(&{1}, buffer_in, &offset))\n", baseIndentation, inputEntry.name);
+                    deserializeThis += string.Format("{0}    return false;\n", baseIndentation);
+
+                    deserialization.Add(deserializeThis);
+                    functionCallInner.Add(inputEntry.name);
+                }
+
+                List<string> outputParameters = new List<string>();
+
+                foreach (FieldEntry outputEntry in function.functionOutput)
+                {
+                    Type parameterType = m_TypeTable.GetType(outputEntry.type);
+
+                    string typename;
+                    if (!GetCPPTypeString(parameterType, out typename))
+                        return false;
+
+                    outputParameters.Add(String.Format("{0}{1} {2};\n", baseIndentation, typename, outputEntry.name));
+                    functionCallInner.Add(String.Format("&{0}", outputEntry.name));
+
+                    string serializeThis = string.Format("{0}if (!Serialize({1}, buffer_out))\n", baseIndentation, outputEntry.name);
+                    serializeThis += string.Format("{0}    return false;\n", baseIndentation);
+
+                    serialization.Add(serializeThis);
+                }
+
+                List<string> functionContent = new List<string>();
+                functionContent.AddRange(deserialization);
+                functionContent.AddRange(outputParameters);
+                string functionCall = string.Format("{0}success = callHandler.{1}({2});\n", baseIndentation, function.name, String.Join(", ", functionCallInner));
+                functionContent.Add(functionCall);
+
+                string serializeSuccess = string.Format("{0}if (!Serialize(success, buffer_out))\n", baseIndentation);
+                serializeSuccess += string.Format("{0}    return false;\n", baseIndentation);
+                functionContent.Add(serializeSuccess);
+
+                functionContent.AddRange(serialization);
+
+                code += String.Join("\n", functionContent);
+                code += "\n";
+
+                code += String.Format("            break;\n");
+                code += String.Format("        }}\n");
+            }
+
+            code += "    }\n\n";
+
+
+            code += "    return socketHandler.Send(buffer_out);\n";
+            code += "}\n";
+
+            File.WriteAllText(CPPRemoteCallHandlerBaseImpl, code);
         }
 
         return true;

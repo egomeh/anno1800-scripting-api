@@ -33,6 +33,12 @@
     <ClInclude Include="remote_call_handler_base.gen.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="socket.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="global_includes.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -45,6 +51,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="remote_call_handler_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="socket.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="remote_call_handler_base.gen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

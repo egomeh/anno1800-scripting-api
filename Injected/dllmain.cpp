@@ -1,4 +1,4 @@
-#include <windows.h>
+#include "global_includes.h"
 #include <string>
 #include "structs.gen.h"
 #include "serialization.gen.h"

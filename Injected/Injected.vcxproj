@@ -152,16 +152,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />
+    <ClInclude Include="global_includes.h" />
     <ClInclude Include="remote_call_handler_base.gen.h" />
     <ClInclude Include="remote_call_handler_test.h" />
     <ClInclude Include="serialization.gen.h" />
+    <ClInclude Include="socket.h" />
     <ClInclude Include="structs.gen.h" />
     <ClInclude Include="testing.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="remote_call_handler_base.gen.cpp" />
     <ClCompile Include="remote_call_handler_test.cpp" />
     <ClCompile Include="serialization.gen.cpp" />
+    <ClCompile Include="socket.cpp" />
     <ClCompile Include="testing.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

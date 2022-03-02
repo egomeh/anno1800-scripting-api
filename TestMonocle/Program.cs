@@ -1,13 +1,5 @@
-﻿using System.Runtime.InteropServices;
-
+﻿
 TestRunner.Run();
-
-class Windows
-{
-    [DllImport("kernel32.dll")]
-    public static extern IntPtr LoadLibrary(string dllToLoad);
-};
-
 
 class TestRunner
 {
@@ -32,8 +24,10 @@ class TestRunner
         Serializer.Deserialize(out object1, buffer.ToArray(), 0, out offsetAfter);
         Serializer.Deserialize(out object2, buffer.ToArray(), offsetAfter, out offsetAfter);
 
-        IntPtr result = Windows.LoadLibrary("../x64/Debug/Injected.dll");
+        Telegraph telegraph = new Telegraph();
+        List<Coordinate> waypoints;
+        telegraph.GetShipWaypoints("my message", 0x0000000200000FF8, out waypoints);
 
-        Console.WriteLine("I'm here so you have something to break on :)");
+        Console.WriteLine(String.Format("{0}, {1}", waypoints.First().x, waypoints.First().y));
     }
 }

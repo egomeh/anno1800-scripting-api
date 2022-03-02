@@ -12,6 +12,7 @@
 
     - GetShipWaypoints:
         - in:
+            - something: string
             - shipID: uint64
         - out:
             - waypoints: list(Coordinate)

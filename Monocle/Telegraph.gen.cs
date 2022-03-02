@@ -2,16 +2,36 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Net;
 using System.Runtime.Serialization;
+using System.Runtime.InteropServices;
 
-class Telegraph
+class Windows
+{
+    [DllImport("kernel32.dll")]
+    public static extern IntPtr LoadLibrary(string dllToLoad);
+};
+
+public class Telegraph
 {
     Socket m_Socket;
 
     public Telegraph()
     {
-        m_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        m_Socket.Connect("localhost", 1800);
+        IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
+        IPAddress ipAddress = ipHostInfo.AddressList[0];
+        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 4050);
+        Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+
+        listener.Bind(localEndPoint);
+        listener.Listen(1);
+
+        Task<Socket> acceptedSocket = listener.AcceptAsync();
+
+        IntPtr result = Windows.LoadLibrary("../x64/Debug/Injected.dll");
+
+        acceptedSocket.Wait();
+        m_Socket = acceptedSocket.Result;
     }
 
 
@@ -116,7 +136,7 @@ class Telegraph
         return true;
     }
 
-    public bool GetShipWaypoints(ulong shipID, out List<Coordinate> waypoints)
+    public bool GetShipWaypoints(string something, ulong shipID, out List<Coordinate> waypoints)
     {
         waypoints = new List<Coordinate>();
         List<byte> outgoingData = new List<byte>();
@@ -124,6 +144,9 @@ class Telegraph
         ulong functionIndex = 3;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(something, outgoingData))
             return false;
 
         if (!Serializer.Serialize(shipID, outgoingData))
