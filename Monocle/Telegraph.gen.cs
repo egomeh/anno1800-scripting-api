@@ -6,6 +6,13 @@ using System.Net;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
 
+
+public enum TelegramMode
+{
+    Inject,
+    Testing,
+}
+
 class Windows
 {
     [DllImport("kernel32.dll")]
@@ -16,7 +23,7 @@ public class Telegraph
 {
     Socket m_Socket;
 
-    public Telegraph()
+    public Telegraph(TelegramMode mode = TelegramMode.Inject)
     {
         IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
         IPAddress ipAddress = ipHostInfo.AddressList[0];
@@ -28,7 +35,10 @@ public class Telegraph
 
         Task<Socket> acceptedSocket = listener.AcceptAsync();
 
-        IntPtr result = Windows.LoadLibrary("../x64/Debug/Injected.dll");
+        if (mode == TelegramMode.Testing)
+            Windows.LoadLibrary("../x64/Debug/Injected.dll");
+        else
+            Injection.InjectDLL("anno1800", Path.GetFullPath(@"../x64/Debug/Injected.dll"));
 
         acceptedSocket.Wait();
         m_Socket = acceptedSocket.Result;

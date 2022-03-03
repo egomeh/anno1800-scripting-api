@@ -25,9 +25,9 @@ class TestRunner
         Serializer.Deserialize(out object2, buffer.ToArray(), offsetAfter, out offsetAfter);
 
         Telegraph telegraph = new Telegraph();
-        List<Coordinate> waypoints;
-        telegraph.GetShipWaypoints("my message", 0x0000000200000FF8, out waypoints);
+        // List<Coordinate> waypoints;
+        //telegraph.GetShipWaypoints("my message", 0x0000000200000FF8, out waypoints);
 
-        Console.WriteLine(String.Format("{0}, {1}", waypoints.First().x, waypoints.First().y));
+        // Console.WriteLine(String.Format("{0}, {1}", waypoints.First().x, waypoints.First().y));
     }
 }

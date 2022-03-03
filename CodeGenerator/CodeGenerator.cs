@@ -708,6 +708,12 @@ class CodeGenerator
         CSRemoteCallCode += "using System.Runtime.Serialization;\n";
         CSRemoteCallCode += "using System.Runtime.InteropServices;\n";
         CSRemoteCallCode += "\n";
+        CSRemoteCallCode += "\n";
+        CSRemoteCallCode += "public enum TelegramMode\n";
+        CSRemoteCallCode += "{\n";
+        CSRemoteCallCode += "    Inject,\n";
+        CSRemoteCallCode += "    Testing,\n";
+        CSRemoteCallCode += "}\n\n";
 
         CSRemoteCallCode += "class Windows\n";
         CSRemoteCallCode += "{\n";
@@ -719,7 +725,7 @@ class CodeGenerator
 
         CSRemoteCallCode += "    Socket m_Socket;\n";
         CSRemoteCallCode += "\n";
-        CSRemoteCallCode += "    public Telegraph()\n";
+        CSRemoteCallCode += "    public Telegraph(TelegramMode mode = TelegramMode.Inject)\n";
         CSRemoteCallCode += "    {\n";
 
         CSRemoteCallCode += "        IPHostEntry ipHostInfo = Dns.GetHostEntry(\"localhost\");\n";
@@ -732,7 +738,10 @@ class CodeGenerator
 
         CSRemoteCallCode += "        Task<Socket> acceptedSocket = listener.AcceptAsync();\n\n";
 
-        CSRemoteCallCode += "        IntPtr result = Windows.LoadLibrary(\"../x64/Debug/Injected.dll\");\n\n";
+        CSRemoteCallCode += "        if (mode == TelegramMode.Testing)\n";
+        CSRemoteCallCode += "            Windows.LoadLibrary(\"../x64/Debug/Injected.dll\");\n";
+        CSRemoteCallCode += "        else\n";
+        CSRemoteCallCode += "            Injection.InjectDLL(\"anno1800\", Path.GetFullPath(@\"../x64/Debug/Injected.dll\"));\n\n";
 
         CSRemoteCallCode += "        acceptedSocket.Wait();\n";
         CSRemoteCallCode += "        m_Socket = acceptedSocket.Result;\n";

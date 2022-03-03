@@ -3,6 +3,7 @@
 #include "structs.gen.h"
 #include "serialization.gen.h"
 #include "testing.h"
+#include "injected.h"
 
 DWORD entry(HMODULE module)
 {
@@ -29,6 +30,8 @@ DWORD entry(HMODULE module)
     // If we're loaded in the test program, just call the test code
     if (mainModuleName.compare("TestMonocle") == 0)
         testing();
+    else
+        injected();
 
     return 0;
 }
