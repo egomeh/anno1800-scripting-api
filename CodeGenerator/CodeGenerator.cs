@@ -948,7 +948,7 @@ class CodeGenerator
 
                 string innerParameterString = String.Join(", ", parameters.ToArray());
 
-                code += string.Format("    virtual bool {0}({1}) = 0;\n", function.name, innerParameterString);
+                code += string.Format("    virtual bool {0}({1}) {{return true;}};\n", function.name, innerParameterString);
             }
 
             code += "};\n";

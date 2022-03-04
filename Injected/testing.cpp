@@ -7,10 +7,17 @@
 
 #include <vector>
 
+extern "C"
+{
+	void game_time_hook_trampoline();
+}
+
 void testing()
 {
 	SocketHandler socketHandler;
 	RemoteCallHandlerTest callHandler;
+
+	game_time_hook_trampoline();
 
 	socketHandler.Initialize();
 

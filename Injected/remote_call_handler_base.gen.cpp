@@ -18,13 +18,13 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
     switch (function_id)
     {
-        case (1): // WriteToLog
+        case (1): // WriteMessageBox
         {
             std::string message;
             if (!Deserialize(&message, buffer_in, &offset))
                 return false;
 
-            success = callHandler.WriteToLog(message);
+            success = callHandler.WriteMessageBox(message);
 
             if (!Serialize(success, buffer_out))
                 return false;
@@ -46,60 +46,6 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
                 return false;
 
             if (!Serialize(frame, buffer_out))
-                return false;
-
-            break;
-        }
-        case (3): // GetShipWaypoints
-        {
-            std::string something;
-            if (!Deserialize(&something, buffer_in, &offset))
-                return false;
-
-            uint64_t shipID;
-            if (!Deserialize(&shipID, buffer_in, &offset))
-                return false;
-
-            std::vector<Coordinate> waypoints;
-
-            success = callHandler.GetShipWaypoints(something, shipID, &waypoints);
-
-            if (!Serialize(success, buffer_out))
-                return false;
-
-            if (!Serialize(waypoints, buffer_out))
-                return false;
-
-            break;
-        }
-        case (4): // GetIslandIds
-        {
-            std::vector<uint64_t> ids;
-
-            success = callHandler.GetIslandIds(&ids);
-
-            if (!Serialize(success, buffer_out))
-                return false;
-
-            if (!Serialize(ids, buffer_out))
-                return false;
-
-            break;
-        }
-        case (5): // GetIslandNames
-        {
-            int32_t Area;
-            if (!Deserialize(&Area, buffer_in, &offset))
-                return false;
-
-            std::vector<std::string> names;
-
-            success = callHandler.GetIslandNames(Area, &names);
-
-            if (!Serialize(success, buffer_out))
-                return false;
-
-            if (!Serialize(names, buffer_out))
                 return false;
 
             break;

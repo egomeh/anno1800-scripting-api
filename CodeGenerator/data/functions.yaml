@@ -1,7 +1,7 @@
 
 - functions:
 
-    - WriteToLog:
+    - WriteMessageBox:
         - in:
             - message: string
 
@@ -9,45 +9,3 @@
         - out:
             - time: uint64
             - frame: uint64
-
-    - GetShipWaypoints:
-        - in:
-            - something: string
-            - shipID: uint64
-        - out:
-            - waypoints: list(Coordinate)
-
-    - GetIslandIds:
-        - out:
-            - ids: list(uint64)
-
-    - GetIslandNames:
-        - in:
-            - Area: int32
-        - out:
-            - names: list(string)
-
-- types:
-
-    - Coordinate:
-        - fields:
-            - x: float
-            - y: float
-
-    - ShipCargo:
-        - fields:
-            - cargo: list(CargoSlot)
-
-    - CargoSlot:
-        - fields:
-            - itemID: uint64
-            - volume: uint32
-
-    - SomeListyBoi:
-        - fields:
-            - ids: list(uint64)
-
-    - Ship:
-        - fields:
-            - name: string
-            - cargo: ShipCargo

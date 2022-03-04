@@ -98,7 +98,7 @@ public class Telegraph
 
         return true;
     }
-    public bool WriteToLog(string message)
+    public bool WriteMessageBox(string message)
     {
         List<byte> outgoingData = new List<byte>();
 
@@ -141,87 +141,6 @@ public class Telegraph
             return false;
 
         if (!Serializer.Deserialize(out frame, inData, offset, out offset))
-            return false;
-
-        return true;
-    }
-
-    public bool GetShipWaypoints(string something, ulong shipID, out List<Coordinate> waypoints)
-    {
-        waypoints = new List<Coordinate>();
-        List<byte> outgoingData = new List<byte>();
-
-        ulong functionIndex = 3;
-
-        if (!Serializer.Serialize(functionIndex, outgoingData))
-            return false;
-
-        if (!Serializer.Serialize(something, outgoingData))
-            return false;
-
-        if (!Serializer.Serialize(shipID, outgoingData))
-            return false;
-
-        List<byte> response;
-
-        if (!Exchange(outgoingData, out response))
-            return false;
-
-        byte[] inData = response.ToArray();
-
-        int offset = 0;
-        if (!Serializer.Deserialize(out waypoints, inData, offset, out offset))
-            return false;
-
-        return true;
-    }
-
-    public bool GetIslandIds(out List<ulong> ids)
-    {
-        ids = new List<ulong>();
-        List<byte> outgoingData = new List<byte>();
-
-        ulong functionIndex = 4;
-
-        if (!Serializer.Serialize(functionIndex, outgoingData))
-            return false;
-
-        List<byte> response;
-
-        if (!Exchange(outgoingData, out response))
-            return false;
-
-        byte[] inData = response.ToArray();
-
-        int offset = 0;
-        if (!Serializer.Deserialize(out ids, inData, offset, out offset))
-            return false;
-
-        return true;
-    }
-
-    public bool GetIslandNames(int Area, out List<string> names)
-    {
-        names = new List<string>();
-        List<byte> outgoingData = new List<byte>();
-
-        ulong functionIndex = 5;
-
-        if (!Serializer.Serialize(functionIndex, outgoingData))
-            return false;
-
-        if (!Serializer.Serialize(Area, outgoingData))
-            return false;
-
-        List<byte> response;
-
-        if (!Exchange(outgoingData, out response))
-            return false;
-
-        byte[] inData = response.ToArray();
-
-        int offset = 0;
-        if (!Serializer.Deserialize(out names, inData, offset, out offset))
             return false;
 
         return true;

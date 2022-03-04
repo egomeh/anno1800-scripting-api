@@ -33,6 +33,8 @@ DWORD entry(HMODULE module)
     else
         injected();
 
+    FreeLibraryAndExitThread(module, 0);
+
     return 0;
 }
 

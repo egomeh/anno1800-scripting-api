@@ -27,30 +27,3 @@ bool Deserialize(double* data, const std::vector<uint8_t>& stream, size_t* offse
 
 bool Serialize(const std::string& data, std::vector<uint8_t>& stream);
 bool Deserialize(std::string* data, const std::vector<uint8_t>& stream, size_t* offset);
-
-bool Serialize(const Coordinate& data, std::vector<uint8_t>& stream);
-bool Deserialize(Coordinate* data, const std::vector<uint8_t>& stream, size_t* offset);
-
-bool Serialize(const CargoSlot& data, std::vector<uint8_t>& stream);
-bool Deserialize(CargoSlot* data, const std::vector<uint8_t>& stream, size_t* offset);
-
-bool Serialize(const std::vector<uint64_t>& data, std::vector<uint8_t>& stream);
-bool Deserialize(std::vector<uint64_t>* data, const std::vector<uint8_t>& stream, size_t* offset);
-
-bool Serialize(const SomeListyBoi& data, std::vector<uint8_t>& stream);
-bool Deserialize(SomeListyBoi* data, const std::vector<uint8_t>& stream, size_t* offset);
-
-bool Serialize(const std::vector<CargoSlot>& data, std::vector<uint8_t>& stream);
-bool Deserialize(std::vector<CargoSlot>* data, const std::vector<uint8_t>& stream, size_t* offset);
-
-bool Serialize(const ShipCargo& data, std::vector<uint8_t>& stream);
-bool Deserialize(ShipCargo* data, const std::vector<uint8_t>& stream, size_t* offset);
-
-bool Serialize(const Ship& data, std::vector<uint8_t>& stream);
-bool Deserialize(Ship* data, const std::vector<uint8_t>& stream, size_t* offset);
-
-bool Serialize(const std::vector<Coordinate>& data, std::vector<uint8_t>& stream);
-bool Deserialize(std::vector<Coordinate>* data, const std::vector<uint8_t>& stream, size_t* offset);
-
-bool Serialize(const std::vector<std::string>& data, std::vector<uint8_t>& stream);
-bool Deserialize(std::vector<std::string>* data, const std::vector<uint8_t>& stream, size_t* offset);

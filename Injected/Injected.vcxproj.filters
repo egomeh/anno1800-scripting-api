@@ -42,6 +42,15 @@
     <ClInclude Include="injected.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="remote_call_handler_anno.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hook.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="memory.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -65,5 +74,19 @@
     <ClCompile Include="injected.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="remote_call_handler_anno.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="memory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="trampolines.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
   </ItemGroup>
 </Project>
