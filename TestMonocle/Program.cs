@@ -5,11 +5,12 @@ class TestRunner
 {
     public static void Run()
     {
-        Telegraph telegraph = new Telegraph(TelegramMode.Testing);
-        telegraph.WriteMessageBox("Hello from telegraph!");
+        Telegraph telegraph = new Telegraph();
 
         ulong time;
         ulong frame;
         telegraph.GetGameTime(out time, out frame);
+
+        Console.WriteLine(String.Format("{0} {1}", time, frame));
     }
 }

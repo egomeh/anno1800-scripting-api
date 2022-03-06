@@ -4,9 +4,6 @@ HookManager::HookManager()
 {
     if (!InitializeCriticalSectionAndSpinCount(&submit_function_for_hook_cs, 0x4000))
         abort();
-
-    ebp = 0;
-    hook_data = {};
 }
 
 HookManager& HookManager::Get()
@@ -15,17 +12,7 @@ HookManager& HookManager::Get()
     return hook_manager;
 }
 
-void HookManager::SetEbp(int ebp)
-{
-    hook_data.ebp = ebp;
-}
-
-void HookManager::SetEax(int eax)
-{
-    hook_data.eax = eax;
-}
-
-void HookManager::ServiceHook(HookedFunction current_hook)
+void HookManager::ServiceHook(HookedFunction current_hook, HookData hook_data)
 {
     for (auto it = hook_execution_requests.begin(); it != hook_execution_requests.end();)
     {
@@ -63,7 +50,7 @@ void HookManager::ServiceHook(HookedFunction current_hook)
     }
 }
 
-bool HookManager::ExecuteInHookBase(HookedFunction hook_to_execute, std::function<bool(const HookData&)> function, bool async)
+bool HookManager::ExecuteInHookBase(HookedFunction hook_to_execute, std::function<bool(HookData)> function, bool async)
 {
     HookExecutionRequest request;
     request.hook = hook_to_execute;
@@ -89,12 +76,18 @@ bool HookManager::ExecuteInHookBase(HookedFunction hook_to_execute, std::functio
     return true;
 }
 
-bool HookManager::ExecuteInHookSync(HookedFunction hook_to_execute, std::function<bool(const HookData&)> function)
+bool HookManager::ExecuteInHookSync(HookedFunction hook_to_execute, std::function<bool(HookData)> function)
 {
     return ExecuteInHookBase(hook_to_execute, function, false);
 }
 
-bool HookManager::ExecuteInHookAsync(HookedFunction hook_to_execute, std::function<bool(const HookData&)> function)
+bool HookManager::ExecuteInHookAsync(HookedFunction hook_to_execute, std::function<bool(HookData)> function)
 {
     return ExecuteInHookBase(hook_to_execute, function, true);
 }
+
+void HookManagerServiceHook(HookedFunction current_hook, HookData hook_data)
+{
+    HookManager::Get().ServiceHook(current_hook, hook_data);
+}
+

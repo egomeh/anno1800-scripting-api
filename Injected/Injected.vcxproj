@@ -164,6 +164,7 @@
     <ClInclude Include="socket.h" />
     <ClInclude Include="structs.gen.h" />
     <ClInclude Include="testing.h" />
+    <ClInclude Include="tools.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="serialization.gen.cpp" />
     <ClCompile Include="socket.cpp" />
     <ClCompile Include="testing.cpp" />
+    <ClCompile Include="tools.cpp" />
   </ItemGroup>
   <ItemGroup>
     <MASM Include="trampolines.asm">

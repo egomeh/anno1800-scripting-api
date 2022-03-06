@@ -17,3 +17,5 @@
 #pragma comment (lib, "Mswsock.lib")
 #pragma comment (lib, "AdvApi32.lib")
 
+#include <string>
+#include <inttypes.h>
