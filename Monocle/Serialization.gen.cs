@@ -173,4 +173,39 @@ public class Serializer
         return true;
     }
 
+
+    public static bool Serialize(IslandResource data, List<byte> buffer)
+    {
+        if (!Serialize(data.type_id, buffer))
+            return false;
+
+        if (!Serialize(data.amount, buffer))
+            return false;
+
+        if (!Serialize(data.capacity, buffer))
+            return false;
+
+        return true;
+    }
+
+    public static bool Deserialize(out IslandResource data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new IslandResource();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.type_id, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.amount, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.capacity, buffer, offset, out offsetAfter))
+            return false;
+
+        return true;
+    }
+
+
 }

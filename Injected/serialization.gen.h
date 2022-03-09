@@ -27,3 +27,6 @@ bool Deserialize(double* data, const std::vector<uint8_t>& stream, size_t* offse
 
 bool Serialize(const std::string& data, std::vector<uint8_t>& stream);
 bool Deserialize(std::string* data, const std::vector<uint8_t>& stream, size_t* offset);
+
+bool Serialize(const IslandResource& data, std::vector<uint8_t>& stream);
+bool Deserialize(IslandResource* data, const std::vector<uint8_t>& stream, size_t* offset);

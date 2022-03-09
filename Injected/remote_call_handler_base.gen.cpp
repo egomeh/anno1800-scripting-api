@@ -50,6 +50,24 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
+        case (3): // DebugGetResourceInfoFromAddress
+        {
+            uint64_t address;
+            if (!Deserialize(&address, buffer_in, &offset))
+                return false;
+
+            IslandResource resource;
+
+            success = callHandler.DebugGetResourceInfoFromAddress(address, &resource);
+
+            if (!Serialize(success, buffer_out))
+                return false;
+
+            if (!Serialize(resource, buffer_out))
+                return false;
+
+            break;
+        }
     }
 
     return socketHandler.Send(buffer_out);

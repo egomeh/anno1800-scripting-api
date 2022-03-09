@@ -9,3 +9,17 @@
         - out:
             - time: uint64
             - frame: uint64
+
+    - DebugGetResourceInfoFromAddress:
+        - in:
+            - address: uint64
+        - out:
+            - resource: IslandResource
+
+- types:
+
+    - IslandResource:
+        - fields:
+            - type_id: int64
+            - amount: int32
+            - capacity: int32

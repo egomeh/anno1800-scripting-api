@@ -211,3 +211,32 @@ bool Deserialize(std::string* data, const std::vector<uint8_t>& stream, size_t* 
     return true;
 }
 
+
+bool Serialize(const IslandResource& data, std::vector<uint8_t>& stream)
+{
+    if (!Serialize(data.type_id, stream))
+        return false;
+
+    if (!Serialize(data.amount, stream))
+        return false;
+
+    if (!Serialize(data.capacity, stream))
+        return false;
+
+    return true;
+}
+
+bool Deserialize(IslandResource* data, const std::vector<uint8_t>& stream, size_t* offset)
+{
+    if (!Deserialize(&data->type_id, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->amount, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->capacity, stream, offset))
+        return false;
+
+    return true;
+}
+
