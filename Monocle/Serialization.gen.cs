@@ -208,4 +208,41 @@ public class Serializer
     }
 
 
+
+    public static bool Serialize(List<IslandResource> data, List<byte> buffer)
+    {
+        ulong size = (ulong)data.Count;
+        if (!Serialize(size, buffer))
+                return false;
+
+        for (int i = 0; i < data.Count; ++i)
+        {
+            if (!Serialize(data[i], buffer))
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool Deserialize(out List<IslandResource> data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        ulong size;
+        data = new List<IslandResource>();
+        offsetAfter = offset;
+
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+        for (ulong i = 0; i < size; ++i)
+        {
+            IslandResource element;
+            if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
+                return false;
+            data.Add(element);
+        }
+
+        return true;
+    }
+
+
 }

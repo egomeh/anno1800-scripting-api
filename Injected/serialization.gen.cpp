@@ -240,3 +240,41 @@ bool Deserialize(IslandResource* data, const std::vector<uint8_t>& stream, size_
     return true;
 }
 
+
+bool Serialize(const std::vector<IslandResource>& data, std::vector<uint8_t>& stream)
+{
+    uint64_t size = data.size();
+
+    if (!Serialize(size, stream))
+        return false;
+
+    for (const IslandResource& item : data)
+    {
+        if (!Serialize(item, stream))
+            return false;
+    }
+
+    return true;
+}
+
+bool Deserialize(std::vector<IslandResource>* data, const std::vector<uint8_t>& stream, size_t* offset)
+{
+    data->clear();
+
+    uint64_t size = 0;
+
+    if (!Deserialize(&size, stream, offset))
+        return false;
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        IslandResource item;
+        if (!Deserialize(&item, stream, offset))
+            return false;
+
+        data->push_back(item);
+    }
+
+    return true;
+}
+

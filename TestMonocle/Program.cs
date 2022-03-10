@@ -11,9 +11,11 @@ class TestRunner
         ulong frame;
         telegraph.GetGameTime(out time, out frame);
 
-        IslandResource fishOnMusli;
-        telegraph.DebugGetResourceInfoFromAddress(0, out fishOnMusli);
+        List<IslandResource> resourceChain;
+        telegraph.DebugGetResourceChainInfoFromAddress(0x26DEB5243A0, out resourceChain);
 
-        Console.WriteLine(String.Format("{0} {1}", time, frame));       
+        int amount = resourceChain.Where( x => { return x.type_id == 1010227; } ).First().amount;
+
+        Console.WriteLine(String.Format("Amount: {0}", amount));
     }
 }

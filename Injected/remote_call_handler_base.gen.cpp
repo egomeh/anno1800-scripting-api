@@ -68,6 +68,24 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
+        case (4): // DebugGetResourceChainInfoFromAddress
+        {
+            uint64_t address;
+            if (!Deserialize(&address, buffer_in, &offset))
+                return false;
+
+            std::vector<IslandResource> resource;
+
+            success = callHandler.DebugGetResourceChainInfoFromAddress(address, &resource);
+
+            if (!Serialize(success, buffer_out))
+                return false;
+
+            if (!Serialize(resource, buffer_out))
+                return false;
+
+            break;
+        }
     }
 
     return socketHandler.Send(buffer_out);

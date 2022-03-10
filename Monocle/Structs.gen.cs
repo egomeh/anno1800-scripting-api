@@ -10,7 +10,7 @@ public struct IslandResource
         capacity = default;
     }
 
-    public long type_id;
+    public int type_id;
     public int amount;
     public int capacity;
 }

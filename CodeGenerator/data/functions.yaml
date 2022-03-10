@@ -16,10 +16,16 @@
         - out:
             - resource: IslandResource
 
+    - DebugGetResourceChainInfoFromAddress:
+        - in:
+            - address: uint64
+        - out:
+            - resource: list(IslandResource)
+
 - types:
 
     - IslandResource:
         - fields:
-            - type_id: int64
+            - type_id: int32
             - amount: int32
             - capacity: int32

@@ -173,4 +173,31 @@ public class Telegraph
         return true;
     }
 
+    public bool DebugGetResourceChainInfoFromAddress(ulong address, out List<IslandResource> resource)
+    {
+        resource = new List<IslandResource>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 4;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(address, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out resource, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
 }

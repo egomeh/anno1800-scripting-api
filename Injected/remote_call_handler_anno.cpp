@@ -28,3 +28,8 @@ bool RemoteCallHandlerAnno::DebugGetResourceInfoFromAddress(const uint64_t& addr
 	return ExtractResourceNodeInfo(address, resource);
 }
 
+bool RemoteCallHandlerAnno::DebugGetResourceChainInfoFromAddress(const uint64_t& address, std::vector<IslandResource>* resource)
+{
+	return ExtractResourceNodeChianInfo(address, resource);
+}
+
