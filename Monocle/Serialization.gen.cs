@@ -165,7 +165,7 @@ public class Serializer
     {
         ulong size = 0;
         data = "";
-        offsetAfter = 0;
+        offsetAfter = offset;
         if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
             return false;
         data = System.Text.Encoding.UTF8.GetString(buffer, offsetAfter, (int)size);
@@ -209,6 +209,41 @@ public class Serializer
 
 
 
+    public static bool Serialize(IslandInfo data, List<byte> buffer)
+    {
+        if (!Serialize(data.island_id, buffer))
+            return false;
+
+        if (!Serialize(data.name, buffer))
+            return false;
+
+        if (!Serialize(data.debug_address, buffer))
+            return false;
+
+        return true;
+    }
+
+    public static bool Deserialize(out IslandInfo data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new IslandInfo();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.island_id, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.name, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.debug_address, buffer, offset, out offsetAfter))
+            return false;
+
+        return true;
+    }
+
+
+
     public static bool Serialize(List<IslandResource> data, List<byte> buffer)
     {
         ulong size = (ulong)data.Count;
@@ -236,6 +271,43 @@ public class Serializer
         for (ulong i = 0; i < size; ++i)
         {
             IslandResource element;
+            if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
+                return false;
+            data.Add(element);
+        }
+
+        return true;
+    }
+
+
+
+    public static bool Serialize(List<IslandInfo> data, List<byte> buffer)
+    {
+        ulong size = (ulong)data.Count;
+        if (!Serialize(size, buffer))
+                return false;
+
+        for (int i = 0; i < data.Count; ++i)
+        {
+            if (!Serialize(data[i], buffer))
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool Deserialize(out List<IslandInfo> data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        ulong size;
+        data = new List<IslandInfo>();
+        offsetAfter = offset;
+
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+        for (ulong i = 0; i < size; ++i)
+        {
+            IslandInfo element;
             if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
                 return false;
             data.Add(element);

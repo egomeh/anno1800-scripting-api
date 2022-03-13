@@ -351,7 +351,7 @@ class CodeGenerator
             code += "    {\n";
             code += "        ulong size = 0;\n";
             code += "        data = \"\";\n";
-            code += "        offsetAfter = 0;\n";
+            code += "        offsetAfter = offset;\n";
             code += "        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))\n";
             code += "            return false;\n";
             code += "        data = System.Text.Encoding.UTF8.GetString(buffer, offsetAfter, (int)size);\n";
@@ -855,6 +855,10 @@ class CodeGenerator
                 if (parameterType is ListType)
                 {
                     initialization = string.Format("new {0}()", typename);
+                }
+                else if (parameterType is StringType)
+                {
+                    initialization = "\"\"";
                 }
 
                 functionCode += string.Format("        {0} = {1};\n", outputEntry.name, initialization);

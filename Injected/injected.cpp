@@ -5,6 +5,7 @@
 #include "serialization.gen.h"
 #include "tools.h"
 #include "memory.h"
+#include "hook.h"
 
 #include <Windows.h>
 #include <string>
@@ -14,6 +15,7 @@
 extern "C"
 {
     void game_time_hook_trampoline();
+    void session_tick_hook_trampoline();
 }
 
 void injected()
@@ -44,18 +46,36 @@ void injected()
     uint64_t moduleSize = (uint64_t)(moduleInfo.SizeOfImage);
     uint64_t exeSectionSize = moduleSize - (entryPoint - moduleBase);
 
-    MemoryReplacement timeAndFrameHook;
-    timeAndFrameHook.SetMemory
-    ({
-        0x48, 0xb9,                                         // movabs rcx, [imm64]
-        EIGHT_BYTES((uint64_t)game_time_hook_trampoline),   // hook address
-        0xff, 0xd1,                                         // call rcx
-        0x90, 0x90, 0x90, 0x90, 0x90                        // 5 nops
-    });
-    timeAndFrameHook.Emplace((void*)(moduleBase + 0x4A36D));
+    // Scope for memory placements.
+    // When exiting this scope, all native code should
+    // be as before the injection
+    {
+        MemoryReplacement timeAndFrameHook;
+        timeAndFrameHook.SetMemory
+        ({
+            0x48, 0xb9,                                             // movabs rcx, [imm64]
+            EIGHT_BYTES((uint64_t)game_time_hook_trampoline),       // hook address
+            0xff, 0xd1,                                             // call rcx
+            0x90, 0x90, 0x90, 0x90, 0x90                            // 5 nops
+            });
+        timeAndFrameHook.Emplace((void*)(moduleBase + 0x4A36D));
 
-	bool stillGoing = true;
-	while (stillGoing)
-		stillGoing = HandleRemoteCall(socketHandler, callHandler);
+
+        MemoryReplacement seesion_tick_hook;
+        seesion_tick_hook.SetMemory
+        ({
+            0x48, 0xb8,                                             // movabs rax, [imm64]
+            EIGHT_BYTES((uint64_t)session_tick_hook_trampoline),    // hook address
+            0xff, 0xd0,                                             // call rax
+            0x90, 0x90, 0x90, 0x90                                  // 5 nops
+            });
+        seesion_tick_hook.Emplace((void*)(moduleBase + 0xBF3750));
+
+        bool stillGoing = true;
+        while (stillGoing)
+            stillGoing = HandleRemoteCall(socketHandler, callHandler);
+    }
+
+    HookManager::Get().ShutDown();
 }
 

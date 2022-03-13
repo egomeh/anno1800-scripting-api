@@ -11,11 +11,25 @@ class TestRunner
         ulong frame;
         telegraph.GetGameTime(out time, out frame);
 
-        List<IslandResource> resourceChain;
-        telegraph.DebugGetResourceChainInfoFromAddress(0x26DEB5243A0, out resourceChain);
+        ulong areaAddress;
+        telegraph.DebugGetFirstAreaStructAddress(out areaAddress);
 
-        int amount = resourceChain.Where( x => { return x.type_id == 1010227; } ).First().amount;
+        Console.WriteLine("break on me");
 
-        Console.WriteLine(String.Format("Amount: {0}", amount));
+        // ulong islandAddress = 0x2135D4A8160;
+
+        // List<IslandResource> resources;
+        //telegraph.DebugGetIslandResources(islandAddress, out resources);
+
+        ///string islandName;
+        //telegraph.DebugGetIslandNameFromAddress(islandAddress, out islandName);
+
+        //List<IslandInfo> info;
+        //telegraph.DebugGetIslandChainFromAddress(islandAddress, out info);
+
+        //Console.WriteLine(info.First().name);
+
+
+        // int amount = resources.Where( x => { return x.type_id == 1010200; } ).First().amount;
     }
 }

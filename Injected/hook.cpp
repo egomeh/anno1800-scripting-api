@@ -4,6 +4,15 @@ HookManager::HookManager()
 {
     if (!InitializeCriticalSectionAndSpinCount(&submit_function_for_hook_cs, 0x4000))
         abort();
+
+    if (!InitializeCriticalSectionAndSpinCount(&handle_request_cs, 0x4000))
+        abort();
+}
+
+void HookManager::ShutDown()
+{
+    DeleteCriticalSection(&submit_function_for_hook_cs);
+    DeleteCriticalSection(&handle_request_cs);
 }
 
 HookManager& HookManager::Get()
@@ -14,6 +23,8 @@ HookManager& HookManager::Get()
 
 void HookManager::ServiceHook(HookedFunction current_hook, HookData hook_data)
 {
+    bool request_pending_delete = false;
+
     for (auto it = hook_execution_requests.begin(); it != hook_execution_requests.end();)
     {
         HookExecutionRequest& current_request = *it;
@@ -25,16 +36,37 @@ void HookManager::ServiceHook(HookedFunction current_hook, HookData hook_data)
         }
 
         // if the function is not satisifed, we exit.
-        if (!current_request.function(hook_data))
+        if (current_request.satisfied)
         {
             ++it;
             continue;
         }
 
-        // at this point, the function is happy and we can remove the request
+        if (current_request.function(hook_data))
+        {
+            // If one or more threads determine success
+            // then mark the function as satisfied
+            current_request.satisfied = true;
+
+            // Also indicate that there is now a request that is pending kill
+        }
+
+        ++it;
+    }
+
+    for (auto it = hook_execution_requests.begin(); it != hook_execution_requests.end();)
+    {
+        HookExecutionRequest& current_request = *it;
+
+        // Request was not satisfied so don't delete it
+        if (!current_request.satisfied)
+        {
+            ++it;
+            continue;
+        }
 
         // and we can also signal the caller if its sync
-        if (current_request.sync_event)
+        if (current_request.sync_event != NULL)
         {
             // set to awake the callee
             SetEvent(current_request.sync_event);
@@ -44,25 +76,31 @@ void HookManager::ServiceHook(HookedFunction current_hook, HookData hook_data)
 
             // now close as we konw the callee has moved on
             CloseHandle(current_request.sync_event);
+
+            current_request.sync_event = NULL;
         }
 
-        it = hook_execution_requests.erase(it);
+        ++it;
+        // it = hook_execution_requests.erase(it);
     }
 }
 
 bool HookManager::ExecuteInHookBase(HookedFunction hook_to_execute, std::function<bool(HookData)> function, bool async)
 {
-    HookExecutionRequest request;
-    request.hook = hook_to_execute;
-    request.function = function;
+    EnterCriticalSection(&submit_function_for_hook_cs);
+
+    hook_execution_requests.emplace_back();
+    HookExecutionRequest& request = hook_execution_requests.back();
 
     if (!async)
         request.sync_event = CreateEventA(NULL, FALSE, FALSE, "hook_request_event");
     else
         request.sync_event = NULL;
 
-    EnterCriticalSection(&submit_function_for_hook_cs);
-    hook_execution_requests.push_back(request);
+    request.hook = hook_to_execute;
+    request.function = function;
+    request.satisfied = false;
+
     LeaveCriticalSection(&submit_function_for_hook_cs);
 
     if (!async && request.sync_event != NULL)

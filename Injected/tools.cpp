@@ -95,7 +95,6 @@ bool EndsWith(const char* string, const char* check)
     return true;
 }
 
-
 bool FindModule(HANDLE process, HMODULE* moduleList, uint64_t numberOfModules, const char* nameEnd, HMODULE& result)
 {
     for (int i = 0; i < numberOfModules; ++i)
@@ -112,4 +111,29 @@ bool FindModule(HANDLE process, HMODULE* moduleList, uint64_t numberOfModules, c
     }
 
     return false;
+}
+
+bool IsReadable(void* address, size_t byteCount)
+{
+    MEMORY_BASIC_INFORMATION mbi;
+    if (VirtualQuery(address, &mbi, sizeof(MEMORY_BASIC_INFORMATION)) == 0)
+        return false;
+
+    if (mbi.State != MEM_COMMIT)
+        return false;
+
+    if (mbi.Protect == PAGE_NOACCESS || mbi.Protect == PAGE_EXECUTE)
+        return false;
+
+    // This checks that the start of memory block is in the same "region" as the
+    // end. If it isn't you "simplify" the problem into checking that the rest of 
+    // the memory is readable.
+    size_t blockOffset = (size_t)((char*)address - (char*)mbi.AllocationBase);
+    size_t blockBytesPostPtr = mbi.RegionSize - blockOffset;
+
+    if (blockBytesPostPtr < byteCount)
+        return IsReadable((char*)address + blockBytesPostPtr,
+            byteCount - blockBytesPostPtr);
+
+    return true;
 }

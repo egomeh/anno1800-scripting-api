@@ -10,3 +10,11 @@ struct IslandResource
     int32_t capacity;
 };
 
+
+struct IslandInfo
+{
+    uint32_t island_id;
+    std::string name;
+    uint64_t debug_address;
+};
+

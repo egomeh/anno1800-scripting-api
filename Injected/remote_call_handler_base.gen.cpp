@@ -86,6 +86,92 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
+        case (5): // DebugGetIslandNameFromAddress
+        {
+            uint64_t address;
+            if (!Deserialize(&address, buffer_in, &offset))
+                return false;
+
+            std::string name;
+
+            success = callHandler.DebugGetIslandNameFromAddress(address, &name);
+
+            if (!Serialize(success, buffer_out))
+                return false;
+
+            if (!Serialize(name, buffer_out))
+                return false;
+
+            break;
+        }
+        case (6): // DebugReadStringFromAddress
+        {
+            uint64_t address;
+            if (!Deserialize(&address, buffer_in, &offset))
+                return false;
+
+            std::string name;
+
+            success = callHandler.DebugReadStringFromAddress(address, &name);
+
+            if (!Serialize(success, buffer_out))
+                return false;
+
+            if (!Serialize(name, buffer_out))
+                return false;
+
+            break;
+        }
+        case (7): // DebugGetIslandResources
+        {
+            uint64_t address;
+            if (!Deserialize(&address, buffer_in, &offset))
+                return false;
+
+            std::vector<IslandResource> resources;
+
+            success = callHandler.DebugGetIslandResources(address, &resources);
+
+            if (!Serialize(success, buffer_out))
+                return false;
+
+            if (!Serialize(resources, buffer_out))
+                return false;
+
+            break;
+        }
+        case (8): // DebugGetIslandChainFromAddress
+        {
+            uint64_t address;
+            if (!Deserialize(&address, buffer_in, &offset))
+                return false;
+
+            std::vector<IslandInfo> islands;
+
+            success = callHandler.DebugGetIslandChainFromAddress(address, &islands);
+
+            if (!Serialize(success, buffer_out))
+                return false;
+
+            if (!Serialize(islands, buffer_out))
+                return false;
+
+            break;
+        }
+        case (9): // DebugGetFirstAreaStructAddress
+        {
+            uint64_t address;
+
+            success = callHandler.DebugGetFirstAreaStructAddress(&address);
+
+            if (!Serialize(success, buffer_out))
+                return false;
+
+            if (!Serialize(address, buffer_out))
+                return false;
+
+            break;
+        }
     }
 
     return socketHandler.Send(buffer_out);

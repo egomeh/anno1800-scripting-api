@@ -4,23 +4,25 @@
 #include "remote_call_handler_test.h"
 #include "remote_call_handler_base.gen.h"
 #include "serialization.gen.h"
+#include "hook.h"
 
 #include <vector>
 
-extern "C"
-{
-	void game_time_hook_trampoline();
-}
 
 void testing()
 {
 	SocketHandler socketHandler;
 	RemoteCallHandlerTest callHandler;
 
-	game_time_hook_trampoline();
-
 	socketHandler.Initialize();
 
-	bool handled = HandleRemoteCall(socketHandler, callHandler);
+	HookManager::Get().ExecuteInHookAsync(HookedFunction::Any,
+		[](HookData data) -> bool
+		{
+			return true; 
+		});
+
+	HookData data = {};
+	HookManager::Get().ServiceHook(HookedFunction::Any, data);
 }
 

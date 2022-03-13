@@ -200,4 +200,136 @@ public class Telegraph
         return true;
     }
 
+    public bool DebugGetIslandNameFromAddress(ulong address, out string name)
+    {
+        name = "";
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 5;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(address, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out name, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool DebugReadStringFromAddress(ulong address, out string name)
+    {
+        name = "";
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 6;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(address, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out name, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool DebugGetIslandResources(ulong address, out List<IslandResource> resources)
+    {
+        resources = new List<IslandResource>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 7;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(address, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out resources, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool DebugGetIslandChainFromAddress(ulong address, out List<IslandInfo> islands)
+    {
+        islands = new List<IslandInfo>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 8;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(address, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out islands, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool DebugGetFirstAreaStructAddress(out ulong address)
+    {
+        address = default;
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 9;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out address, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
 }

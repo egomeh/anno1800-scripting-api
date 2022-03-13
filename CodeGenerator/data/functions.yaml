@@ -22,6 +22,34 @@
         - out:
             - resource: list(IslandResource)
 
+    - DebugGetIslandNameFromAddress:
+        - in:
+            - address: uint64
+        - out:
+            - name: string
+
+    - DebugReadStringFromAddress:
+        - in:
+            - address: uint64
+        - out:
+            - name: string
+
+    - DebugGetIslandResources:
+        - in:
+            - address: uint64
+        - out:
+            - resources: list(IslandResource)
+
+    - DebugGetIslandChainFromAddress:
+        - in:
+            - address: uint64
+        - out:
+            - islands: list(IslandInfo)
+
+    - DebugGetFirstAreaStructAddress:
+        - out:
+            - address: uint64
+
 - types:
 
     - IslandResource:
@@ -29,3 +57,9 @@
             - type_id: int32
             - amount: int32
             - capacity: int32
+
+    - IslandInfo:
+        - fields:
+            - island_id: uint32
+            - name: string
+            - debug_address: uint64

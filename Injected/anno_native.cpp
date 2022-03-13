@@ -1,4 +1,5 @@
 #include "anno_native.h"
+#include "anno_tools.h"
 
 bool ExtractResourceNodeInfo(uint64_t address, IslandResource* resourceInfo)
 {
@@ -35,3 +36,15 @@ bool ExtractResourceNodeChianInfo(uint64_t address, std::vector<IslandResource>*
 	return true;
 }
 
+bool DoesIslandBelongToPlayer(uint64_t address)
+{
+	// I have almost no clue if this is right...?
+	uint16_t belong_flag = *(uint16_t*)(address + 0x4e);
+	return belong_flag == 0;
+}
+
+bool GetIslandName(uint64_t island_address, std::string& name)
+{
+	uint64_t name_address = island_address + 0x118;
+	return ReadAnnoString(name_address, name);
+}

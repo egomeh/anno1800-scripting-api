@@ -15,3 +15,18 @@ public struct IslandResource
     public int capacity;
 }
 
+
+public struct IslandInfo
+{
+    public IslandInfo()
+    {
+        island_id = default;
+        name = "";
+        debug_address = default;
+    }
+
+    public uint island_id;
+    public string name;
+    public ulong debug_address;
+}
+

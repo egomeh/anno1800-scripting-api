@@ -4,11 +4,13 @@
 #include <functional>
 #include <list>
 #include <windows.h>
+#include <atomic>
 
 enum class HookedFunction
 {
     Any = 0,
-    GameTimeHook = 1
+    GameTimeHook = 1,
+    SessionTickHook = 2,
 };
 
 struct HookData
@@ -29,12 +31,15 @@ struct HookExecutionRequest
     HANDLE sync_event = NULL;
     HookedFunction hook;
     std::function<bool(HookData&)> function = {};
+    bool satisfied;
 };
 
 class HookManager
 {
 public:
     HookManager();
+    
+    void ShutDown();
 
     static HookManager& Get();
 
@@ -46,6 +51,7 @@ public:
 
 private:
     CRITICAL_SECTION submit_function_for_hook_cs;
+    CRITICAL_SECTION handle_request_cs;
     std::list<HookExecutionRequest> hook_execution_requests;
 };
 

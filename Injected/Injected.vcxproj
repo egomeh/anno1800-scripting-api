@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="anno_native.h" />
+    <ClInclude Include="anno_tools.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="global_includes.h" />
     <ClInclude Include="hook.h" />
@@ -169,6 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="anno_native.cpp" />
+    <ClCompile Include="anno_tools.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="hook.cpp" />
     <ClCompile Include="injected.cpp" />

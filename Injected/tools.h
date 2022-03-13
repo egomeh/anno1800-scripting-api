@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include "global_includes.h"
 
 template<typename T>
@@ -41,7 +42,9 @@ bool GetProcessModules(const HANDLE& processHandle, HMODULE** moduleList, uint64
 bool EndsWith(const char* string, const char* check);
 bool FindModule(HANDLE process, HMODULE* moduleList, uint64_t numberOfModules, const char* nameEnd, HMODULE& result);
 
-#include <functional>
+
+bool IsReadable(void* address, size_t byteCount);
+
 
 class RunOnExit
 {
