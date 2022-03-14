@@ -5,16 +5,19 @@ class TestRunner
 {
     public static void Run()
     {
-        Telegraph telegraph = new Telegraph();
+        Telegraph telegraph = new Telegraph(TelegramMode.Testing);
 
         ulong time;
         ulong frame;
         telegraph.GetGameTime(out time, out frame);
 
         ulong areaAddress;
-        telegraph.DebugGetFirstAreaStructAddress(out areaAddress);
 
-        Console.WriteLine("break on me");
+        while (true)
+        {
+            telegraph.DebugGetFirstAreaStructAddress(out areaAddress);
+            Console.WriteLine(String.Format("Sturct address {0:X}", areaAddress));
+        }
 
         // ulong islandAddress = 0x2135D4A8160;
 

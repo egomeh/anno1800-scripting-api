@@ -8,6 +8,14 @@
 
 #include <vector>
 
+DWORD Servicer(HMODULE module)
+{
+	while (true)
+	{
+		HookData test_hook_data = {};
+		HookManager::Get().ServiceHook(HookedFunction::GameTimeHook, test_hook_data);
+	}
+}
 
 void testing()
 {
@@ -16,13 +24,20 @@ void testing()
 
 	socketHandler.Initialize();
 
-	HookManager::Get().ExecuteInHookAsync(HookedFunction::Any,
-		[](HookData data) -> bool
-		{
-			return true; 
-		});
+	HookManager::Get();
 
-	HookData data = {};
-	HookManager::Get().ServiceHook(HookedFunction::Any, data);
+	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&Servicer, NULL, NULL, NULL);
+	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&Servicer, NULL, NULL, NULL);
+	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&Servicer, NULL, NULL, NULL);
+	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&Servicer, NULL, NULL, NULL);
+
+	while (true)
+	{
+		HookManager::Get().ExecuteInHookSync(HookedFunction::Any,
+			[](HookData data) -> bool
+			{
+				return true;
+			});
+	}
 }
 
