@@ -1,6 +1,6 @@
 #include "memory.h"
 
-MemoryReplacement::MemoryReplacement() : placement_address(nullptr)
+MemoryReplacement::MemoryReplacement() : placement_address(nullptr), placed(false)
 {
 }
 
@@ -37,10 +37,15 @@ void MemoryReplacement::Emplace(void* address)
     placement_address = address;
 
     VirtualProtect(address, 0x1000, old_protection, &dummy_protection);
+
+    placed = true;
 }
 
 void MemoryReplacement::Undo()
 {
+    if (!placed)
+        return;
+
     DWORD old_protection;
     DWORD dummy_protection;
     VirtualProtect(placement_address, 0x1000, PAGE_EXECUTE_READWRITE, &old_protection);
@@ -49,4 +54,6 @@ void MemoryReplacement::Undo()
     memcpy(placement_address, old_memory.data(), memory.size());
 
     VirtualProtect(placement_address, 0x1000, old_protection, &dummy_protection);
+
+    placed = false;
 }

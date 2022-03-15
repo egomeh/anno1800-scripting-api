@@ -29,7 +29,6 @@ struct HookExecutionRequest
     HANDLE sync_event = nullptr;
     HookedFunction hook;
     std::function<bool(HookData&)> function = {};
-    bool satisfied;
 };
 
 class HookManager
@@ -49,17 +48,9 @@ public:
 
 private:
 
-    bool AcceptingNewThread();
-    void LeaveThread();
-    void SetAllowThreads(bool does_allow);
-    void WaitForZeroThreads();
-
-    CRITICAL_SECTION submit_function_for_hook_cs;
-    CRITICAL_SECTION handle_request_cs;
+    bool shutting_down;
+    CRITICAL_SECTION access_hook_requests_cs;
     std::list<HookExecutionRequest> hook_execution_requests;
-
-    bool accept_handling;
-    int handling_thread_count;
 };
 
 // To have an interface for assembly

@@ -17,4 +17,5 @@ private:
     std::vector<uint8_t> memory;
     std::vector<uint8_t> old_memory;
     void* placement_address;
+    bool placed;
 };

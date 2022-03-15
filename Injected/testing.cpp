@@ -26,18 +26,10 @@ void testing()
 
 	HookManager::Get();
 
-	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&Servicer, NULL, NULL, NULL);
-	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&Servicer, NULL, NULL, NULL);
-	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&Servicer, NULL, NULL, NULL);
-	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&Servicer, NULL, NULL, NULL);
+	HookManager::Get().ShutDown();
 
-	while (true)
-	{
-		HookManager::Get().ExecuteInHookSync(HookedFunction::Any,
-			[](HookData data) -> bool
-			{
-				return true;
-			});
-	}
+	CRITICAL_SECTION cs;
+
+	EnterCriticalSection(&cs);
 }
 

@@ -69,13 +69,14 @@ void injected()
             0xff, 0xd0,                                             // call rax
             0x90, 0x90, 0x90, 0x90                                  // 5 nops
             });
-        seesion_tick_hook.Emplace((void*)(moduleBase + 0xBF3750));
+        // seesion_tick_hook.Emplace((void*)(moduleBase + 0xBF3750));
 
-        bool stillGoing = true;
-        while (stillGoing)
-            stillGoing = HandleRemoteCall(socketHandler, callHandler);
+        // Handle remote calls until we fail
+        while (HandleRemoteCall(socketHandler, callHandler));
     }
 
+    Sleep(500);
     HookManager::Get().ShutDown();
 }
+
 

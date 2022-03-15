@@ -5,26 +5,16 @@ class TestRunner
 {
     public static void Run()
     {
-        Telegraph telegraph = new Telegraph(TelegramMode.Testing);
+        Telegraph telegraph = new Telegraph();
 
-        ulong time;
-        ulong frame;
-        telegraph.GetGameTime(out time, out frame);
+        //ulong areaAddress;
 
-        ulong areaAddress;
+        //ulong islandAddress = 0x2135D4A8160;
 
-        while (true)
-        {
-            telegraph.DebugGetFirstAreaStructAddress(out areaAddress);
-            Console.WriteLine(String.Format("Sturct address {0:X}", areaAddress));
-        }
-
-        // ulong islandAddress = 0x2135D4A8160;
-
-        // List<IslandResource> resources;
+        //List<IslandResource> resources;
         //telegraph.DebugGetIslandResources(islandAddress, out resources);
 
-        ///string islandName;
+        //bstring islandName;
         //telegraph.DebugGetIslandNameFromAddress(islandAddress, out islandName);
 
         //List<IslandInfo> info;
@@ -32,7 +22,18 @@ class TestRunner
 
         //Console.WriteLine(info.First().name);
 
+        while (true)
+        {
+            ulong time;
+            ulong frame;
+            telegraph.GetGameTime(out time, out frame);
+            frame &= 0xFFFFFFFF;
+            // ulong areaAddress;
+            // telegraph.DebugGetFirstAreaStructAddress(out areaAddress);
+            // Console.WriteLine(string.Format("{0:X}"));
+        }
 
-        // int amount = resources.Where( x => { return x.type_id == 1010200; } ).First().amount;
+
+        // int amount = resources.Where(x => { return x.type_id == 1010200; }).First().amount;
     }
 }
