@@ -40,6 +40,8 @@ public:
 
     static HookManager& Get();
 
+    void Initialize();
+
     void ServiceHook(HookedFunction current_hook, HookData hook_data);
 
     bool ExecuteInHookBase(HookedFunction hook_to_execute, std::function<bool(HookData)> function, bool async);

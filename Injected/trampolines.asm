@@ -87,20 +87,24 @@ push r13
 push r14
 push r15
 
+; push the return address
+push rax
+
 push_volatile
 
 fill_hook_data
+
 mov rcx, 2 ; service hook #2 session tick hook
 sub rsp, 020h
 call HookManagerServiceHook
 add rsp, 020h
+
 clean_up_hook_data
 
 pop_volatile
 
-; push the return 
-push rax
 ret
+
 session_tick_hook_trampoline ENDP
 
 get_area_from_tls PROC

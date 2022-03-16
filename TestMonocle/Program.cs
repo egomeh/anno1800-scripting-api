@@ -24,15 +24,9 @@ class TestRunner
 
         while (true)
         {
-            ulong time;
-            ulong frame;
-            telegraph.GetGameTime(out time, out frame);
-            frame &= 0xFFFFFFFF;
-            // ulong areaAddress;
-            // telegraph.DebugGetFirstAreaStructAddress(out areaAddress);
-            // Console.WriteLine(string.Format("{0:X}"));
+            ulong areaAddress;
+            telegraph.DebugGetFirstAreaStructAddress(out areaAddress);
         }
-
 
         // int amount = resources.Where(x => { return x.type_id == 1010200; }).First().amount;
     }

@@ -974,7 +974,8 @@ class CodeGenerator
             code += "    std::vector<uint8_t> buffer_in;\n";
             code += "    std::vector<uint8_t> buffer_out;\n\n";
 
-            code += "    socketHandler.Receive(buffer_in);\n\n";
+            code += "    if (!socketHandler.Receive(buffer_in))\n";
+            code += "        return false;\n\n";
 
             code += "    uint64_t function_id = 0;\n";
             code += "    size_t offset = 0;\n\n";

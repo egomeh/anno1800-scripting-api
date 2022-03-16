@@ -25,6 +25,8 @@ void injected()
 
     socketHandler.Initialize();
 
+    HookManager::Get().Initialize();
+
     HANDLE anno_process = GetCurrentProcess();
 
     // Get the modules that are loaded in the exe.
@@ -69,7 +71,7 @@ void injected()
             0xff, 0xd0,                                             // call rax
             0x90, 0x90, 0x90, 0x90                                  // 5 nops
             });
-        // seesion_tick_hook.Emplace((void*)(moduleBase + 0xBF3750));
+        seesion_tick_hook.Emplace((void*)(moduleBase + 0xBF3750));
 
         // Handle remote calls until we fail
         while (HandleRemoteCall(socketHandler, callHandler));
@@ -78,5 +80,4 @@ void injected()
     Sleep(500);
     HookManager::Get().ShutDown();
 }
-
 

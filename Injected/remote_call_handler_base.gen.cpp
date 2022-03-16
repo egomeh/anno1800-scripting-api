@@ -7,7 +7,8 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
     std::vector<uint8_t> buffer_in;
     std::vector<uint8_t> buffer_out;
 
-    socketHandler.Receive(buffer_in);
+    if (!socketHandler.Receive(buffer_in))
+        return false;
 
     uint64_t function_id = 0;
     size_t offset = 0;
