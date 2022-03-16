@@ -42,6 +42,7 @@ void HookManager::ServiceHook(HookedFunction current_hook, HookData hook_data)
         return;
 
     EnterCriticalSection(&access_hook_requests_cs);
+
     for (auto it = hook_execution_requests.begin(); it != hook_execution_requests.end();)
     {
         HookExecutionRequest& current_request = *it;
@@ -63,6 +64,7 @@ void HookManager::ServiceHook(HookedFunction current_hook, HookData hook_data)
 
         ++it;
     }
+
     LeaveCriticalSection(&access_hook_requests_cs);
 }
 
