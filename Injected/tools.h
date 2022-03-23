@@ -1,6 +1,6 @@
 #pragma once
 
-#include <functional>
+#include <vector>
 #include "global_includes.h"
 
 template<typename T>
@@ -45,6 +45,44 @@ bool FindModule(HANDLE process, HMODULE* moduleList, uint64_t numberOfModules, c
 
 bool IsReadable(void* address, size_t byteCount);
 
+template<typename T>
+bool ForEachThreadInProcess(T&& function)
+{
+    DWORD currentProcessID = GetCurrentProcessId();
+
+    HANDLE snapshotHandle = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
+
+    if (snapshotHandle == INVALID_HANDLE_VALUE)
+        return false;
+
+    THREADENTRY32 threadEntry;
+    threadEntry.dwSize = sizeof(threadEntry);
+
+    int counter = 0;
+
+    if (Thread32First(snapshotHandle, &threadEntry))
+    {
+        do
+        {
+            if (threadEntry.dwSize >= FIELD_OFFSET(THREADENTRY32, th32OwnerProcessID) + sizeof(threadEntry.th32OwnerProcessID))
+            {
+                if (threadEntry.th32OwnerProcessID == currentProcessID)
+                {
+                    HANDLE thread = OpenThread(THREAD_ALL_ACCESS, FALSE, threadEntry.th32ThreadID);
+                    if (thread != NULL)
+                    {
+                        function(threadEntry.th32ThreadID, thread);
+                        CloseHandle(thread);
+                    }
+                }
+            }
+            threadEntry.dwSize = sizeof(threadEntry);
+        } while (Thread32Next(snapshotHandle, &threadEntry));
+    }
+
+    CloseHandle(snapshotHandle);
+    return true;
+}
 
 class RunOnExit
 {
