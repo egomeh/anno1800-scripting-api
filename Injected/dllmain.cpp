@@ -5,9 +5,12 @@
 #include "testing.h"
 #include "injected.h"
 #include "process.h"
+#include "log.h"
 
 DWORD entry(HMODULE module)
 {
+    Log::Get().Initialize();
+
     char filename[1024];
     GetModuleFileNameA(NULL, filename, sizeof(filename));
 
@@ -34,6 +37,8 @@ DWORD entry(HMODULE module)
     else
         injected();
 
+    ANNO_LOG("Injected leaveing");
+    Log::Get().Shutdown();
     FreeLibraryAndExitThread(module, 0);
 
     return 0;

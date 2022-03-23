@@ -29,13 +29,14 @@ void Servicer()
 
 void testing()
 {
+	ANNO_LOG("Running teting code");
+
 	SocketHandler socketHandler;
 	RemoteCallHandlerTest callHandler;
 
 	socketHandler.Initialize();
 
 	HookManager::Get().Initialize();
-	Log::Get().Initialize();
 
 	ANNO_LOG("Here 1");
 
@@ -48,7 +49,7 @@ void testing()
 		0x90, 0x90, 0x90, 0x90                                  // 5 nops
 	});
 
-	 for (int i = 0; i < 20; ++i)
+	 for (int i = 0; i < 4; ++i)
 		_beginthread((_beginthread_proc_type)&Servicer, 0, nullptr);
 
 	void* addressofjump = (void*)&test_function_to_hook;

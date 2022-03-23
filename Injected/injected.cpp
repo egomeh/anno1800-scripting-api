@@ -6,6 +6,7 @@
 #include "tools.h"
 #include "memory.h"
 #include "hook.h"
+#include "log.h"
 
 #include <Windows.h>
 #include <string>
@@ -21,6 +22,8 @@ extern "C"
 
 void injected()
 {
+    ANNO_LOG("Running injected code in Anno 1800");
+
 	SocketHandler socketHandler;
 	RemoteCallHandlerAnno callHandler;
 

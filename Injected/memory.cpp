@@ -1,4 +1,5 @@
 #include "memory.h"
+#include "log.h"
 
 MemoryReplacement::MemoryReplacement() : placement_address(nullptr), placed(false)
 {
@@ -22,6 +23,8 @@ void MemoryReplacement::SetMemory(const std::vector<uint8_t>& bytes)
 
 void MemoryReplacement::Emplace(void* address)
 {
+    ANNO_LOG("Placing memory at location %llx", address);
+
     DWORD old_protection;
     DWORD dummy_protection;
     VirtualProtect(address, 0x1000, PAGE_EXECUTE_READWRITE, &old_protection);
@@ -49,6 +52,8 @@ void MemoryReplacement::Emplace(void* address)
         uint64_t rip = context.Rip;
         while (rip >= (uint64_t)address && rip <= (((uint64_t)address) + memory.size()))
         {
+            ANNO_LOG("Thread %llx has rip %llx, resume and suspend to leave hook", (uint64_t)id, rip);
+
             ResumeThread(thread);
             Sleep(1);
             SuspendThread(thread);
@@ -60,6 +65,8 @@ void MemoryReplacement::Emplace(void* address)
 
             rip = context.Rip;
         }
+
+        ANNO_LOG("Thread %llx has rip %llx and is suspended for hooking", (uint64_t)id, rip);
     });
 
     // Write the data to the location we want
@@ -71,6 +78,8 @@ void MemoryReplacement::Emplace(void* address)
             return;
 
         ResumeThread(thread);
+
+        ANNO_LOG("Thread %llx resumed", (uint64_t)id);
     });
 
     placement_address = address;
