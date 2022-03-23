@@ -41,7 +41,8 @@ void HookManager::ServiceHook(HookedFunction current_hook, HookData hook_data)
     if (shutting_down)
         return;
 
-    EnterCriticalSection(&access_hook_requests_cs);
+    if (!TryEnterCriticalSection(&access_hook_requests_cs))
+        return;
 
     for (auto it = hook_execution_requests.begin(); it != hook_execution_requests.end();)
     {
