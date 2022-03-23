@@ -22,21 +22,18 @@
     <Filter Include="Source Files\Tools">
       <UniqueIdentifier>{68ebc3e6-9134-4607-bc56-eb786c444b67}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Testing">
+      <UniqueIdentifier>{a63d9421-cb86-4241-93a1-dbcbedfc52d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="testing.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="injected.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="serialization.gen.h">
-      <Filter>Source Files\Generated</Filter>
-    </ClInclude>
-    <ClInclude Include="remote_call_handler_test.h">
       <Filter>Source Files\Generated</Filter>
     </ClInclude>
     <ClInclude Include="remote_call_handler_base.gen.h">
@@ -69,21 +66,21 @@
     <ClInclude Include="anno_tools.h">
       <Filter>Source Files\anno</Filter>
     </ClInclude>
+    <ClInclude Include="testing.h">
+      <Filter>Source Files\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="remote_call_handler_test.h">
+      <Filter>Source Files\Testing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="testing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="injected.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="serialization.gen.cpp">
-      <Filter>Source Files\Generated</Filter>
-    </ClCompile>
-    <ClCompile Include="remote_call_handler_test.cpp">
       <Filter>Source Files\Generated</Filter>
     </ClCompile>
     <ClCompile Include="remote_call_handler_base.gen.cpp">
@@ -110,10 +107,19 @@
     <ClCompile Include="anno_tools.cpp">
       <Filter>Source Files\anno</Filter>
     </ClCompile>
+    <ClCompile Include="testing.cpp">
+      <Filter>Source Files\Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="remote_call_handler_test.cpp">
+      <Filter>Source Files\Testing</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="trampolines.asm">
       <Filter>Source Files</Filter>
+    </MASM>
+    <MASM Include="test_asm.asm">
+      <Filter>Source Files\Testing</Filter>
     </MASM>
   </ItemGroup>
 </Project>

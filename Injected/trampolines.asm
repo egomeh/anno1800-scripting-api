@@ -1,4 +1,6 @@
 PUBLIC game_time_hook_trampoline
+PUBLIC session_tick_hook_trampoline
+PUBLIC get_area_from_tls
 
 push_volatile MACRO
 pushf
