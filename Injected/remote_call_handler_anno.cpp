@@ -96,7 +96,7 @@ bool RemoteCallHandlerAnno::DebugGetFirstAreaStructAddress(uint64_t* address)
 	HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
 		[&](HookData data) -> bool
 		{
-			*address = get_area_from_tls();
+			*address = 123;// get_area_from_tls();
 			return true;
 		});
 

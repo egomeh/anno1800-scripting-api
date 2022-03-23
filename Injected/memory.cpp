@@ -31,8 +31,47 @@ void MemoryReplacement::Emplace(void* address)
     // Copy the current data to our local storage
     memcpy(old_memory.data(), address, memory.size());
 
+    DWORD thisThread = GetCurrentThreadId();
+
+    ForEachThreadInProcess([&](DWORD id, HANDLE thread)
+    {
+        if (id == thisThread)
+            return;
+
+        SuspendThread(thread);
+
+        CONTEXT context = {};
+        context.ContextFlags |= CONTEXT_ALL;
+
+        if (!GetThreadContext(thread, &context))
+            return;
+
+        uint64_t rip = context.Rip;
+        while (rip >= (uint64_t)address && rip <= (((uint64_t)address) + memory.size()))
+        {
+            ResumeThread(thread);
+            Sleep(1);
+            SuspendThread(thread);
+
+            context = {};
+            context.ContextFlags |= CONTEXT_ALL;
+            if (!GetThreadContext(thread, &context))
+                return;
+
+            rip = context.Rip;
+        }
+    });
+
     // Write the data to the location we want
     memcpy(address, memory.data(), memory.size());
+
+    ForEachThreadInProcess([&](DWORD id, HANDLE thread)
+    {
+        if (id == thisThread)
+            return;
+
+        ResumeThread(thread);
+    });
 
     placement_address = address;
 
@@ -50,8 +89,45 @@ void MemoryReplacement::Undo()
     DWORD dummy_protection;
     VirtualProtect(placement_address, 0x1000, PAGE_EXECUTE_READWRITE, &old_protection);
 
+    DWORD thisThread = GetCurrentThreadId();
+
+    ForEachThreadInProcess([&](DWORD id, HANDLE thread)
+    {
+        if (id == thisThread)
+            return;
+
+        SuspendThread(thread);
+
+        CONTEXT context = {};
+        context.ContextFlags |= CONTEXT_ALL;
+
+        if (!GetThreadContext(thread, &context))
+            return;
+
+        uint64_t rip = context.Rip;
+        while (rip >= (uint64_t)placement_address && rip <= (((uint64_t)placement_address) + old_memory.size()))
+        {
+            ResumeThread(thread);
+            Sleep(1);
+            SuspendThread(thread);
+
+            if (!GetThreadContext(thread, &context))
+                return;
+
+            rip = context.Rip;
+        }
+    });
+
     // Write the data to the location we want
     memcpy(placement_address, old_memory.data(), memory.size());
+
+    ForEachThreadInProcess([&](DWORD id, HANDLE thread)
+    {
+        if (id == thisThread)
+            return;
+
+        ResumeThread(thread);
+    });
 
     VirtualProtect(placement_address, 0x1000, old_protection, &dummy_protection);
 

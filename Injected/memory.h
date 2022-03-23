@@ -1,7 +1,8 @@
 #pragma once
 
+#include "global_includes.h"
+#include "tools.h"
 #include <vector>
-#include <windows.h>
 
 class MemoryReplacement
 {
