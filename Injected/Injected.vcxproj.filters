@@ -72,6 +72,9 @@
     <ClInclude Include="remote_call_handler_test.h">
       <Filter>Source Files\Testing</Filter>
     </ClInclude>
+    <ClInclude Include="log.h">
+      <Filter>Source Files\Tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -112,6 +115,9 @@
     </ClCompile>
     <ClCompile Include="remote_call_handler_test.cpp">
       <Filter>Source Files\Testing</Filter>
+    </ClCompile>
+    <ClCompile Include="log.cpp">
+      <Filter>Source Files\Tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

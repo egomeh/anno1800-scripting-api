@@ -8,6 +8,7 @@
 #include "process.h"
 #include "memory.h"
 #include "tools.h"
+#include "log.h"
 
 #include <vector>
 #include <iostream>
@@ -34,6 +35,9 @@ void testing()
 	socketHandler.Initialize();
 
 	HookManager::Get().Initialize();
+	Log::Get().Initialize();
+
+	ANNO_LOG("Here 1");
 
 	MemoryReplacement seesion_tick_hook;
 	seesion_tick_hook.SetMemory
@@ -44,13 +48,15 @@ void testing()
 		0x90, 0x90, 0x90, 0x90                                  // 5 nops
 	});
 
-	for (int i = 0; i < 20; ++i)
+	 for (int i = 0; i < 20; ++i)
 		_beginthread((_beginthread_proc_type)&Servicer, 0, nullptr);
 
 	void* addressofjump = (void*)&test_function_to_hook;
 	uint32_t offset = *(uint32_t*)((uint64_t)addressofjump + 1);
 	uint64_t finalAddress = (uint64_t)((uint64_t)addressofjump + offset + 5);
 	seesion_tick_hook.Emplace((void*)(finalAddress));
+
+	ANNO_LOG("Here 2");
 
 	while (true);
 }

@@ -158,6 +158,7 @@
     <ClInclude Include="global_includes.h" />
     <ClInclude Include="hook.h" />
     <ClInclude Include="injected.h" />
+    <ClInclude Include="log.h" />
     <ClInclude Include="memory.h" />
     <ClInclude Include="remote_call_handler_anno.h" />
     <ClInclude Include="remote_call_handler_base.gen.h" />
@@ -174,6 +175,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="hook.cpp" />
     <ClCompile Include="injected.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="memory.cpp" />
     <ClCompile Include="remote_call_handler_anno.cpp" />
     <ClCompile Include="remote_call_handler_base.gen.cpp" />
@@ -188,7 +190,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
     </MASM>
-	<MASM Include="test_asm.asm">
+    <MASM Include="test_asm.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
     </MASM>
