@@ -4,6 +4,7 @@
 #include "serialization.gen.h"
 #include "testing.h"
 #include "injected.h"
+#include "process.h"
 
 DWORD entry(HMODULE module)
 {
@@ -46,7 +47,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-        CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&entry, (void*)hModule, NULL, NULL);
+        _beginthread((_beginthread_proc_type)&entry, 0xC800000, (void*)hModule);
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
