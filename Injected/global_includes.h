@@ -18,4 +18,5 @@
 #pragma comment (lib, "AdvApi32.lib")
 
 #include <string>
+#include <functional>
 #include <inttypes.h>
