@@ -16,6 +16,7 @@ extern "C"
 {
     void game_time_hook_trampoline();
     void session_tick_hook_trampoline();
+    uint64_t get_area_from_tls();
 }
 
 void injected()
@@ -57,8 +58,8 @@ void injected()
         ({
             0x48, 0xb9,                                             // movabs rcx, [imm64]
             EIGHT_BYTES((uint64_t)game_time_hook_trampoline),       // hook address
-            0xff, 0xd1,                                             // call rcx
-            0x90, 0x90, 0x90, 0x90, 0x90                            // 5 nops
+            0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
+            0xff, 0xd1                                              // call rcx
             });
         timeAndFrameHook.Emplace((void*)(moduleBase + 0x4A36D));
 
@@ -68,8 +69,8 @@ void injected()
         ({
             0x48, 0xb8,                                             // movabs rax, [imm64]
             EIGHT_BYTES((uint64_t)session_tick_hook_trampoline),    // hook address
-            0xff, 0xd0,                                             // call rax
-            0x90, 0x90, 0x90, 0x90                                  // 5 nops
+            0x90, 0x90, 0x90, 0x90,                                 // 5 nops
+            0xff, 0xd0                                              // call rax
             });
         seesion_tick_hook.Emplace((void*)(moduleBase + 0xBF3750));
 
