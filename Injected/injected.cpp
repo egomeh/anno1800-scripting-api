@@ -81,6 +81,8 @@ void injected()
         while (HandleRemoteCall(socketHandler, callHandler));
     }
 
+    CloseHandle(anno_process);
+
     Sleep(500);
     HookManager::Get().ShutDown();
 }

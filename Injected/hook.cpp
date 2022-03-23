@@ -1,5 +1,6 @@
 #include "hook.h"
 #include "tools.h"
+#include "log.h"
 
 HookManager::HookManager()
 {
@@ -20,6 +21,8 @@ void HookManager::ShutDown()
     EnterCriticalSection(&access_hook_requests_cs);
     for (auto it = hook_execution_requests.begin(); it != hook_execution_requests.end();)
     {
+        ANNO_LOG("Removing request at shut-down");
+
         if (it->sync_event != NULL)
             SetEvent(it->sync_event);
 

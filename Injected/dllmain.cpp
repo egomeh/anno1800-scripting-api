@@ -7,7 +7,7 @@
 #include "process.h"
 #include "log.h"
 
-DWORD entry(HMODULE module)
+void entry(HMODULE module)
 {
     Log::Get().Initialize();
 
@@ -40,8 +40,6 @@ DWORD entry(HMODULE module)
     ANNO_LOG("Injected leaveing");
     Log::Get().Shutdown();
     FreeLibraryAndExitThread(module, 0);
-
-    return 0;
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -52,7 +50,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-        _beginthread((_beginthread_proc_type)&entry, 0xC800000, (void*)hModule);
+        CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)&entry, (LPVOID)hModule, NULL, NULL);
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:
     case DLL_PROCESS_DETACH:
