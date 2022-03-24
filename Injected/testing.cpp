@@ -38,8 +38,6 @@ void testing()
 
 	HookManager::Get().Initialize();
 
-	ANNO_LOG("Here 1");
-
 	MemoryReplacement seesion_tick_hook;
 	seesion_tick_hook.SetMemory
 	({
@@ -56,8 +54,6 @@ void testing()
 	uint32_t offset = *(uint32_t*)((uint64_t)addressofjump + 1);
 	uint64_t finalAddress = (uint64_t)((uint64_t)addressofjump + offset + 5);
 	seesion_tick_hook.Emplace((void*)(finalAddress));
-
-	ANNO_LOG("Here 2");
 
 	while (true);
 }

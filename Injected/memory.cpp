@@ -23,7 +23,7 @@ void MemoryReplacement::SetMemory(const std::vector<uint8_t>& bytes)
 
 void MemoryReplacement::Emplace(void* address)
 {
-    ANNO_LOG("Placing memory at location %llx", address);
+    ANNO_LOG("Placing memory at location %llx", (uint64_t)address);
 
     DWORD old_protection;
     DWORD dummy_protection;
@@ -65,8 +65,6 @@ void MemoryReplacement::Emplace(void* address)
 
             rip = context.Rip;
         }
-
-        ANNO_LOG("Thread %llx has rip %llx and is suspended for hooking", (uint64_t)id, rip);
     });
 
     // Write the data to the location we want
@@ -78,8 +76,6 @@ void MemoryReplacement::Emplace(void* address)
             return;
 
         ResumeThread(thread);
-
-        ANNO_LOG("Thread %llx resumed", (uint64_t)id);
     });
 
     placement_address = address;
