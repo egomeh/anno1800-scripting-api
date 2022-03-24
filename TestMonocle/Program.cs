@@ -5,7 +5,7 @@ class TestRunner
 {
     public static void Run()
     {
-        Telegraph telegraph = new Telegraph(TelegramMode.Testing);
+        Telegraph telegraph = new Telegraph();
 
         while (true)
         {

@@ -739,9 +739,9 @@ class CodeGenerator
         CSRemoteCallCode += "        Task<Socket> acceptedSocket = listener.AcceptAsync();\n\n";
 
         CSRemoteCallCode += "        if (mode == TelegramMode.Testing)\n";
-        CSRemoteCallCode += "            Windows.LoadLibrary(\"../x64/Debug/Injected.dll\");\n";
+        CSRemoteCallCode += "            Windows.LoadLibrary(\"../x64/Release/Injected.dll\");\n";
         CSRemoteCallCode += "        else\n";
-        CSRemoteCallCode += "            Injection.InjectDLL(\"anno1800\", Path.GetFullPath(@\"../x64/Debug/Injected.dll\"));\n\n";
+        CSRemoteCallCode += "            Injection.InjectDLL(\"anno1800\", Path.GetFullPath(@\"../x64/Release/Injected.dll\"));\n\n";
 
         CSRemoteCallCode += "        acceptedSocket.Wait();\n";
         CSRemoteCallCode += "        m_Socket = acceptedSocket.Result;\n";

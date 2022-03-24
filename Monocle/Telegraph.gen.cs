@@ -36,9 +36,9 @@ public class Telegraph
         Task<Socket> acceptedSocket = listener.AcceptAsync();
 
         if (mode == TelegramMode.Testing)
-            Windows.LoadLibrary("../x64/Debug/Injected.dll");
+            Windows.LoadLibrary("../x64/Release/Injected.dll");
         else
-            Injection.InjectDLL("anno1800", Path.GetFullPath(@"../x64/Debug/Injected.dll"));
+            Injection.InjectDLL("anno1800", Path.GetFullPath(@"../x64/Release/Injected.dll"));
 
         acceptedSocket.Wait();
         m_Socket = acceptedSocket.Result;
