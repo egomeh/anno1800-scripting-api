@@ -48,3 +48,31 @@ bool GetIslandName(uint64_t island_address, std::string& name)
 	uint64_t name_address = island_address + 0x118;
 	return ReadAnnoString(name_address, name);
 }
+
+bool ExtractIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* islands)
+{
+	uint64_t current_address = address;
+
+	while (true)
+	{
+		uint32_t island_id = *(uint32_t*)(current_address + 0x10) & 0xffff;
+		uint64_t current_island_address = current_address + 0x18;
+
+		if (DoesIslandBelongToPlayer(current_island_address))
+		{
+			IslandInfo info;
+			info.debug_address = current_island_address;
+			info.island_id = island_id;
+
+			if (GetIslandName(current_island_address, info.name))
+				islands->push_back(info);
+		}
+
+		current_address = *(uint64_t*)current_address;
+
+		if (current_address == address)
+			break;
+	}
+
+	return true;
+}

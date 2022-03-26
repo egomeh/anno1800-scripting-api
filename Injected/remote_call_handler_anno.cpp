@@ -65,30 +65,7 @@ bool RemoteCallHandlerAnno::DebugGetIslandResources(const uint64_t& address, std
 
 bool RemoteCallHandlerAnno::DebugGetIslandChainFromAddress(const uint64_t& address, std::vector<IslandInfo>* islands)
 {
-	uint64_t current_address = address;
-
-	while (true)
-	{
-		uint32_t island_id = *(uint32_t*)(current_address + 0x10) & 0xffff;
-		uint64_t current_island_address = current_address + 0x18;
-
-		if (DoesIslandBelongToPlayer(current_island_address))
-		{
-			IslandInfo info;
-			info.debug_address = current_island_address;
-			info.island_id = island_id;
-			
-			if (GetIslandName(current_island_address, info.name))
-				islands->push_back(info);
-		}
-
-		current_address = *(uint64_t*)current_address;
-
-		if (current_address == address)
-			break;
-	}
-
-	return true;
+	return ExtractIslandChainFromAddress(address, islands);
 }
 
 bool RemoteCallHandlerAnno::DebugGetFirstAreaStructAddress(uint64_t* address)
@@ -96,7 +73,7 @@ bool RemoteCallHandlerAnno::DebugGetFirstAreaStructAddress(uint64_t* address)
 	HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
 		[&](HookData data) -> bool
 		{
-			*address = 123;// get_area_from_tls();
+			*address = get_area_from_tls();
 			return true;
 		});
 
