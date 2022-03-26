@@ -99,7 +99,10 @@ bool RemoteCallHandlerAnno::DebugGetAreaWithCode(const uint32_t& areaCode, uint6
 
 			if (current_area_code == areaCode)
 			{
-				*address = temporary_address;
+				uint64_t intermediate_struct = *(uint64_t*)(temporary_address + 0x200);
+				uint64_t list_pointer = *(uint64_t*)(intermediate_struct + 0x80);
+				*address = list_pointer;
+
 				return true;
 			}
 
@@ -108,3 +111,4 @@ bool RemoteCallHandlerAnno::DebugGetAreaWithCode(const uint32_t& areaCode, uint6
 
 	return true;
 }
+	
