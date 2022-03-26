@@ -14,4 +14,5 @@ public:
 	virtual bool DebugGetIslandResources(const uint64_t& address, std::vector<IslandResource>* resources) override;
 	virtual bool DebugGetIslandChainFromAddress(const uint64_t& address, std::vector<IslandInfo>* islands) override;
 	virtual bool DebugGetFirstAreaStructAddress(uint64_t* address) override;
+	virtual bool DebugGetAreaWithCode(const uint32_t& areaCode, uint64_t* address) override;
 };

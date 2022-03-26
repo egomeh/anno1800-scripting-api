@@ -10,4 +10,7 @@ bool DoesIslandBelongToPlayer(uint64_t address);
 
 bool GetIslandName(uint64_t island_address, std::string& name);
 
+bool GetAreaCode(uint64_t area_address, uint16_t* area_code);
+
 bool ExtractIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* islands);
+

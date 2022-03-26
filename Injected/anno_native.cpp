@@ -76,3 +76,14 @@ bool ExtractIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* is
 
 	return true;
 }
+
+bool GetAreaCode(uint64_t area_address, uint16_t* area_code)
+{
+	if (!area_address)
+		return false;
+
+	*area_code = *(uint16_t*)(area_address + 0x8);
+
+	return true;
+}
+

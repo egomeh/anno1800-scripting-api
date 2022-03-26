@@ -79,3 +79,32 @@ bool RemoteCallHandlerAnno::DebugGetFirstAreaStructAddress(uint64_t* address)
 
 	return true;
 }
+
+bool RemoteCallHandlerAnno::DebugGetAreaWithCode(const uint32_t& areaCode, uint64_t* address)
+{
+	uint64_t temporary_address = 0;
+	int attempts = 0;
+	HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
+		[&](HookData data) -> bool
+		{
+			// Don't keep going forever, if you pass a bad code,
+			// we want to return eventually
+			if (++attempts > 100)
+				return true;
+
+			temporary_address = get_area_from_tls();
+
+			uint16_t current_area_code = 0;
+			GetAreaCode(temporary_address, &current_area_code);
+
+			if (current_area_code == areaCode)
+			{
+				*address = temporary_address;
+				return true;
+			}
+
+			return false;
+		});
+
+	return true;
+}
