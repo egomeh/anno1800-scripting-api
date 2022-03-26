@@ -10,7 +10,7 @@ class TestRunner
         while (true)
         {
             ulong address;
-            telegraph.DebugGetFirstAreaStructAddress(out address);
+            telegraph.DebugGetAreaWithCode(0xBF39, out address);
         }
     }
 }

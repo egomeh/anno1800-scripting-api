@@ -9,3 +9,5 @@ bool ExtractResourceNodeChianInfo(uint64_t address, std::vector<IslandResource>*
 bool DoesIslandBelongToPlayer(uint64_t address);
 
 bool GetIslandName(uint64_t island_address, std::string& name);
+
+bool GetAreaCode(uint64_t area_address, uint16_t* area_code);

@@ -50,6 +50,12 @@
         - out:
             - address: uint64
 
+    - DebugGetAreaWithCode:
+        - in:
+            - code: uint32
+        - out:
+            - address: uint64
+
 - types:
 
     - IslandResource:

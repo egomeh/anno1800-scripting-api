@@ -48,3 +48,12 @@ bool GetIslandName(uint64_t island_address, std::string& name)
 	uint64_t name_address = island_address + 0x118;
 	return ReadAnnoString(name_address, name);
 }
+
+bool GetAreaCode(uint64_t area_address, uint16_t* area_code)
+{
+	if (!area_address)
+		return false;
+
+	*area_code = *(uint16_t*)(area_address + 0x8);
+	return true;
+}
