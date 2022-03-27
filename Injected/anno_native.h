@@ -14,3 +14,5 @@ bool GetAreaCode(uint64_t area_address, uint16_t* area_code);
 
 bool ExtractIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* islands);
 
+bool GetIslandListFromAreaAddress(uint64_t address, uint64_t* list_pointer);
+

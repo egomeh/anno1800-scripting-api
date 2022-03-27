@@ -19,6 +19,7 @@ public:
     virtual bool DebugGetIslandChainFromAddress(const uint64_t& address, std::vector<IslandInfo>* islands) {return true;};
     virtual bool DebugGetFirstAreaStructAddress(uint64_t* address) {return true;};
     virtual bool DebugGetAreaWithCode(const uint32_t& code, uint64_t* address) {return true;};
+    virtual bool GetPlayerIslandsInWorld(const uint32_t& area, std::vector<IslandInfo>* islands) {return true;};
 };
 
 bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callHandler);

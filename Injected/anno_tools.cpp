@@ -9,24 +9,6 @@ bool ReadAnnoString(uint64_t address, std::string& result)
         return false; 
     }
 
-    if (!IsReadable((void*)(address + 0x18), 8))
-    {
-        result = "[Could not read longString]";
-        return false;
-    }
-
-    if (!IsReadable((void*)(address + 0x10), 8))
-    {
-        result = "[Could not read length]";
-        return false;
-    }
-
-    if (!IsReadable((void*)(address), 16))
-    {
-        result = "[Could not read string address]";
-        return false;
-    }
-
     uint64_t longString = *(uint64_t*)(address + 0x18);
     uint64_t length = *(uint64_t*)(address + 0x10);
 
@@ -44,12 +26,6 @@ bool ReadAnnoString(uint64_t address, std::string& result)
 
     if (isLong)
         stringLocation = (wchar_t*)*(uint64_t*)(address);
-
-    if (!IsReadable((void*)(stringLocation), length))
-    {
-        result = "[Could not read pointer to string]";
-        return false;
-    }
 
     wmemset(buffer, 0, _countof(buffer));
     wmemcpy(buffer, stringLocation, length);

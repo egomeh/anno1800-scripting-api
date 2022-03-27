@@ -1,5 +1,6 @@
 #include "anno_native.h"
 #include "anno_tools.h"
+#include "log.h"
 
 bool ExtractResourceNodeInfo(uint64_t address, IslandResource* resourceInfo)
 {
@@ -52,9 +53,14 @@ bool GetIslandName(uint64_t island_address, std::string& name)
 bool ExtractIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* islands)
 {
 	uint64_t current_address = address;
+	int attempts = 0;
 
 	while (true)
 	{
+		// Don't go on forever if an assumption is wrong
+		if (++attempts > 512)
+			break;
+
 		uint32_t island_id = *(uint32_t*)(current_address + 0x10) & 0xffff;
 		uint64_t current_island_address = current_address + 0x18;
 
@@ -87,3 +93,10 @@ bool GetAreaCode(uint64_t area_address, uint16_t* area_code)
 	return true;
 }
 
+bool GetIslandListFromAreaAddress(uint64_t address, uint64_t* list_pointer)
+{
+	uint64_t intermediate_struct = *(uint64_t*)(address + 0x200);
+	*list_pointer = *(uint64_t*)(intermediate_struct + 0x80);
+
+	return true;
+}

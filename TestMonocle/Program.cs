@@ -7,10 +7,8 @@ class TestRunner
     {
         Telegraph telegraph = new Telegraph();
 
-        while (true)
-        {
-            ulong address;
-            telegraph.DebugGetAreaWithCode(0xBF37, out address);
-        }
+        List<IslandInfo> islands;
+        // ulong address;
+        telegraph.GetPlayerIslandsInWorld(0xBF37, out islands);
     }
 }

@@ -56,6 +56,12 @@
         - out:
             - address: uint64
 
+    - GetPlayerIslandsInWorld:
+        - in:
+            - area: uint32
+        - out:
+            - islands: list(IslandInfo)
+
 - types:
 
     - IslandResource:
