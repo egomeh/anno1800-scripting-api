@@ -64,7 +64,7 @@ bool ExtractIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* is
 		uint32_t island_id = *(uint32_t*)(current_address + 0x10) & 0xffff;
 		uint64_t current_island_address = current_address + 0x18;
 
-		if (DoesIslandBelongToPlayer(current_island_address))
+		if (DoesIslandBelongToPlayer(current_island_address) && island_id)
 		{
 			IslandInfo info;
 			info.debug_address = current_island_address;
