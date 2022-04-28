@@ -9,6 +9,7 @@ enum class HookedFunction
     Any = 0,
     GameTimeHook = 1,
     SessionTickHook = 2,
+    ConsumptionHook = 3,
 };
 
 struct HookData
@@ -54,6 +55,8 @@ private:
     CRITICAL_SECTION access_hook_requests_cs;
     std::list<HookExecutionRequest> hook_execution_requests;
 };
+
+uint64_t AnnoFunctionOffset(uint32_t binary_crc, HookedFunction function);
 
 // To have an interface for assembly
 extern "C"

@@ -19,11 +19,13 @@
   <ItemGroup>
     <None Remove="data\functions.yaml" />
     <None Remove="data\functions2.yaml" />
+    <None Remove="data\functions_debug.yaml" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="data\functions.yaml"/>
+    <EmbeddedResource Include="data\functions.yaml" />
     <EmbeddedResource Include="data\functions2.yaml" />
+    <EmbeddedResource Include="data\functions_debug.yaml" />
   </ItemGroup>
 
   <ItemGroup>

@@ -110,6 +110,36 @@ bool HookManager::ExecuteInHookAsync(HookedFunction hook_to_execute, std::functi
     return ExecuteInHookBase(hook_to_execute, function, true);
 }
 
+uint64_t AnnoFunctionOffset(uint32_t binary_crc, HookedFunction function)
+{
+    if (binary_crc == 0)
+    {
+        return 0;
+    }
+    else if (binary_crc == 0x9839b541) // Steam
+    {
+        switch (function)
+        {
+        case HookedFunction::Any:                       return 0;
+        case HookedFunction::GameTimeHook:              return 0x08A0BD;
+        case HookedFunction::SessionTickHook:           return 0xBE5FF0;
+        case HookedFunction::ConsumptionHook:           return 0xAD2F5D;
+        }
+    }
+    else if (binary_crc == 0x3F16D31F) // Epic store
+    {
+        switch (function)
+        {
+        case HookedFunction::Any:                       return 0;
+        case HookedFunction::GameTimeHook:              return 0x08A0BD;
+        case HookedFunction::SessionTickHook:           return 0xBE48B0;
+        case HookedFunction::ConsumptionHook:           return 0xAD181D;
+        }
+    }
+
+    return 0;
+}
+
 void HookManagerServiceHook(HookedFunction current_hook, HookData hook_data)
 {
     HookManager::Get().ServiceHook(current_hook, hook_data);

@@ -10,65 +10,59 @@
             - time: uint64
             - frame: uint64
 
-    - DebugGetResourceInfoFromAddress:
-        - in:
-            - address: uint64
-        - out:
-            - resource: IslandResource
-
-    - DebugGetResourceChainInfoFromAddress:
-        - in:
-            - address: uint64
-        - out:
-            - resource: list(IslandResource)
-
-    - DebugGetIslandNameFromAddress:
-        - in:
-            - address: uint64
-        - out:
-            - name: string
-
-    - DebugReadStringFromAddress:
-        - in:
-            - address: uint64
-        - out:
-            - name: string
-
-    - DebugGetIslandResources:
-        - in:
-            - address: uint64
-        - out:
-            - resources: list(IslandResource)
-
-    - DebugGetIslandChainFromAddress:
-        - in:
-            - address: uint64
-        - out:
-            - islands: list(IslandInfo)
-
-    - DebugGetFirstAreaStructAddress:
-        - out:
-            - address: uint64
-
-    - DebugGetAreaWithCode:
-        - in:
-            - code: uint32
-        - out:
-            - address: uint64
-
     - GetPlayerIslandsInWorld:
         - in:
             - area: uint32
         - out:
             - islands: list(IslandInfo)
 
+    - GetAllAreas:
+        - out:
+            - areas: list(uint32)
+
+    - GetIslandResources:
+        - in:
+            - areaCode: uint32
+            - islandId: uint32
+        - out:
+            - resources: list(IslandResource)
+
+    - GetIslandResidentialConsumption:
+        - in:
+            - areaCode: uint32
+            - islandId: uint32
+        - out:
+            - resources: list(ResourceConsumption)
+
+    - GetIslandIndustrialConversion:
+        - in:
+            - areaId: uint32
+            - islandId: uint32
+        - out:
+            - resources: list(ResourceConsumption)
+
+    - MinMaxResourcesOnIsland:
+        - in:
+            - areaId: uint32
+            - islandId: uint32
+            - lowerBound: uint32
+            - upperBound: uint32
+
 - types:
 
     - IslandResource:
         - fields:
             - type_id: int32
+            - name: string
             - amount: int32
             - capacity: int32
+            - amount_ptr: uint64
+
+    - ResourceConsumption:
+        - fields:
+            - type_id: int32
+            - name: string
+            - rate: float
 
     - IslandInfo:
         - fields:

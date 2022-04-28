@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
+using System.Reflection;
 
 
 public enum TelegramMode
@@ -35,10 +36,29 @@ public class Telegraph
 
         Task<Socket> acceptedSocket = listener.AcceptAsync();
 
+        var assembly = Assembly.GetExecutingAssembly();
+        string temporaryPath = Path.GetTempPath();
+        string targetDllPath = Path.Combine(temporaryPath, "Injected.dll");
+
+        using (Stream inStream = assembly.GetManifestResourceStream("Monocle.Injected.dll"))
+        using (FileStream outStream = File.OpenWrite(targetDllPath))
+        {
+            BinaryReader reader = new BinaryReader(inStream);
+            BinaryWriter writer = new BinaryWriter(outStream);
+
+            byte[] buffer = new Byte[1024];
+            int bytesRead;
+
+            while ((bytesRead = inStream.Read(buffer, 0, 1024)) > 0)
+            {
+                outStream.Write(buffer, 0, bytesRead);
+            }
+        }
+
         if (mode == TelegramMode.Testing)
-            Windows.LoadLibrary("../x64/Release/Injected.dll");
+            Windows.LoadLibrary(@"../x64/Release/Injected.dll");
         else
-            Injection.InjectDLL("anno1800", Path.GetFullPath(@"../x64/Release/Injected.dll"));
+            Injection.InjectDLL("anno1800", Path.GetFullPath(targetDllPath));
 
         acceptedSocket.Wait();
         m_Socket = acceptedSocket.Result;
@@ -146,12 +166,182 @@ public class Telegraph
         return true;
     }
 
+    public bool GetPlayerIslandsInWorld(uint area, out List<IslandInfo> islands)
+    {
+        islands = new List<IslandInfo>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 3;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(area, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out islands, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool GetAllAreas(out List<uint> areas)
+    {
+        areas = new List<uint>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 4;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out areas, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool GetIslandResources(uint areaCode, uint islandId, out List<IslandResource> resources)
+    {
+        resources = new List<IslandResource>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 5;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(areaCode, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(islandId, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out resources, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool GetIslandResidentialConsumption(uint areaCode, uint islandId, out List<ResourceConsumption> resources)
+    {
+        resources = new List<ResourceConsumption>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 6;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(areaCode, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(islandId, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out resources, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool GetIslandIndustrialConversion(uint areaId, uint islandId, out List<ResourceConsumption> resources)
+    {
+        resources = new List<ResourceConsumption>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 7;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(areaId, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(islandId, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out resources, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool MinMaxResourcesOnIsland(uint areaId, uint islandId, uint lowerBound, uint upperBound)
+    {
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 8;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(areaId, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(islandId, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(lowerBound, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(upperBound, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        return true;
+    }
+
     public bool DebugGetResourceInfoFromAddress(ulong address, out IslandResource resource)
     {
         resource = default;
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 3;
+        ulong functionIndex = 9;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -178,7 +368,7 @@ public class Telegraph
         resource = new List<IslandResource>();
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 4;
+        ulong functionIndex = 10;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -205,7 +395,7 @@ public class Telegraph
         name = "";
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 5;
+        ulong functionIndex = 11;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -232,7 +422,7 @@ public class Telegraph
         name = "";
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 6;
+        ulong functionIndex = 12;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -259,7 +449,7 @@ public class Telegraph
         resources = new List<IslandResource>();
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 7;
+        ulong functionIndex = 13;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -286,7 +476,7 @@ public class Telegraph
         islands = new List<IslandInfo>();
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 8;
+        ulong functionIndex = 14;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -313,7 +503,7 @@ public class Telegraph
         address = default;
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 9;
+        ulong functionIndex = 15;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -337,7 +527,7 @@ public class Telegraph
         address = default;
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 10;
+        ulong functionIndex = 16;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -359,17 +549,17 @@ public class Telegraph
         return true;
     }
 
-    public bool GetPlayerIslandsInWorld(uint area, out List<IslandInfo> islands)
+    public bool DebugGetNameFromGuid(uint guid, out string name)
     {
-        islands = new List<IslandInfo>();
+        name = "";
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 11;
+        ulong functionIndex = 17;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
 
-        if (!Serializer.Serialize(area, outgoingData))
+        if (!Serializer.Serialize(guid, outgoingData))
             return false;
 
         List<byte> response;
@@ -380,7 +570,120 @@ public class Telegraph
         byte[] inData = response.ToArray();
 
         int offset = 0;
-        if (!Serializer.Deserialize(out islands, inData, offset, out offset))
+        if (!Serializer.Deserialize(out name, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool DebugGetGuidFromName(string name, out uint guid)
+    {
+        guid = default;
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 18;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(name, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out guid, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool DebugVirtualGetComponentFromAddress(ulong address, ulong componentId, out ulong componentAddress)
+    {
+        componentAddress = default;
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 19;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(address, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(componentId, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out componentAddress, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool DebugGetIslandBuildingAddresses(uint areaId, uint islandId, out List<ulong> addresses)
+    {
+        addresses = new List<ulong>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 20;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(areaId, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(islandId, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out addresses, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool DebugTryEnqueueShipForTrade(uint areaId, uint islandId, ulong tradeComponent)
+    {
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 21;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(areaId, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(islandId, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(tradeComponent, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
             return false;
 
         return true;

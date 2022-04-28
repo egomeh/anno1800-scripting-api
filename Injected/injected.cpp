@@ -17,10 +17,12 @@ extern "C"
 {
     void game_time_hook_trampoline();
     void session_tick_hook_trampoline();
+    void consumption_hook_trampoline();
+    void building_hook_trampoline();
     uint64_t get_area_from_tls();
 }
 
-void injected()
+void injected(uint32_t binary_crc)
 {
     ANNO_LOG("Running injected code in Anno 1800");
 
@@ -64,18 +66,32 @@ void injected()
             0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
             0xff, 0xd1                                              // call rcx
             });
-        timeAndFrameHook.Emplace((void*)(moduleBase + 0x4A36D));
+        uint64_t time_and_frame_offset = AnnoFunctionOffset(binary_crc, HookedFunction::GameTimeHook);
+        timeAndFrameHook.Emplace((void*)(moduleBase + time_and_frame_offset));
 
-
-        MemoryReplacement seesion_tick_hook;
-        seesion_tick_hook.SetMemory
+        MemoryReplacement session_tick_hook;
+        session_tick_hook.SetMemory
         ({
             0x48, 0xb8,                                             // movabs rax, [imm64]
             EIGHT_BYTES((uint64_t)session_tick_hook_trampoline),    // hook address
-            0x90, 0x90, 0x90, 0x90,                                 // 5 nops
+            0x90, 0x90, 0x90, 0x90,                                 // 4 nops
             0xff, 0xd0                                              // call rax
             });
-        seesion_tick_hook.Emplace((void*)(moduleBase + 0xBF3750));
+        uint64_t session_tick_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::SessionTickHook);
+        session_tick_hook.Emplace((void*)(moduleBase + session_tick_hook_offset));
+
+        MemoryReplacement consumption_hook;
+        consumption_hook.SetMemory
+        ({
+            0x48, 0xbb,                                             // movabs rbx, [imm64]
+            EIGHT_BYTES((uint64_t)consumption_hook_trampoline),     // hook address
+            0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
+            0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
+            0x90, 0x90, 0x90, 0x90,                                 // 4 nops
+            0xff, 0xd3                                              // call rbx
+            });
+        uint64_t consumption_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::ConsumptionHook);
+        consumption_hook.Emplace((void*)(moduleBase + consumption_hook_offset));
 
         // Handle remote calls until we fail
         while (HandleRemoteCall(socketHandler, callHandler));

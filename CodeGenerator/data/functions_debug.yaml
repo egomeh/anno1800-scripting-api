@@ -1,0 +1,81 @@
+
+- functions:
+
+    - DebugGetResourceInfoFromAddress:
+        - in:
+            - address: uint64
+        - out:
+            - resource: IslandResource
+
+    - DebugGetResourceChainInfoFromAddress:
+        - in:
+            - address: uint64
+        - out:
+            - resource: list(IslandResource)
+
+    - DebugGetIslandNameFromAddress:
+        - in:
+            - address: uint64
+        - out:
+            - name: string
+
+    - DebugReadStringFromAddress:
+        - in:
+            - address: uint64
+        - out:
+            - name: string
+
+    - DebugGetIslandResources:
+        - in:
+            - address: uint64
+        - out:
+            - resources: list(IslandResource)
+
+    - DebugGetIslandChainFromAddress:
+        - in:
+            - address: uint64
+        - out:
+            - islands: list(IslandInfo)
+
+    - DebugGetFirstAreaStructAddress:
+        - out:
+            - address: uint64
+
+    - DebugGetAreaWithCode:
+        - in:
+            - code: uint32
+        - out:
+            - address: uint64
+
+    - DebugGetNameFromGuid:
+        - in:
+            - guid: uint32
+        - out:
+            - name: string
+
+    - DebugGetGuidFromName:
+        - in:
+            - name: string
+        - out:
+            - guid: uint32
+
+    - DebugVirtualGetComponentFromAddress:
+        - in:
+            - address: uint64
+            - componentId: uint64
+        - out:
+            - componentAddress: uint64
+
+    - DebugGetIslandBuildingAddresses:
+        - in:
+            - areaId: uint32
+            - islandId: uint32
+        - out:
+            - addresses: list(uint64)
+
+    - DebugTryEnqueueShipForTrade:
+        - in:
+            - areaId: uint32
+            - islandId: uint32
+            - tradeComponent: uint64
+

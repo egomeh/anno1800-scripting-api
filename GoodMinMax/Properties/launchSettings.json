@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "GoodMinMax": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)",
+      "nativeDebugging": true
+    }
+  }
+}

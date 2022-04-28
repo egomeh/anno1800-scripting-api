@@ -707,6 +707,7 @@ class CodeGenerator
         CSRemoteCallCode += "using System.Net;\n";
         CSRemoteCallCode += "using System.Runtime.Serialization;\n";
         CSRemoteCallCode += "using System.Runtime.InteropServices;\n";
+        CSRemoteCallCode += "using System.Reflection;\n";
         CSRemoteCallCode += "\n";
         CSRemoteCallCode += "\n";
         CSRemoteCallCode += "public enum TelegramMode\n";
@@ -738,10 +739,29 @@ class CodeGenerator
 
         CSRemoteCallCode += "        Task<Socket> acceptedSocket = listener.AcceptAsync();\n\n";
 
+        CSRemoteCallCode += "        var assembly = Assembly.GetExecutingAssembly();\n";
+        CSRemoteCallCode += "        string temporaryPath = Path.GetTempPath();\n";
+        CSRemoteCallCode += "        string targetDllPath = Path.Combine(temporaryPath, \"Injected.dll\");\n\n";
+
+        CSRemoteCallCode += "        using (Stream inStream = assembly.GetManifestResourceStream(\"Monocle.Injected.dll\"))\n";
+        CSRemoteCallCode += "        using (FileStream outStream = File.OpenWrite(targetDllPath))\n";
+        CSRemoteCallCode += "        {\n";
+        CSRemoteCallCode += "            BinaryReader reader = new BinaryReader(inStream);\n";
+        CSRemoteCallCode += "            BinaryWriter writer = new BinaryWriter(outStream);\n\n";
+
+        CSRemoteCallCode += "            byte[] buffer = new Byte[1024];\n";
+        CSRemoteCallCode += "            int bytesRead;\n\n";
+
+        CSRemoteCallCode += "            while ((bytesRead = inStream.Read(buffer, 0, 1024)) > 0)\n";
+        CSRemoteCallCode += "            {\n";
+        CSRemoteCallCode += "                outStream.Write(buffer, 0, bytesRead);\n";
+        CSRemoteCallCode += "            }\n";
+        CSRemoteCallCode += "        }\n\n";
+
         CSRemoteCallCode += "        if (mode == TelegramMode.Testing)\n";
-        CSRemoteCallCode += "            Windows.LoadLibrary(\"../x64/Release/Injected.dll\");\n";
+        CSRemoteCallCode += "            Windows.LoadLibrary(@\"../x64/Release/Injected.dll\");\n";
         CSRemoteCallCode += "        else\n";
-        CSRemoteCallCode += "            Injection.InjectDLL(\"anno1800\", Path.GetFullPath(@\"../x64/Release/Injected.dll\"));\n\n";
+        CSRemoteCallCode += "            Injection.InjectDLL(\"anno1800\", Path.GetFullPath(targetDllPath));\n\n";
 
         CSRemoteCallCode += "        acceptedSocket.Wait();\n";
         CSRemoteCallCode += "        m_Socket = acceptedSocket.Result;\n";

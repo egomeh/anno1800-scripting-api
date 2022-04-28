@@ -1,6 +1,11 @@
 PUBLIC game_time_hook_trampoline
 PUBLIC session_tick_hook_trampoline
+PUBLIC consumption_hook_trampoline
+
+
 PUBLIC get_area_from_tls
+PUBLIC virtual_get_component
+PUBLIC try_enqueue_ship_for_trade;
 
 push_volatile MACRO
 pushf
@@ -109,6 +114,36 @@ ret
 
 session_tick_hook_trampoline ENDP
 
+consumption_hook_trampoline PROC
+
+pop rbx
+
+; original code
+movaps [rax-048h],xmm6
+movaps [rax-058h],xmm7
+movaps [rax-068h],xmm8
+movaps [rax-078h],xmm9
+movaps [rax-000000088h],xmm10
+
+push rbx
+
+push_volatile
+
+fill_hook_data
+
+mov rcx, 3 ; service hook #3 consumption hook
+sub rsp, 020h
+call HookManagerServiceHook
+add rsp, 020h
+
+clean_up_hook_data
+
+pop_volatile
+
+ret
+
+consumption_hook_trampoline ENDP
+
 get_area_from_tls PROC
 ; Copied directly from some anno
 ; code that seems to extract the area object from
@@ -116,7 +151,7 @@ get_area_from_tls PROC
 push rbx
 push rcx
 mov rax, gs:[58h]
-mov ebx, 1530h
+mov rbx, 1558h
 mov rcx, [rax]
 mov rbx, [rbx + rcx]
 mov rax, rbx
@@ -125,4 +160,23 @@ pop rbx
 ret
 get_area_from_tls ENDP
 
+virtual_get_component PROC
+sub    rsp, 020h
+mov    rax, QWORD PTR [rcx]
+call   QWORD PTR [rax + 018h]
+nop
+add    rsp, 20h
+ret
+virtual_get_component ENDP
+
+try_enqueue_ship_for_trade PROC
+sub    rsp, 020h
+nop
+
+
+add    rsp, 20h
+ret
+try_enqueue_ship_for_trade ENDP
+
 END
+

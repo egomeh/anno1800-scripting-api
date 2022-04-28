@@ -21,3 +21,8 @@ Monocle/obj
 CommsCS/obj
 CodeGenerator/obj
 TestMonocle/obj
+ResourceExporter/obj/publish/win-x64
+ResourceExporter/obj
+ResourceExporter/Properties/PublishProfiles
+ProductionViewer/obj
+GoodMinMax/obj

@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "TestMonocle": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)",
+      "nativeDebugging": true
+    }
+  }
+}

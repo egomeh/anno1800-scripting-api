@@ -6,13 +6,32 @@ public struct IslandResource
     public IslandResource()
     {
         type_id = default;
+        name = "";
         amount = default;
         capacity = default;
+        amount_ptr = default;
     }
 
     public int type_id;
+    public string name;
     public int amount;
     public int capacity;
+    public ulong amount_ptr;
+}
+
+
+public struct ResourceConsumption
+{
+    public ResourceConsumption()
+    {
+        type_id = default;
+        name = "";
+        rate = default;
+    }
+
+    public int type_id;
+    public string name;
+    public float rate;
 }
 
 

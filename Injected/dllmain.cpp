@@ -1,11 +1,14 @@
 #include "global_includes.h"
 #include <string>
+#include <fstream>
 #include "structs.gen.h"
 #include "serialization.gen.h"
 #include "testing.h"
 #include "injected.h"
 #include "process.h"
 #include "log.h"
+#include "hook.h"
+#include "tools.h"
 
 void entry(HMODULE module)
 {
@@ -29,13 +32,28 @@ void entry(HMODULE module)
         }
     }
 
+    // Get the file's crc checksum
+    uint32_t binary_crc = 0;
+    {
+        std::ifstream file_in(filename, std::ifstream::binary);
+        std::vector<char> buffer(1024, 0);
+        while (!file_in.eof())
+        {
+            file_in.read(buffer.data(), 1024);
+            std::streamsize bytes_read = file_in.gcount();
+            binary_crc = crc_update(binary_crc, buffer.data(), bytes_read);
+        }
+    }
+
+    ANNO_LOG("Injected into binary with crc %x", binary_crc);
+
     std::string mainModuleName = std::string(&filename[lastSeperator + 1], exeStart - lastSeperator - 1);
 
     // If we're loaded in the test program, just call the test code
     if (mainModuleName.compare("TestMonocle") == 0)
         testing();
     else
-        injected();
+        injected(binary_crc);
 
     ANNO_LOG("Injected leaveing");
     Log::Get().Shutdown();

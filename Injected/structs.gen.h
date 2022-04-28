@@ -6,8 +6,18 @@
 struct IslandResource
 {
     int32_t type_id;
+    std::string name;
     int32_t amount;
     int32_t capacity;
+    uint64_t amount_ptr;
+};
+
+
+struct ResourceConsumption
+{
+    int32_t type_id;
+    std::string name;
+    float rate;
 };
 
 
