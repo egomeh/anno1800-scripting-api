@@ -126,14 +126,14 @@ uint64_t AnnoFunctionOffset(uint32_t binary_crc, HookedFunction function)
         case HookedFunction::ConsumptionHook:           return 0xAD2F5D;
         }
     }
-    else if (binary_crc == 0x3F16D31F) // Epic store
+    else if (binary_crc == 0x986B7BBE) // Epic store
     {
         switch (function)
         {
         case HookedFunction::Any:                       return 0;
-        case HookedFunction::GameTimeHook:              return 0x08A0BD;
-        case HookedFunction::SessionTickHook:           return 0xBE48B0;
-        case HookedFunction::ConsumptionHook:           return 0xAD181D;
+        case HookedFunction::GameTimeHook:              return 0x08A0CD;
+        case HookedFunction::SessionTickHook:           return 0xBE4E00;
+        case HookedFunction::ConsumptionHook:           return 0xAD1BDD;
         }
     }
 

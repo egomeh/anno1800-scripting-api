@@ -7,9 +7,9 @@ class TestRunner
     {
         Telegraph telegraph = new Telegraph();
         List<uint> areas;
-        //telegraph.GetAllAreas(out areas);
+        telegraph.GetAllAreas(out areas);
 
-        List<IslandInfo> islands;
+        //List<IslandInfo> islands;
         //telegraph.GetPlayerIslandsInWorld(areas[1], out islands);
 
         // telegraph.DebugTryEnqueueShipForTrade(areas[0], 0x2482, 0x0000015C18E578A8, 0x0000015C18E578A8);
