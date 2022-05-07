@@ -115,7 +115,7 @@ bool GetAreaCode(uint64_t area_address, uint16_t* area_code)
 bool GetIslandListFromAreaAddress(uint64_t address, uint64_t* list_pointer)
 {
 	uint64_t intermediate_struct = *(uint64_t*)(address + 0x200);
-	*list_pointer = *(uint64_t*)(intermediate_struct + 0x80);
+	*list_pointer = *(uint64_t*)(intermediate_struct + 0x78);
 
 	return true;
 }
