@@ -86,7 +86,10 @@ bool ExtractIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* is
 			bool CouldGetName = GetIslandName(current_island_address, info.name);
 
 			if (CouldGetName && info.name.size() > 0)
+			{
 				islands->push_back(info);
+				ANNO_LOG("Success ! %llx : %s ", info.debug_address, info.name.c_str());
+			}
 			else
 			{
 				ANNO_LOG("Failed to get name from island %llx: %s", current_island_address, info.name.c_str());

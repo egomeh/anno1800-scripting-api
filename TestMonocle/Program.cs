@@ -9,8 +9,20 @@ class TestRunner
         List<uint> areas;
         telegraph.GetAllAreas(out areas);
 
-        List<IslandInfo> islands;
-        telegraph.GetPlayerIslandsInWorld(areas[1], out islands);
+        Console.WriteLine("Starting !");
+        for (int i = 0; i < areas.Count; i++)
+        {
+            Console.WriteLine(areas[i]);
+            List<IslandInfo> islands;
+            telegraph.GetPlayerIslandsInWorld(areas[i], out islands);
+
+            for (int i0 = 0; i0 < islands.Count; i0++)
+            {
+                Console.WriteLine("Island : " + islands[i0].name);
+            }
+        }
+
+
 
         // telegraph.DebugTryEnqueueShipForTrade(areas[0], 0x2482, 0x0000015C18E578A8, 0x0000015C18E578A8);
 

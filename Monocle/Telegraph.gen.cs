@@ -6,7 +6,7 @@ using System.Net;
 using System.Runtime.Serialization;
 using System.Runtime.InteropServices;
 using System.Reflection;
-
+using System.Text.RegularExpressions;
 
 public enum TelegramMode
 {
@@ -20,46 +20,86 @@ class Windows
     public static extern IntPtr LoadLibrary(string dllToLoad);
 };
 
+/**
+ * The program sets up a local network and listens in order to accept a future client.
+ * Then it injects a source code in the form of .dll in the Anno1800.exe process through the class Injection.cs
+ * After injecting, the program sets up a gateway through a local network between itself and the injected code
+ * 
+ * Author : egomeh (https://github.com/egomeh)
+ * 
+ **/
 public class Telegraph
 {
     Socket m_Socket;
 
     public Telegraph(TelegramMode mode = TelegramMode.Inject)
     {
+        // local ip search
         IPHostEntry ipHostInfo = Dns.GetHostEntry("localhost");
         IPAddress ipAddress = ipHostInfo.AddressList[0];
-        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 4050);
-        Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-        listener.Bind(localEndPoint);
-        listener.Listen(1);
-
-        Task<Socket> acceptedSocket = listener.AcceptAsync();
-
-        var assembly = Assembly.GetExecutingAssembly();
-        string temporaryPath = Path.GetTempPath();
-        string targetDllPath = Path.Combine(temporaryPath, "Injected.dll");
-
-        using (Stream inStream = assembly.GetManifestResourceStream("Monocle.Injected.dll"))
-        using (FileStream outStream = File.OpenWrite(targetDllPath))
+        /**
+         * Searches for the first IP that matches the pattern "x.x.x.x" with x between one and three digits
+         * (This is a resolution that prevents the program from using a non-functional ip (:::1) as a user had)
+         * 
+         * Author : Seynax (https://github.com/seynax)
+        **/
         {
-            BinaryReader reader = new BinaryReader(inStream);
-            BinaryWriter writer = new BinaryWriter(outStream);
-
-            byte[] buffer = new Byte[1024];
-            int bytesRead;
-
-            while ((bytesRead = inStream.Read(buffer, 0, 1024)) > 0)
+            for (int i = 0; i < ipHostInfo.AddressList.Count(); i++)
             {
-                outStream.Write(buffer, 0, bytesRead);
+                IPAddress tempIpAddress = ipHostInfo.AddressList[i];
+
+                if (tempIpAddress == null)
+                    continue;
+
+                if (Regex.IsMatch(tempIpAddress.ToString(), "[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}"))
+                {
+                    ipAddress = tempIpAddress;
+
+                    break;
+                }
             }
         }
 
-        if (mode == TelegramMode.Testing)
-            Windows.LoadLibrary(@"../x64/Release/Injected.dll");
-        else
-            Injection.InjectDLL("anno1800", Path.GetFullPath(targetDllPath));
+        // Opening the connection
+        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 4050);
+        Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
+        // Bind to the listener and wait for accept a new client (the source code injected.dll)
+        listener.Bind(localEndPoint);
+        listener.Listen(1);
+        Task<Socket> acceptedSocket = listener.AcceptAsync();
+
+        /**
+         * Source code injection (injected.dll) or load library
+         **/
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            string temporaryPath = Path.GetTempPath();
+            string targetDllPath = Path.Combine(temporaryPath, "Injected.dll");
+
+            using (Stream inStream = assembly.GetManifestResourceStream("Monocle.Injected.dll"))
+            using (FileStream outStream = File.OpenWrite(targetDllPath))
+            {
+                BinaryReader reader = new BinaryReader(inStream);
+                BinaryWriter writer = new BinaryWriter(outStream);
+
+                byte[] buffer = new Byte[1024];
+                int bytesRead;
+
+                while ((bytesRead = inStream.Read(buffer, 0, 1024)) > 0)
+                {
+                    outStream.Write(buffer, 0, bytesRead);
+                }
+            }
+
+            if (mode == TelegramMode.Testing)
+                Windows.LoadLibrary(@"../x64/Release/Injected.dll");
+            else
+                Injection.InjectDLL("anno1800", Path.GetFullPath(targetDllPath));
+        }
+
+        // Waiting for instructions to complete
         acceptedSocket.Wait();
         m_Socket = acceptedSocket.Result;
     }
