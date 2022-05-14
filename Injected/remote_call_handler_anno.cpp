@@ -69,9 +69,9 @@ bool RemoteCallHandlerAnno::DebugGetIslandResources(const uint64_t& address, std
 	return true;
 }
 
-bool RemoteCallHandlerAnno::DebugGetIslandChainFromAddress(const uint64_t& address, std::vector<IslandInfo>* islands)
+bool RemoteCallHandlerAnno::DebugGetIslandChainFromAddress(const uint64_t& address, const bool& mustBelongToThePlayer, std::vector<IslandInfo>* islands)
 {
-	return ExtractIslandChainFromAddress(address, islands);
+	return ExtractIslandChainFromAddress(address, mustBelongToThePlayer, islands);
 }
 
 bool RemoteCallHandlerAnno::DebugGetFirstAreaStructAddress(uint64_t* address)
@@ -115,7 +115,7 @@ bool RemoteCallHandlerAnno::DebugGetAreaWithCode(const uint32_t& areaCode, uint6
 	return true;
 }
 
-bool RemoteCallHandlerAnno::GetPlayerIslandsInWorld(const uint32_t& area, std::vector<IslandInfo>* islands)
+bool RemoteCallHandlerAnno::GetWorldIslands(const uint32_t& area, const bool& mustBelongToThePlayer, std::vector<IslandInfo>* islands)
 {
 	uint64_t area_address = 0;
 	int attempts = 0;
@@ -141,43 +141,7 @@ bool RemoteCallHandlerAnno::GetPlayerIslandsInWorld(const uint32_t& area, std::v
 				// Follow the pointer twice to get past the 'dud' pointers???
 				island_list_pointer = **(uint64_t**)island_list_pointer;
 
-				ExtractPlayerIslandChainFromAddress(island_list_pointer, islands);
-				return true;
-			}
-
-			return false;
-		});
-
-	return true;
-}
-
-bool RemoteCallHandlerAnno::GetAllIslandsOfWorld(const uint32_t& area, std::vector<IslandInfo>* islands)
-{
-	uint64_t area_address = 0;
-	int attempts = 0;
-
-	HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
-		[&](HookData data) -> bool
-		{
-			// Don't keep going forever, if you pass a bad code,
-			// we want to return eventually
-			if (++attempts > 512)
-				return true;
-
-			area_address = get_area_from_tls();
-
-			uint16_t current_area_code = 0;
-			GetAreaCode(area_address, &current_area_code);
-
-			if (current_area_code == area)
-			{
-				uint64_t island_list_pointer;
-				GetIslandListFromAreaAddress(area_address, &island_list_pointer);
-
-				// Follow the pointer twice to get past the 'dud' pointers???
-				island_list_pointer = **(uint64_t**)island_list_pointer;
-
-				ExtractIslandChainFromAddress(island_list_pointer, islands);
+				ExtractIslandChainFromAddress(island_list_pointer, mustBelongToThePlayer, islands);
 				return true;
 			}
 
@@ -254,7 +218,7 @@ bool RemoteCallHandlerAnno::GetIslandResources(const uint32_t& areaCode, const u
 				// Follow the pointer twice to get past the 'dud' pointers???
 				island_list_pointer = **(uint64_t**)island_list_pointer;
 
-				ExtractPlayerIslandChainFromAddress(island_list_pointer, &islands);
+				ExtractIslandChainFromAddress(island_list_pointer, false, &islands);
 
 				for (int i = 0; i < islands.size(); ++i)
 				{
@@ -316,7 +280,7 @@ bool RemoteCallHandlerAnno::GetIslandResidentialConsumption(const uint32_t& area
 				// Follow the pointer twice to get past the 'dud' pointers???
 				island_list_pointer = **(uint64_t**)island_list_pointer;
 
-				ExtractPlayerIslandChainFromAddress(island_list_pointer, &islands);
+				ExtractIslandChainFromAddress(island_list_pointer, false, &islands);
 
 				for (int i = 0; i < islands.size(); ++i)
 				{
@@ -550,7 +514,7 @@ bool RemoteCallHandlerAnno::DebugTryEnqueueShipForTrade(const uint32_t& areaId, 
 	return true;
 }
 
-bool RemoteCallHandlerAnno::MinMaxResourcesOnIsland(const uint32_t& areaId, const uint32_t& islandId, const uint32_t& lowerBound, const uint32_t& upperBound)
+bool RemoteCallHandlerAnno::MinMaxResourcesOnIsland(const uint32_t& areaId, const uint32_t& islandId,  const uint32_t& lowerBound, const uint32_t& upperBound)
 {
 	int counter = 0;
 	uint64_t areaAddress = 0;
@@ -573,7 +537,7 @@ bool RemoteCallHandlerAnno::MinMaxResourcesOnIsland(const uint32_t& areaId, cons
 				// Follow the pointer twice to get past the 'dud' pointers???
 				island_list_pointer = **(uint64_t**)island_list_pointer;
 
-				ExtractPlayerIslandChainFromAddress(island_list_pointer, &islands);
+				ExtractIslandChainFromAddress(island_list_pointer, false, &islands);
 
 				for (int i = 0; i < islands.size(); ++i)
 				{

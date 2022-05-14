@@ -163,9 +163,10 @@ public class Serializer
 
     public static bool Deserialize(out string data, byte[] buffer, int offset, out int offsetAfter)
     {
+        ulong size = 0;
         data = "";
         offsetAfter = offset;
-        if (!Deserialize(out ulong size, buffer, offsetAfter, out offsetAfter))
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
             return false;
         data = System.Text.Encoding.UTF8.GetString(buffer, offsetAfter, (int)size);
         offsetAfter += (int)size;
@@ -309,10 +310,11 @@ public class Serializer
 
     public static bool Deserialize(out List<IslandInfo> data, byte[] buffer, int offset, out int offsetAfter)
     {
+        ulong size;
         data = new List<IslandInfo>();
         offsetAfter = offset;
 
-        if (!Deserialize(out ulong size, buffer, offsetAfter, out offsetAfter))
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
                 return false;
 
         for (ulong i = 0; i < size; ++i)
@@ -419,10 +421,11 @@ public class Serializer
 
     public static bool Deserialize(out List<ResourceConsumption> data, byte[] buffer, int offset, out int offsetAfter)
     {
+        ulong size;
         data = new List<ResourceConsumption>();
         offsetAfter = offset;
 
-        if (!Deserialize(out ulong size, buffer, offsetAfter, out offsetAfter))
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
                 return false;
 
         for (ulong i = 0; i < size; ++i)
@@ -455,15 +458,17 @@ public class Serializer
 
     public static bool Deserialize(out List<ulong> data, byte[] buffer, int offset, out int offsetAfter)
     {
+        ulong size;
         data = new List<ulong>();
         offsetAfter = offset;
 
-        if (!Deserialize(out ulong size, buffer, offsetAfter, out offsetAfter))
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
                 return false;
 
         for (ulong i = 0; i < size; ++i)
         {
-            if (!Deserialize(out ulong element, buffer, offsetAfter, out offsetAfter))
+            ulong element;
+            if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
                 return false;
             data.Add(element);
         }
