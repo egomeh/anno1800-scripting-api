@@ -198,7 +198,6 @@ bool RemoteCallHandlerAnno::GetAllAreas(std::vector<uint32_t>* areas)
 		[&](HookData data) -> bool
 		{
 			uint64_t area_address = get_area_from_tls();
-			ANNO_LOG("Area %llx", area_address);
 			uint16_t current_area_code = 0;
 			GetAreaCode(area_address, &current_area_code);
 
