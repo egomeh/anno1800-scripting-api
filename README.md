@@ -47,3 +47,21 @@ I will probably change a lot when I'm happier with the code. But at current, fol
   * Configure the debugging settings by specifying $(TargetDir) as the working directory, as can be seen in the following image doc/surveillancevan_debug_config.png
     Launch the solution (still in debug mode)
   * Run code using the monocle project (**with administrator rights**)
+
+### License
+
+```
+    This file is part of Anno1800-Scripting-API.
+
+    Anno1800-Scripting-API is libre software: you can redistribute it and/or modify
+    it under the terms of the MIT License as published by
+    the MIT.
+
+    Anno1800-Scripting-API is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the MIT License
+    along with Anno1800-Scripting-API.  If not, see <https://opensource.org/licenses/> <https://opensource.org/licenses/MIT>.
+```
