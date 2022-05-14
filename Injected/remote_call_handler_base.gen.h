@@ -12,6 +12,7 @@ public:
     virtual bool WriteMessageBox(const std::string& message) {return true;};
     virtual bool GetGameTime(uint64_t* time, uint64_t* frame) {return true;};
     virtual bool GetPlayerIslandsInWorld(const uint32_t& area, std::vector<IslandInfo>* islands) {return true;};
+    virtual bool GetAllIslandsOfWorld(const uint32_t& area, std::vector<IslandInfo>* islands) {return true; };
     virtual bool GetAllAreas(std::vector<uint32_t>* areas) {return true;};
     virtual bool GetIslandResources(const uint32_t& areaCode, const uint32_t& islandId, std::vector<IslandResource>* resources) {return true;};
     virtual bool GetIslandResidentialConsumption(const uint32_t& areaCode, const uint32_t& islandId, std::vector<ResourceConsumption>* resources) {return true;};

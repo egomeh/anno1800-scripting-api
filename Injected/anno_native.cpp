@@ -63,7 +63,7 @@ bool GetIslandName(uint64_t island_address, std::string& name)
 	return ReadAnnoString(name_address, name);
 }
 
-bool ExtractIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* islands)
+bool ExtractPlayerIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* islands)
 {
 	uint64_t current_address = address;
 	int attempts = 0;
@@ -83,6 +83,49 @@ bool ExtractIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* is
 			info.debug_address = current_island_address;
 			info.island_id = island_id;
 
+			bool CouldGetName = GetIslandName(current_island_address, info.name);
+
+			if (CouldGetName && info.name.size() > 0)
+			{
+				islands->push_back(info);
+				ANNO_LOG("Success ! %llx : %s ", info.debug_address, info.name.c_str());
+			}
+			else
+			{
+				ANNO_LOG("Failed to get name from island %llx: %s", current_island_address, info.name.c_str());
+			}
+		}
+
+		current_address = *(uint64_t*)current_address;
+
+		if (current_address == address)
+			break;
+	}
+
+	return true;
+}
+
+bool ExtractIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* islands)
+{
+	uint64_t current_address = address;
+	int attempts = 0;
+
+	while (true)
+	{
+		// Don't go on forever if an assumption is wrong
+		if (++attempts > 512)
+			break;
+
+		uint32_t island_id = *(uint32_t*)(current_address + 0x10) & 0xffff;
+		uint64_t current_island_address = current_address + 0x18;
+
+		if (island_id)
+		{
+			IslandInfo info;
+			info.debug_address = current_island_address;
+			info.island_id = island_id;
+
+			ANNO_LOG("Extract ! ");
 			bool CouldGetName = GetIslandName(current_island_address, info.name);
 
 			if (CouldGetName && info.name.size() > 0)

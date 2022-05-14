@@ -30,7 +30,7 @@ class Windows
  **/
 public class Telegraph
 {
-    Socket m_Socket;
+    readonly Socket? m_Socket;
 
     public Telegraph(TelegramMode mode = TelegramMode.Inject)
     {
@@ -78,18 +78,23 @@ public class Telegraph
             string temporaryPath = Path.GetTempPath();
             string targetDllPath = Path.Combine(temporaryPath, "Injected.dll");
 
-            using (Stream inStream = assembly.GetManifestResourceStream("Monocle.Injected.dll"))
-            using (FileStream outStream = File.OpenWrite(targetDllPath))
+            using (Stream? inStream = assembly.GetManifestResourceStream("Monocle.Injected.dll"))
             {
-                BinaryReader reader = new BinaryReader(inStream);
-                BinaryWriter writer = new BinaryWriter(outStream);
+                if (inStream == null)
+                    return;
 
-                byte[] buffer = new Byte[1024];
-                int bytesRead;
-
-                while ((bytesRead = inStream.Read(buffer, 0, 1024)) > 0)
+                using (FileStream outStream = File.OpenWrite(targetDllPath))
                 {
-                    outStream.Write(buffer, 0, bytesRead);
+                    BinaryReader reader = new(inStream);
+                    BinaryWriter writer = new(outStream);
+
+                    byte[] buffer = new Byte[1024];
+                    int bytesRead;
+
+                    while ((bytesRead = inStream.Read(buffer, 0, 1024)) > 0)
+                    {
+                        outStream.Write(buffer, 0, bytesRead);
+                    }
                 }
             }
 
@@ -117,6 +122,9 @@ public class Telegraph
             return false;
 
         finalPayload.AddRange(payload);
+
+        if (m_Socket == null)
+            return false;
 
         int sentBytes = m_Socket.Send(finalPayload.ToArray());
 
@@ -212,6 +220,33 @@ public class Telegraph
         List<byte> outgoingData = new List<byte>();
 
         ulong functionIndex = 3;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(area, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out islands, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
+    public bool GetAllIslandsOfWorld(uint area, out List<IslandInfo> islands)
+    {
+        islands = new List<IslandInfo>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 22;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;

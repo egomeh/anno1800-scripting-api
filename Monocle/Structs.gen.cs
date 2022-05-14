@@ -1,51 +1,50 @@
 // Auto generated code
 using System.Collections.Generic;
 
-public struct IslandResource
-{
-    public IslandResource()
+    public struct IslandResource
     {
-        type_id = default;
-        name = "";
-        amount = default;
-        capacity = default;
-        amount_ptr = default;
+        public IslandResource()
+        {
+            type_id = default;
+            name = "";
+            amount = default;
+            capacity = default;
+            amount_ptr = default;
+        }
+
+        public int type_id;
+        public string name;
+        public int amount;
+        public int capacity;
+        public ulong amount_ptr;
     }
 
-    public int type_id;
-    public string name;
-    public int amount;
-    public int capacity;
-    public ulong amount_ptr;
-}
 
-
-public struct ResourceConsumption
-{
-    public ResourceConsumption()
+    public struct ResourceConsumption
     {
-        type_id = default;
-        name = "";
-        rate = default;
+        public ResourceConsumption()
+        {
+            type_id = default;
+            name = "";
+            rate = default;
+        }
+
+        public int type_id;
+        public string name;
+        public float rate;
     }
 
-    public int type_id;
-    public string name;
-    public float rate;
-}
 
-
-public struct IslandInfo
-{
-    public IslandInfo()
+    public struct IslandInfo
     {
-        island_id = default;
-        name = "";
-        debug_address = default;
+        public IslandInfo()
+        {
+            island_id = default;
+            name = "";
+            debug_address = default;
+        }
+
+        public uint island_id;
+        public string name;
+        public ulong debug_address;
     }
-
-    public uint island_id;
-    public string name;
-    public ulong debug_address;
-}
-

@@ -415,6 +415,24 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
+        case (22): // GetAllIslandsOfWorld
+        {
+            uint32_t area;
+            if (!Deserialize(&area, buffer_in, &offset))
+                return false;
+
+            std::vector<IslandInfo> islands;
+
+            success = callHandler.GetAllIslandsOfWorld(area, &islands);
+
+            if (!Serialize(success, buffer_out))
+                return false;
+
+            if (!Serialize(islands, buffer_out))
+                return false;
+
+            break;
+        }
     }
 
     return socketHandler.Send(buffer_out);

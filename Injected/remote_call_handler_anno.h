@@ -18,6 +18,7 @@ public:
 	virtual bool DebugGetFirstAreaStructAddress(uint64_t* address) override;
 	virtual bool DebugGetAreaWithCode(const uint32_t& areaCode, uint64_t* address) override;
 	virtual bool GetPlayerIslandsInWorld(const uint32_t& area, std::vector<IslandInfo>* islands) override;
+	virtual bool GetAllIslandsOfWorld(const uint32_t& area, std::vector<IslandInfo>* islands) override;
 	virtual bool GetAllAreas(std::vector<uint32_t>* areas) override;
 	virtual bool DebugGetNameFromGuid(const uint32_t& guid, std::string* name) override;
 	virtual bool DebugGetGuidFromName(const std::string& name, uint32_t* guid) override;
