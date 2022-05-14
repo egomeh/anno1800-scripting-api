@@ -88,7 +88,6 @@ bool ExtractPlayerIslandChainFromAddress(uint64_t address, std::vector<IslandInf
 			if (CouldGetName && info.name.size() > 0)
 			{
 				islands->push_back(info);
-				ANNO_LOG("Success ! %llx : %s ", info.debug_address, info.name.c_str());
 			}
 			else
 			{
@@ -125,13 +124,11 @@ bool ExtractIslandChainFromAddress(uint64_t address, std::vector<IslandInfo>* is
 			info.debug_address = current_island_address;
 			info.island_id = island_id;
 
-			ANNO_LOG("Extract ! ");
 			bool CouldGetName = GetIslandName(current_island_address, info.name);
 
 			if (CouldGetName && info.name.size() > 0)
 			{
 				islands->push_back(info);
-				ANNO_LOG("Success ! %llx : %s ", info.debug_address, info.name.c_str());
 			}
 			else
 			{
