@@ -62,13 +62,13 @@ class Injection
                     break;
                 }
 
-                Console.WriteLine(String.Format("No processes with namem {0} found", processName));
+                Console.WriteLine(String.Format("No processes with name {0} found", processName));
                 Thread.Sleep(15000);
             }
 
             if (processes == null || processes.Length == 0)
             {
-                Console.WriteLine(String.Format("No processes with namem {0} found", processName));
+                Console.WriteLine(String.Format("No processes with name {0} found", processName));
 
                 return false;
             }
