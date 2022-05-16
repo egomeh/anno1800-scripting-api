@@ -25,15 +25,21 @@ bool ReadAnnoString(uint64_t address, std::string& result)
     wchar_t* stringLocation = (wchar_t*)(address);
 
     if (isLong)
+    {
         stringLocation = (wchar_t*)*(uint64_t*)(address);
+    }
 
     wmemset(buffer, 0, _countof(buffer));
     wmemcpy(buffer, stringLocation, length);
 
     std::wstring wideString = buffer;
     std::string name = utf8_encode(wideString);
+    
+    if (name.length() <= 0)
+    {
+        return false;
+    }
 
-    result = name;
     return true;
 }
 

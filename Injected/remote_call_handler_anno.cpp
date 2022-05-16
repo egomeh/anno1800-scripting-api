@@ -69,9 +69,9 @@ bool RemoteCallHandlerAnno::DebugGetIslandResources(const uint64_t& address, std
 	return true;
 }
 
-bool RemoteCallHandlerAnno::DebugGetIslandChainFromAddress(const uint64_t& address, std::vector<IslandInfo>* islands)
+bool RemoteCallHandlerAnno::DebugGetIslandChainFromAddress(const uint64_t& address, const bool& mustBelongToThePlayer, std::vector<IslandInfo>* islands)
 {
-	return ExtractIslandChainFromAddress(address, islands);
+	return ExtractIslandChainFromAddress(address, mustBelongToThePlayer, islands);
 }
 
 bool RemoteCallHandlerAnno::DebugGetFirstAreaStructAddress(uint64_t* address)
@@ -115,7 +115,7 @@ bool RemoteCallHandlerAnno::DebugGetAreaWithCode(const uint32_t& areaCode, uint6
 	return true;
 }
 
-bool RemoteCallHandlerAnno::GetPlayerIslandsInWorld(const uint32_t& area, std::vector<IslandInfo>* islands)
+bool RemoteCallHandlerAnno::GetWorldIslands(const uint32_t& area, const bool& mustBelongToThePlayer, std::vector<IslandInfo>* islands)
 {
 	uint64_t area_address = 0;
 	int attempts = 0;
@@ -141,7 +141,7 @@ bool RemoteCallHandlerAnno::GetPlayerIslandsInWorld(const uint32_t& area, std::v
 				// Follow the pointer twice to get past the 'dud' pointers???
 				island_list_pointer = **(uint64_t**)island_list_pointer;
 
-				ExtractIslandChainFromAddress(island_list_pointer, islands);
+				ExtractIslandChainFromAddress(island_list_pointer, mustBelongToThePlayer, islands);
 				return true;
 			}
 
@@ -162,7 +162,6 @@ bool RemoteCallHandlerAnno::GetAllAreas(std::vector<uint32_t>* areas)
 		[&](HookData data) -> bool
 		{
 			uint64_t area_address = get_area_from_tls();
-
 			uint16_t current_area_code = 0;
 			GetAreaCode(area_address, &current_area_code);
 
@@ -219,7 +218,7 @@ bool RemoteCallHandlerAnno::GetIslandResources(const uint32_t& areaCode, const u
 				// Follow the pointer twice to get past the 'dud' pointers???
 				island_list_pointer = **(uint64_t**)island_list_pointer;
 
-				ExtractIslandChainFromAddress(island_list_pointer, &islands);
+				ExtractIslandChainFromAddress(island_list_pointer, false, &islands);
 
 				for (int i = 0; i < islands.size(); ++i)
 				{
@@ -281,7 +280,7 @@ bool RemoteCallHandlerAnno::GetIslandResidentialConsumption(const uint32_t& area
 				// Follow the pointer twice to get past the 'dud' pointers???
 				island_list_pointer = **(uint64_t**)island_list_pointer;
 
-				ExtractIslandChainFromAddress(island_list_pointer, &islands);
+				ExtractIslandChainFromAddress(island_list_pointer, false, &islands);
 
 				for (int i = 0; i < islands.size(); ++i)
 				{
@@ -515,7 +514,7 @@ bool RemoteCallHandlerAnno::DebugTryEnqueueShipForTrade(const uint32_t& areaId, 
 	return true;
 }
 
-bool RemoteCallHandlerAnno::MinMaxResourcesOnIsland(const uint32_t& areaId, const uint32_t& islandId, const uint32_t& lowerBound, const uint32_t& upperBound)
+bool RemoteCallHandlerAnno::MinMaxResourcesOnIsland(const uint32_t& areaId, const uint32_t& islandId,  const uint32_t& lowerBound, const uint32_t& upperBound)
 {
 	int counter = 0;
 	uint64_t areaAddress = 0;
@@ -538,7 +537,7 @@ bool RemoteCallHandlerAnno::MinMaxResourcesOnIsland(const uint32_t& areaId, cons
 				// Follow the pointer twice to get past the 'dud' pointers???
 				island_list_pointer = **(uint64_t**)island_list_pointer;
 
-				ExtractIslandChainFromAddress(island_list_pointer, &islands);
+				ExtractIslandChainFromAddress(island_list_pointer, false, &islands);
 
 				for (int i = 0; i < islands.size(); ++i)
 				{

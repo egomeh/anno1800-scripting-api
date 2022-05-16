@@ -10,9 +10,10 @@
             - time: uint64
             - frame: uint64
 
-    - GetPlayerIslandsInWorld:
+    - GetWorldIslands:
         - in:
             - area: uint32
+            - mustBelongToThePlayer: bool
         - out:
             - islands: list(IslandInfo)
 

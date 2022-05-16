@@ -55,7 +55,7 @@ void entry(HMODULE module)
     else
         injected(binary_crc);
 
-    ANNO_LOG("Injected leaveing");
+    ANNO_LOG("Injected leaving");
     Log::Get().Shutdown();
     FreeLibraryAndExitThread(module, 0);
 }

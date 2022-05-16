@@ -24,21 +24,57 @@ class Injection
     [DllImport("kernel32.dll")]
     static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
 
+    /**
+     * This method allows to inject the source code of Injected.cpp and .h, into Anno1800.exe process
+     * 
+     * Author : egomeh (https://github.com/egomeh)
+     **/
     public static bool InjectDLL(string processName, string DLLPath)
     {
         Process[] processes = Process.GetProcessesByName(processName);
 
-        if (processes.Length == 0)
+        /**
+         * Checks every 15 seconds (15,000 ms), if a process has opened with the name in parameter "processName".
+         * After 40 tries (40 * 15 seconds = 10 minutes), the loop and finally the program exits interrupt.
+         * 
+         * Author : Seynax (https://github.com/seynax)
+        **/
         {
-            Console.WriteLine(String.Format("No processes with namem {0} found", processName));
-            return false;
-        }
-        else if (processes.Length > 1)
-        {
-            Console.WriteLine(String.Format("More than one process found for {0}", processName));
-            Console.WriteLine(String.Format("Using process with id {0}"), processes[0].Id);
+            int attempt = 0;
+            while (true)
+            {
+                if (attempt++ >= 40)
+                {
+                    break;
+                }
+
+                processes = Process.GetProcessesByName(processName);
+
+                if (processes.Length > 1)
+                {
+                    Console.WriteLine(String.Format("More than one process found for {0}", processName));
+                    Console.WriteLine(String.Format("Using process with id {0}"), processes[0].Id);
+
+                    return false;
+                }
+                else if (processes != null && processes.Length > 0)
+                {
+                    break;
+                }
+
+                Console.WriteLine(String.Format("No processes with name {0} found", processName));
+                Thread.Sleep(15000);
+            }
+
+            if (processes == null || processes.Length == 0)
+            {
+                Console.WriteLine(String.Format("No processes with name {0} found", processName));
+
+                return false;
+            }
         }
 
+        // Get process
         Process targetProcess = processes[0];
 
         // Open process with proper access rights
