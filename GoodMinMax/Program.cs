@@ -27,7 +27,7 @@ class GoodsMinMax
             foreach (uint area in areas)
             {
                 List<IslandInfo> islands;
-                telegraph.GetPlayerIslandsInWorld(area, out islands);
+                telegraph.GetWorldIslands(area, true, out islands);
 
                 foreach (IslandInfo island in islands)
                 {
