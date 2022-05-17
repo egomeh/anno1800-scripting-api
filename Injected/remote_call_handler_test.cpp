@@ -2,7 +2,7 @@
 #include "tools.h"
 #include "anno_tools.h"
 
-bool RemoteCallHandlerTest::DebugGetIslandChainFromAddress(const uint64_t& address, std::vector<IslandInfo>* islands)
+bool RemoteCallHandlerTest::DebugGetIslandChainFromAddress(const uint64_t& address, const bool& mustBelongToThePlayer, std::vector<IslandInfo>* islands)
 {
 	IslandInfo info;
 	info.name = "hello world";

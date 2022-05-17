@@ -16,7 +16,7 @@ class TestRunner
             Console.WriteLine(areas[i]);
 
             // Get islands of player into this area
-            telegraph.GetPlayerIslandsInWorld(areas[i], out List<IslandInfo> islands);
+            telegraph.GetWorldIslands(areas[i], true, out List <IslandInfo> islands);
 
             // Read all islands
             for (int i0 = 0; i0 < islands.Count; i0++)
@@ -43,7 +43,7 @@ class TestRunner
             }
 
             // Get all islands of this area
-            telegraph.GetAllIslandsOfWorld(areas[i], out List<IslandInfo> islands0);
+            telegraph.GetWorldIslands(areas[i], false, out List <IslandInfo> islands0);
 
             // Read all islands
             for (int i0 = 0; i0 < islands0.Count; i0++)

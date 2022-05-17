@@ -708,6 +708,7 @@ class CodeGenerator
         CSRemoteCallCode += "using System.Runtime.Serialization;\n";
         CSRemoteCallCode += "using System.Runtime.InteropServices;\n";
         CSRemoteCallCode += "using System.Reflection;\n";
+        CSRemoteCallCode += "using System.Text.RegularExpressions;\n";
         CSRemoteCallCode += "\n";
         CSRemoteCallCode += "\n";
         CSRemoteCallCode += "public enum TelegramMode\n";
@@ -722,23 +723,59 @@ class CodeGenerator
         CSRemoteCallCode += "    public static extern IntPtr LoadLibrary(string dllToLoad);\n";
         CSRemoteCallCode += "};\n\n";
 
+        CSRemoteCallCode += "/**\n";
+        CSRemoteCallCode += "*The program sets up a local network and listens in order to accept a future client.\n";
+        CSRemoteCallCode += "* Then it injects a source code in the form of .dll in the Anno1800.exe process through the class Injection.cs\n";
+        CSRemoteCallCode += "* After injecting, the program sets up a gateway through a local network between itself and the injected code\n";
+        CSRemoteCallCode += "* \n";
+        CSRemoteCallCode += "* Author : egomeh (https://github.com/egomeh)\n";
+        CSRemoteCallCode += "*\n";
+        CSRemoteCallCode += "**/\n";
         CSRemoteCallCode += "public class Telegraph\n{\n";
 
         CSRemoteCallCode += "    Socket m_Socket;\n";
         CSRemoteCallCode += "\n";
         CSRemoteCallCode += "    public Telegraph(TelegramMode mode = TelegramMode.Inject)\n";
         CSRemoteCallCode += "    {\n";
-
+        CSRemoteCallCode += "        // local ip search\n";
         CSRemoteCallCode += "        IPHostEntry ipHostInfo = Dns.GetHostEntry(\"localhost\");\n";
         CSRemoteCallCode += "        IPAddress ipAddress = ipHostInfo.AddressList[0];\n";
+        CSRemoteCallCode += "        /**\n";
+        CSRemoteCallCode += "         * Searches for the first IP that matches the pattern \"x.x.x.x\" with x between one and three digits\n";
+        CSRemoteCallCode += "         * (This is a resolution that prevents the program from using a non-functional ip (:::1) as a user had)\n";
+        CSRemoteCallCode += "         * \n";
+        CSRemoteCallCode += "         * Author : Seynax (https://github.com/seynax)\n";
+        CSRemoteCallCode += "        **/\n";
+        CSRemoteCallCode += "        {\n";
+        CSRemoteCallCode += "            for (int i = 0; i < ipHostInfo.AddressList.Count(); i++)\n";
+        CSRemoteCallCode += "            {\n";
+        CSRemoteCallCode += "               IPAddress tempIpAddress = ipHostInfo.AddressList[i];\n";
+        CSRemoteCallCode += "\n";
+        CSRemoteCallCode += "               if (tempIpAddress == null)\n";
+        CSRemoteCallCode += "                   continue;\n";
+        CSRemoteCallCode += "\n";
+        CSRemoteCallCode += "               if (Regex.IsMatch(tempIpAddress.ToString(), \"[0 - 9]{ 1,3}\\\\.[0 - 9]{ 1,3}\\\\.[0 - 9]{ 1,3}\\\\.[0 - 9]{ 1,3}\"))\n";
+        CSRemoteCallCode += "               {\n";
+        CSRemoteCallCode += "                   ipAddress = tempIpAddress;\n";
+        CSRemoteCallCode += "\n";
+        CSRemoteCallCode += "                   break;\n";
+        CSRemoteCallCode += "               }\n";
+        CSRemoteCallCode += "            }\n";
+        CSRemoteCallCode += "        }\n";
+        CSRemoteCallCode += "\n";
+        CSRemoteCallCode += "        // Opening the connection\n";
         CSRemoteCallCode += "        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 4050);\n";
         CSRemoteCallCode += "        Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);\n\n";
 
+        CSRemoteCallCode += "        // Bind to the listener and wait for accept a new client (the source code injected.dll)\n";
         CSRemoteCallCode += "        listener.Bind(localEndPoint);\n";
         CSRemoteCallCode += "        listener.Listen(1);\n\n";
 
         CSRemoteCallCode += "        Task<Socket> acceptedSocket = listener.AcceptAsync();\n\n";
 
+        CSRemoteCallCode += "/**\n";
+        CSRemoteCallCode += "* Source code injection (injected.dll) or load library\n";
+        CSRemoteCallCode += "* */\n";
         CSRemoteCallCode += "        var assembly = Assembly.GetExecutingAssembly();\n";
         CSRemoteCallCode += "        string temporaryPath = Path.GetTempPath();\n";
         CSRemoteCallCode += "        string targetDllPath = Path.Combine(temporaryPath, \"Injected.dll\");\n\n";
@@ -763,6 +800,7 @@ class CodeGenerator
         CSRemoteCallCode += "        else\n";
         CSRemoteCallCode += "            Injection.InjectDLL(\"anno1800\", Path.GetFullPath(targetDllPath));\n\n";
 
+        CSRemoteCallCode += "        // Waiting for instructions to complete";
         CSRemoteCallCode += "        acceptedSocket.Wait();\n";
         CSRemoteCallCode += "        m_Socket = acceptedSocket.Result;\n";
 

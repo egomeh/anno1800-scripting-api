@@ -51,15 +51,19 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (3): // GetPlayerIslandsInWorld
+        case (3): // GetWorldIslands
         {
             uint32_t area;
             if (!Deserialize(&area, buffer_in, &offset))
                 return false;
 
+            bool mustBelongToThePlayer;
+            if (!Deserialize(&mustBelongToThePlayer, buffer_in, &offset))
+                return false;
+
             std::vector<IslandInfo> islands;
 
-            success = callHandler.GetPlayerIslandsInWorld(area, &islands);
+            success = callHandler.GetWorldIslands(area, mustBelongToThePlayer, &islands);
 
             if (!Serialize(success, buffer_out))
                 return false;
@@ -270,9 +274,13 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
             if (!Deserialize(&address, buffer_in, &offset))
                 return false;
 
+            bool mustBelongToThePlayer;
+            if (!Deserialize(&mustBelongToThePlayer, buffer_in, &offset))
+                return false;
+
             std::vector<IslandInfo> islands;
 
-            success = callHandler.DebugGetIslandChainFromAddress(address, &islands);
+            success = callHandler.DebugGetIslandChainFromAddress(address, mustBelongToThePlayer, &islands);
 
             if (!Serialize(success, buffer_out))
                 return false;
@@ -411,24 +419,6 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
             success = callHandler.DebugTryEnqueueShipForTrade(areaId, islandId, tradeComponent);
 
             if (!Serialize(success, buffer_out))
-                return false;
-
-            break;
-        }
-        case (22): // GetAllIslandsOfWorld
-        {
-            uint32_t area;
-            if (!Deserialize(&area, buffer_in, &offset))
-                return false;
-
-            std::vector<IslandInfo> islands;
-
-            success = callHandler.GetAllIslandsOfWorld(area, &islands);
-
-            if (!Serialize(success, buffer_out))
-                return false;
-
-            if (!Serialize(islands, buffer_out))
                 return false;
 
             break;

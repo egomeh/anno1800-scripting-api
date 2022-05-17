@@ -11,8 +11,7 @@ class RemoteCallHandlerBase
 public:
     virtual bool WriteMessageBox(const std::string& message) {return true;};
     virtual bool GetGameTime(uint64_t* time, uint64_t* frame) {return true;};
-    virtual bool GetPlayerIslandsInWorld(const uint32_t& area, std::vector<IslandInfo>* islands) {return true;};
-    virtual bool GetAllIslandsOfWorld(const uint32_t& area, std::vector<IslandInfo>* islands) {return true; };
+    virtual bool GetWorldIslands(const uint32_t& area, const bool& mustBelongToThePlayer, std::vector<IslandInfo>* islands) {return true;};
     virtual bool GetAllAreas(std::vector<uint32_t>* areas) {return true;};
     virtual bool GetIslandResources(const uint32_t& areaCode, const uint32_t& islandId, std::vector<IslandResource>* resources) {return true;};
     virtual bool GetIslandResidentialConsumption(const uint32_t& areaCode, const uint32_t& islandId, std::vector<ResourceConsumption>* resources) {return true;};
@@ -23,7 +22,7 @@ public:
     virtual bool DebugGetIslandNameFromAddress(const uint64_t& address, std::string* name) {return true;};
     virtual bool DebugReadStringFromAddress(const uint64_t& address, std::string* name) {return true;};
     virtual bool DebugGetIslandResources(const uint64_t& address, std::vector<IslandResource>* resources) {return true;};
-    virtual bool DebugGetIslandChainFromAddress(const uint64_t& address, std::vector<IslandInfo>* islands) {return true;};
+    virtual bool DebugGetIslandChainFromAddress(const uint64_t& address, const bool& mustBelongToThePlayer, std::vector<IslandInfo>* islands) {return true;};
     virtual bool DebugGetFirstAreaStructAddress(uint64_t* address) {return true;};
     virtual bool DebugGetAreaWithCode(const uint32_t& code, uint64_t* address) {return true;};
     virtual bool DebugGetNameFromGuid(const uint32_t& guid, std::string* name) {return true;};
