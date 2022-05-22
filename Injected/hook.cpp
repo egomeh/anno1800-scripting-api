@@ -116,14 +116,14 @@ uint64_t AnnoFunctionOffset(uint32_t binary_crc, HookedFunction function)
     {
         return 0;
     }
-    else if (binary_crc == 0x76F3A991) // Steam
+    else if (binary_crc == 0x4091d0b6) // Steam
     {
         switch (function)
         {
         case HookedFunction::Any:                       return 0;
         case HookedFunction::GameTimeHook:              return 0x08A0CD;
-        case HookedFunction::SessionTickHook:           return 0xBE6540;
-        case HookedFunction::ConsumptionHook:           return 0xAD331D;
+        case HookedFunction::SessionTickHook:           return 0xBE6A20;
+        case HookedFunction::ConsumptionHook:           return 0xAD37FD;
         }
     }
     else if (binary_crc == 0x986B7BBE) // Epic store

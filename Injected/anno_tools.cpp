@@ -40,6 +40,7 @@ bool ReadAnnoString(uint64_t address, std::string& result)
         return false;
     }
 
+    result = name;
     return true;
 }
 
