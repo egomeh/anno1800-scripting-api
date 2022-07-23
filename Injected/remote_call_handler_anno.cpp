@@ -313,7 +313,7 @@ bool RemoteCallHandlerAnno::GetIslandResidentialConsumption(const uint32_t& area
 
 			if (island_ptr == target_island_address)
 			{
-				uint64_t island_consumption_ptr = *(uint64_t*)(data.rcx + 0x30);
+				uint64_t island_consumption_ptr = *(uint64_t*)(data.rcx + 0x38);
 
 				if (!island_consumption_ptr)
 					return true;
