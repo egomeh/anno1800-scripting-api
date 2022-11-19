@@ -151,7 +151,7 @@ get_area_from_tls PROC
 push rbx
 push rcx
 mov rax, gs:[58h]
-mov rbx, 1558h
+mov rbx, 15A8h
 mov rcx, [rax]
 mov rbx, [rbx + rcx]
 mov rax, rbx

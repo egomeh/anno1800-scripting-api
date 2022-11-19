@@ -26,7 +26,9 @@ bool RemoteCallHandlerAnno::GetGameTime(uint64_t* time, uint64_t* frame)
 		[&](HookData data) -> bool
 		{
 			*time = *(uint64_t*)(data.rbx + 0x60);
-			*frame = *(uint64_t*)(data.rbx + 0x70);
+			// It seems to actually be a 32 bit integer holding the frame number.
+			// So we mask out the garbage.
+			*frame = *(uint64_t*)(data.rbx + 0x70) & (uint32_t)(-1);
 
 			return true;
 		});
@@ -462,8 +464,8 @@ bool RemoteCallHandlerAnno::GetIslandIndustrialConversion(const uint32_t& areaId
 
 				uint32_t building_type_id = *(uint32_t*)(building_address + 8);
 
-				if (building_type_id == 1010540 || building_type_id == 1010517)
-					;//ANNO_LOG("trading post %llx", building_address);
+				//if (building_type_id == 1010540 || building_type_id == 1010517)
+				//	;//ANNO_LOG("trading post %llx", building_address);
 
 				GetBuildingIndustrialConversion(building_address, conversion_map);
 				GetBuildingBuffConversion(building_address, conversion_map);
@@ -506,7 +508,7 @@ bool RemoteCallHandlerAnno::DebugTryEnqueueShipForTrade(const uint32_t& areaId, 
 				return false;
 
 			uint64_t function_address = module_base + 0x117C800;
-			uint64_t islandIdValueThing = (islandId << 0x20) & 0x0000FFFF00000000;
+			uint64_t islandIdValueThing = ((uint64_t)islandId << 0x20) & 0x0000FFFF00000000;
 			reinterpret_cast<void(*)(uint64_t, uint64_t)>(function_address)(tradeComponent, islandIdValueThing);
 
 			return true;
@@ -557,12 +559,12 @@ bool RemoteCallHandlerAnno::MinMaxResourcesOnIsland(const uint32_t& areaId, cons
 
 					for (uint64_t i = 0; i < resources.size(); ++i)
 					{
-						if (resources[i].amount > (resources[i].capacity - upperBound))
+						if ((uint32_t)resources[i].amount > ((uint32_t)resources[i].capacity - upperBound))
 						{
 							*(uint32_t*)(resources[i].amount_ptr) = resources[i].capacity - upperBound;
 						}
 
-						if (resources[i].amount < lowerBound)
+						if ((uint32_t)resources[i].amount < lowerBound)
 						{
 							*(uint32_t*)(resources[i].amount_ptr) = lowerBound;
 						}

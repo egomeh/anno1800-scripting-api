@@ -10,30 +10,33 @@ class TestRunner
 
         Telegraph telegraph = new Telegraph();
 
-        ulong time;
+        ulong gametime;
         ulong frame;
-        telegraph.GetGameTime(out time, out frame);
+        telegraph.GetGameTime(out gametime, out frame);
 
         List<uint> areas;
         telegraph.GetAllAreas(out areas);
 
-        var oldWorld = (from area in areas where area == 0xBF37 select area).FirstOrDefault();
+        //var oldWorld = (from area in areas where area == 0xBF37 select area).FirstOrDefault();
 
-        List<IslandInfo> islands;
-        telegraph.GetWorldIslands(oldWorld, true, out islands);
+        //List<IslandInfo> islands;
+        //telegraph.GetWorldIslands(oldWorld, true, out islands);
 
-        var lillypaddy = (from island in islands where island.name.Equals(islandName) select island).FirstOrDefault();
+        //var lillypaddy = (from island in islands where island.name.Equals(islandName) select island).FirstOrDefault();
 
-        List<IslandResource> resources;
-        telegraph.GetIslandResources(oldWorld, lillypaddy.island_id, out resources);
+        //List<IslandResource> resources;
+        //telegraph.GetIslandResources(oldWorld, lillypaddy.island_id, out resources);
 
-        var value = (from resource in resources where resource.name.Equals(resourceName) select resource).FirstOrDefault();
+        //var value = (from resource in resources where resource.name.Equals(resourceName) select resource).FirstOrDefault();
 
-        List<ResourceConsumption> consumption;
-        telegraph.GetIslandResidentialConsumption(oldWorld, lillypaddy.island_id, out consumption);
+        //List<ResourceConsumption> consumption;
+        //telegraph.GetIslandResidentialConsumption(oldWorld, lillypaddy.island_id, out consumption);
 
-        var resourceConsumption = (from c in consumption where c.name.Equals(resourceName) select c.rate).FirstOrDefault();
+        //var resourceConsumption = (from c in consumption where c.name.Equals(resourceName) select c.rate).FirstOrDefault();
 
-        Console.WriteLine($"{islandName} has {value.amount} of {resourceName} consumed at a rate of {resourceConsumption} tonnes per minute");
+        //// List<ulong> buildings;
+        //// telegraph.DebugGetIslandBuildingAddresses(oldWorld, lillypaddy.island_id, out buildings);
+
+        //Console.WriteLine($"{islandName} has {value.amount} of {resourceName} consumed at a rate of {resourceConsumption} tonnes per minute");
     }
 }

@@ -91,7 +91,7 @@ void injected(uint32_t binary_crc)
             0xff, 0xd3                                              // call rbx
             });
         uint64_t consumption_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::ConsumptionHook);
-        consumption_hook.Emplace((void*)(moduleBase + consumption_hook_offset));
+        //consumption_hook.Emplace((void*)(moduleBase + consumption_hook_offset));
 
         // Handle remote calls until we fail
         while (HandleRemoteCall(socketHandler, callHandler));
