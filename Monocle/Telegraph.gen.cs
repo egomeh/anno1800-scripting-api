@@ -733,4 +733,31 @@ public class Telegraph
         return true;
     }
 
+    public bool DebugGetAreaAddress(uint areaID, out ulong areaAddress)
+    {
+        areaAddress = default;
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 22;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(areaID, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out areaAddress, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
 }

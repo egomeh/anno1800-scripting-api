@@ -83,6 +83,8 @@ bool ExtractIslandChainFromAddress(uint64_t address, bool mustBelongToThePlayer,
 			info.debug_address = current_island_address;
 			info.island_id = island_id;
 
+			ANNO_LOG("island address %llx", current_island_address);
+
 			bool CouldGetName = GetIslandName(current_island_address, info.name);
 
 			if (CouldGetName && info.name.size() > 0)
@@ -117,7 +119,7 @@ bool GetAreaCode(uint64_t area_address, uint16_t* area_code)
 bool GetIslandListFromAreaAddress(uint64_t address, uint64_t* list_pointer)
 {
 	uint64_t intermediate_struct = *(uint64_t*)(address + 0x200);
-	*list_pointer = *(uint64_t*)(intermediate_struct + 0x78);
+	*list_pointer = *(uint64_t*)(intermediate_struct + 0x98);
 
 	return true;
 }

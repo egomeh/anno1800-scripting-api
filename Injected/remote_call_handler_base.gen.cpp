@@ -423,6 +423,24 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
+        case (22): // DebugGetAreaAddress
+        {
+            uint32_t areaID;
+            if (!Deserialize(&areaID, buffer_in, &offset))
+                return false;
+
+            uint64_t areaAddress;
+
+            success = callHandler.DebugGetAreaAddress(areaID, &areaAddress);
+
+            if (!Serialize(success, buffer_out))
+                return false;
+
+            if (!Serialize(areaAddress, buffer_out))
+                return false;
+
+            break;
+        }
     }
 
     return socketHandler.Send(buffer_out);

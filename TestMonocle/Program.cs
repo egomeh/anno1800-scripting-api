@@ -17,6 +17,14 @@ class TestRunner
         List<uint> areas;
         telegraph.GetAllAreas(out areas);
 
+        uint OldWorldId = 0xBF37;
+
+        ulong OldWorldAddress;
+        telegraph.DebugGetAreaAddress(OldWorldId, out OldWorldAddress);
+
+        List<IslandInfo> OldWorldIslands;
+        telegraph.GetWorldIslands(OldWorldId, true, out OldWorldIslands);
+
         //var oldWorld = (from area in areas where area == 0xBF37 select area).FirstOrDefault();
 
         //List<IslandInfo> islands;

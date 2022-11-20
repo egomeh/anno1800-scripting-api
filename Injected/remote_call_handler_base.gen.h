@@ -30,6 +30,7 @@ public:
     virtual bool DebugVirtualGetComponentFromAddress(const uint64_t& address, const uint64_t& componentId, uint64_t* componentAddress) {return true;};
     virtual bool DebugGetIslandBuildingAddresses(const uint32_t& areaId, const uint32_t& islandId, std::vector<uint64_t>* addresses) {return true;};
     virtual bool DebugTryEnqueueShipForTrade(const uint32_t& areaId, const uint32_t& islandId, const uint64_t& tradeComponent) {return true;};
+    virtual bool DebugGetAreaAddress(const uint32_t& areaID, uint64_t* areaAddress) {return true;};
 };
 
 bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callHandler);

@@ -80,3 +80,11 @@
             - islandId: uint32
             - tradeComponent: uint64
 
+
+    - DebugGetAreaAddress:
+        - in:
+            - areaID: uint32
+        - out:
+            - areaAddress: uint64
+
+

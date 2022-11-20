@@ -582,3 +582,34 @@ bool RemoteCallHandlerAnno::MinMaxResourcesOnIsland(const uint32_t& areaId, cons
 
 	return true;
 }
+
+bool RemoteCallHandlerAnno::DebugGetAreaAddress(const uint32_t& areaID, uint64_t* areaAddress)
+{
+	uint64_t area_address = 0;
+	int attempts = 0;
+
+	HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
+		[&](HookData data) -> bool
+		{
+			// Don't keep going forever, if you pass a bad code,
+			// we want to return eventually
+			if (++attempts > 512)
+				return true;
+
+			area_address = get_area_from_tls();
+
+			uint16_t current_area_code = 0;
+			GetAreaCode(area_address, &current_area_code);
+
+			if (current_area_code == areaID)
+			{
+				*areaAddress = area_address;
+				return true;
+			}
+
+			return false;
+		});
+
+	return true;
+}
+
