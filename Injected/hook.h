@@ -10,6 +10,7 @@ enum class HookedFunction
     GameTimeHook = 1,
     SessionTickHook = 2,
     ConsumptionHook = 3,
+    VehicleSortingHook = 4,
 };
 
 struct HookData

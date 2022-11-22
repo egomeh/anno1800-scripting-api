@@ -123,7 +123,8 @@ uint64_t AnnoFunctionOffset(uint32_t binary_crc, HookedFunction function)
         case HookedFunction::Any:                       return 0;
         case HookedFunction::GameTimeHook:              return 0x4D17D;
         case HookedFunction::SessionTickHook:           return 0x5FB840;
-        case HookedFunction::ConsumptionHook:           return 0;// 0xAD4CFD;
+        case HookedFunction::ConsumptionHook:           return 0; // 0xAD4CFD;
+        case HookedFunction::VehicleSortingHook:        return 0xD52550;
         }
     }
     else if (binary_crc == 0xDBB41535) // Epic store
@@ -134,6 +135,7 @@ uint64_t AnnoFunctionOffset(uint32_t binary_crc, HookedFunction function)
         case HookedFunction::GameTimeHook:              return 0x08A0CD;
         case HookedFunction::SessionTickHook:           return 0xBE4E00;
         case HookedFunction::ConsumptionHook:           return 0xAD1BDD;
+        case HookedFunction::VehicleSortingHook:        return 0; // Have not found this yet 
         }
     }
 

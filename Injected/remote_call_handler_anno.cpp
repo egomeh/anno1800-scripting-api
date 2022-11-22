@@ -613,3 +613,31 @@ bool RemoteCallHandlerAnno::DebugGetAreaAddress(const uint32_t& areaID, uint64_t
 	return true;
 }
 
+bool RemoteCallHandlerAnno::DebugGetVehicleLists(std::vector<uint64_t>* vehicleLists)
+{
+	int attempts = 0;
+	HookManager::Get().ExecuteInHookSync(HookedFunction::VehicleSortingHook,
+		[&](HookData data) -> bool
+		{
+			// Do 32 runs, expect all lists are visited
+			if (++attempts > 8)
+				return true;
+
+			const uint64_t current_list = data.rcx;
+
+			bool hasList = false;
+			for (int i = 0; i < vehicleLists->size(); ++i)
+			{
+				if ((*vehicleLists)[i] == current_list)
+					hasList = true;
+			}
+
+			if (!hasList)
+				vehicleLists->push_back(current_list);
+
+			return false;
+		});
+
+	return true;
+}
+

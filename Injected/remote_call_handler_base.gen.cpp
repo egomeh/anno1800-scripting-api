@@ -441,6 +441,20 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
+        case (23): // DebugGetVehicleLists
+        {
+            std::vector<uint64_t> vehicleLists;
+
+            success = callHandler.DebugGetVehicleLists(&vehicleLists);
+
+            if (!Serialize(success, buffer_out))
+                return false;
+
+            if (!Serialize(vehicleLists, buffer_out))
+                return false;
+
+            break;
+        }
     }
 
     return socketHandler.Send(buffer_out);

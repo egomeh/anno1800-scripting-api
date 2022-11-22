@@ -760,4 +760,28 @@ public class Telegraph
         return true;
     }
 
+    public bool DebugGetVehicleLists(out List<ulong> vehicleLists)
+    {
+        vehicleLists = new List<ulong>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 23;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out vehicleLists, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
 }

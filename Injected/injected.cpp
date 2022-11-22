@@ -18,6 +18,7 @@ extern "C"
     void game_time_hook_trampoline();
     void session_tick_hook_trampoline();
     void consumption_hook_trampoline();
+    void vehicle_sorting_hook_trampoline();
     void building_hook_trampoline();
     uint64_t get_area_from_tls();
 }
@@ -92,6 +93,18 @@ void injected(uint32_t binary_crc)
             });
         uint64_t consumption_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::ConsumptionHook);
         //consumption_hook.Emplace((void*)(moduleBase + consumption_hook_offset));
+
+        // Add a hook for when the game is sorting controllable vehicles (on steam: Anno1800.exe+D52550)
+        MemoryReplacement vehicle_sort_hook;
+        vehicle_sort_hook.SetMemory
+        ({
+            0x48, 0xb8,                                             // movabs rax, [imm64]
+            EIGHT_BYTES((uint64_t)vehicle_sorting_hook_trampoline), // hook address
+            0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
+            0xff, 0xd0                                              // call rax
+            });
+        uint64_t vehicle_sort_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::VehicleSortingHook);
+        vehicle_sort_hook.Emplace((void*)(moduleBase + vehicle_sort_hook_offset));
 
         // Handle remote calls until we fail
         while (HandleRemoteCall(socketHandler, callHandler));

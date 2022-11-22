@@ -6,7 +6,7 @@ class TestRunner
     public static void Run()
     {
         string islandName = "lillypaddy";
-        string resourceName = "beer";
+        string resourceName = "bricks";
 
         Telegraph telegraph = new Telegraph();
 
@@ -22,20 +22,18 @@ class TestRunner
         ulong OldWorldAddress;
         telegraph.DebugGetAreaAddress(OldWorldId, out OldWorldAddress);
 
-        List<IslandInfo> OldWorldIslands;
-        telegraph.GetWorldIslands(OldWorldId, true, out OldWorldIslands);
+        List<IslandInfo> islands;
+        telegraph.GetWorldIslands(OldWorldId, true, out islands);
 
-        //var oldWorld = (from area in areas where area == 0xBF37 select area).FirstOrDefault();
+        var lillypaddy = (from island in islands where island.name.Equals(islandName) select island).FirstOrDefault();
 
-        //List<IslandInfo> islands;
-        //telegraph.GetWorldIslands(oldWorld, true, out islands);
+        List<IslandResource> resources;
+        telegraph.GetIslandResources(OldWorldId, lillypaddy.island_id, out resources);
 
-        //var lillypaddy = (from island in islands where island.name.Equals(islandName) select island).FirstOrDefault();
+        var value = (from resource in resources where resource.name.Equals(resourceName) select resource).FirstOrDefault();
 
-        //List<IslandResource> resources;
-        //telegraph.GetIslandResources(oldWorld, lillypaddy.island_id, out resources);
-
-        //var value = (from resource in resources where resource.name.Equals(resourceName) select resource).FirstOrDefault();
+        List<ulong> vehicleLists;
+        telegraph.DebugGetVehicleLists(out vehicleLists);
 
         //List<ResourceConsumption> consumption;
         //telegraph.GetIslandResidentialConsumption(oldWorld, lillypaddy.island_id, out consumption);

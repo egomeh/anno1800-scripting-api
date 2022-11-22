@@ -1,7 +1,7 @@
 PUBLIC game_time_hook_trampoline
 PUBLIC session_tick_hook_trampoline
 PUBLIC consumption_hook_trampoline
-
+PUBLIC vehicle_sorting_hook_trampoline
 
 PUBLIC get_area_from_tls
 PUBLIC virtual_get_component
@@ -143,6 +143,40 @@ pop_volatile
 ret
 
 consumption_hook_trampoline ENDP
+
+vehicle_sorting_hook_trampoline PROC
+
+pop rax
+
+; Do original function work (prologue)
+mov [rsp+08],rcx
+push rbp
+push rbx
+push rsi
+push rdi
+push r12
+push r13
+push r14
+push r15
+
+push rax
+
+push_volatile
+
+fill_hook_data
+
+mov rcx, 4 ; service hook #4 vehicle sort hook
+sub rsp, 020h
+call HookManagerServiceHook
+add rsp, 020h
+
+clean_up_hook_data
+
+pop_volatile
+
+ret
+
+vehicle_sorting_hook_trampoline ENDP
 
 get_area_from_tls PROC
 ; Copied directly from some anno
