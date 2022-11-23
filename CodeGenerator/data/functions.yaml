@@ -49,6 +49,12 @@
             - lowerBound: uint32
             - upperBound: uint32
 
+    - GetShipsInRegion:
+        - in:
+            - areaId: uint32
+        - out:
+            - ships: list(ShipInfo)
+
 - types:
 
     - IslandResource:
@@ -69,4 +75,9 @@
         - fields:
             - island_id: uint32
             - name: string
+            - debug_address: uint64
+
+    - ShipInfo:
+        - fields:
+            - id: uint32
             - debug_address: uint64

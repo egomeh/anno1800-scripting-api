@@ -17,6 +17,7 @@ public:
     virtual bool GetIslandResidentialConsumption(const uint32_t& areaCode, const uint32_t& islandId, std::vector<ResourceConsumption>* resources) {return true;};
     virtual bool GetIslandIndustrialConversion(const uint32_t& areaId, const uint32_t& islandId, std::vector<ResourceConsumption>* resources) {return true;};
     virtual bool MinMaxResourcesOnIsland(const uint32_t& areaId, const uint32_t& islandId, const uint32_t& lowerBound, const uint32_t& upperBound) {return true;};
+    virtual bool GetShipsInRegion(const uint32_t& areaId, std::vector<ShipInfo>* ships) {return true;};
     virtual bool DebugGetResourceInfoFromAddress(const uint64_t& address, IslandResource* resource) {return true;};
     virtual bool DebugGetResourceChainInfoFromAddress(const uint64_t& address, std::vector<IslandResource>* resource) {return true;};
     virtual bool DebugGetIslandNameFromAddress(const uint64_t& address, std::string* name) {return true;};

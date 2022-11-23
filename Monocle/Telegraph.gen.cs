@@ -377,12 +377,39 @@ public class Telegraph
         return true;
     }
 
+    public bool GetShipsInRegion(uint areaId, out List<ShipInfo> ships)
+    {
+        ships = new List<ShipInfo>();
+        List<byte> outgoingData = new List<byte>();
+
+        ulong functionIndex = 9;
+
+        if (!Serializer.Serialize(functionIndex, outgoingData))
+            return false;
+
+        if (!Serializer.Serialize(areaId, outgoingData))
+            return false;
+
+        List<byte> response;
+
+        if (!Exchange(outgoingData, out response))
+            return false;
+
+        byte[] inData = response.ToArray();
+
+        int offset = 0;
+        if (!Serializer.Deserialize(out ships, inData, offset, out offset))
+            return false;
+
+        return true;
+    }
+
     public bool DebugGetResourceInfoFromAddress(ulong address, out IslandResource resource)
     {
         resource = default;
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 9;
+        ulong functionIndex = 10;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -409,7 +436,7 @@ public class Telegraph
         resource = new List<IslandResource>();
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 10;
+        ulong functionIndex = 11;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -436,7 +463,7 @@ public class Telegraph
         name = "";
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 11;
+        ulong functionIndex = 12;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -463,7 +490,7 @@ public class Telegraph
         name = "";
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 12;
+        ulong functionIndex = 13;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -490,7 +517,7 @@ public class Telegraph
         resources = new List<IslandResource>();
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 13;
+        ulong functionIndex = 14;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -517,7 +544,7 @@ public class Telegraph
         islands = new List<IslandInfo>();
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 14;
+        ulong functionIndex = 15;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -547,7 +574,7 @@ public class Telegraph
         address = default;
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 15;
+        ulong functionIndex = 16;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -571,7 +598,7 @@ public class Telegraph
         address = default;
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 16;
+        ulong functionIndex = 17;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -598,7 +625,7 @@ public class Telegraph
         name = "";
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 17;
+        ulong functionIndex = 18;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -625,7 +652,7 @@ public class Telegraph
         guid = default;
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 18;
+        ulong functionIndex = 19;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -652,7 +679,7 @@ public class Telegraph
         componentAddress = default;
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 19;
+        ulong functionIndex = 20;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -682,7 +709,7 @@ public class Telegraph
         addresses = new List<ulong>();
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 20;
+        ulong functionIndex = 21;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -711,7 +738,7 @@ public class Telegraph
     {
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 21;
+        ulong functionIndex = 22;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -738,7 +765,7 @@ public class Telegraph
         areaAddress = default;
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 22;
+        ulong functionIndex = 23;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;
@@ -765,7 +792,7 @@ public class Telegraph
         vehicleLists = new List<ulong>();
         List<byte> outgoingData = new List<byte>();
 
-        ulong functionIndex = 23;
+        ulong functionIndex = 24;
 
         if (!Serializer.Serialize(functionIndex, outgoingData))
             return false;

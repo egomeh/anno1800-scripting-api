@@ -293,6 +293,34 @@ public class Serializer
 
 
 
+    public static bool Serialize(ShipInfo data, List<byte> buffer)
+    {
+        if (!Serialize(data.id, buffer))
+            return false;
+
+        if (!Serialize(data.debug_address, buffer))
+            return false;
+
+        return true;
+    }
+
+    public static bool Deserialize(out ShipInfo data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new ShipInfo();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.id, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.debug_address, buffer, offset, out offsetAfter))
+            return false;
+
+        return true;
+    }
+
+
+
     public static bool Serialize(List<IslandInfo> data, List<byte> buffer)
     {
         ulong size = (ulong)data.Count;
@@ -431,6 +459,43 @@ public class Serializer
         for (ulong i = 0; i < size; ++i)
         {
             ResourceConsumption element;
+            if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
+                return false;
+            data.Add(element);
+        }
+
+        return true;
+    }
+
+
+
+    public static bool Serialize(List<ShipInfo> data, List<byte> buffer)
+    {
+        ulong size = (ulong)data.Count;
+        if (!Serialize(size, buffer))
+                return false;
+
+        for (int i = 0; i < data.Count; ++i)
+        {
+            if (!Serialize(data[i], buffer))
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool Deserialize(out List<ShipInfo> data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        ulong size;
+        data = new List<ShipInfo>();
+        offsetAfter = offset;
+
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+        for (ulong i = 0; i < size; ++i)
+        {
+            ShipInfo element;
             if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
                 return false;
             data.Add(element);

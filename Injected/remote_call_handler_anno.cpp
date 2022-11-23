@@ -641,3 +641,53 @@ bool RemoteCallHandlerAnno::DebugGetVehicleLists(std::vector<uint64_t>* vehicleL
 	return true;
 }
 
+bool RemoteCallHandlerAnno::GetShipsInRegion(const uint32_t& areaId, std::vector<ShipInfo>* ships)
+{
+	int attempts = 0;
+	HookManager::Get().ExecuteInHookSync(HookedFunction::VehicleSortingHook,
+		[&](HookData data) -> bool
+		{
+			// Don't run forever, in case we've passed an invalid areaId
+			// 512 is a bit excessive, but it should resovle in at most
+			// number of regions iterations.
+			if (++attempts > 512)
+				return true;
+
+			uint64_t current_area = get_area_from_tls();
+			uint16_t current_area_id;
+			GetAreaCode(current_area, &current_area_id);
+
+			if (current_area_id != (uint16_t)areaId)
+				return false;
+
+			uint64_t ship_list_struct = data.rcx;
+			uint64_t list_ptr = *(uint64_t*)(ship_list_struct + 0x28);
+			uint64_t list_end = *(uint64_t*)(ship_list_struct + 0x30);
+
+			// If either pointer is null, we assume there are no ships
+			if (list_ptr == 0)
+				return true;
+
+			if (list_end == 0)
+				return true;
+
+			while (list_ptr < list_end)
+			{
+				uint64_t id_field = *(uint64_t*)list_ptr;
+				uint64_t ptr_field = *(uint64_t*)(list_ptr + 0x8);
+
+				ShipInfo ship_info;
+				ship_info.id = (uint32_t)id_field;
+				ship_info.debug_address = ptr_field;
+
+				ships->push_back(ship_info);
+
+				list_ptr += 0x18;
+			}
+
+			return true;
+		});
+
+	return true;
+}
+

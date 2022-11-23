@@ -90,5 +90,3 @@
     - DebugGetVehicleLists:
         - out:
             - vehicleLists: list(uint64)
-
-

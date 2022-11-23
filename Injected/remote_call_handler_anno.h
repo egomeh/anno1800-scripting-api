@@ -30,4 +30,5 @@ public:
 	virtual bool MinMaxResourcesOnIsland(const uint32_t& areaId, const uint32_t& islandId, const uint32_t& lowerBound, const uint32_t& upperBound) override;
 	virtual bool DebugGetAreaAddress(const uint32_t& areaID, uint64_t* areaAddress) override;
 	virtual bool DebugGetVehicleLists(std::vector<uint64_t>* vehicleLists);
+	virtual bool GetShipsInRegion(const uint32_t& areaId, std::vector<ShipInfo>* ships) override;
 };

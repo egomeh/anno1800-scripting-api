@@ -49,3 +49,16 @@ public struct IslandInfo
     public ulong debug_address;
 }
 
+
+public struct ShipInfo
+{
+    public ShipInfo()
+    {
+        id = default;
+        debug_address = default;
+    }
+
+    public uint id;
+    public ulong debug_address;
+}
+

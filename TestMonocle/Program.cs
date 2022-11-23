@@ -35,6 +35,9 @@ class TestRunner
         List<ulong> vehicleLists;
         telegraph.DebugGetVehicleLists(out vehicleLists);
 
+        List<ShipInfo> ships;
+        telegraph.GetShipsInRegion(OldWorldId, out ships);
+
         //List<ResourceConsumption> consumption;
         //telegraph.GetIslandResidentialConsumption(oldWorld, lillypaddy.island_id, out consumption);
 

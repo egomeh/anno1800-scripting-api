@@ -28,3 +28,10 @@ struct IslandInfo
     uint64_t debug_address;
 };
 
+
+struct ShipInfo
+{
+    uint32_t id;
+    uint64_t debug_address;
+};
+
