@@ -311,12 +311,123 @@ bool Deserialize(IslandInfo* data, const std::vector<uint8_t>& stream, size_t* o
 }
 
 
+bool Serialize(const Vector& data, std::vector<uint8_t>& stream)
+{
+    if (!Serialize(data.x, stream))
+        return false;
+
+    if (!Serialize(data.y, stream))
+        return false;
+
+    return true;
+}
+
+bool Deserialize(Vector* data, const std::vector<uint8_t>& stream, size_t* offset)
+{
+    if (!Deserialize(&data->x, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->y, stream, offset))
+        return false;
+
+    return true;
+}
+
+
+bool Serialize(const CargoSlot& data, std::vector<uint8_t>& stream)
+{
+    if (!Serialize(data.occupied, stream))
+        return false;
+
+    if (!Serialize(data.type_name, stream))
+        return false;
+
+    if (!Serialize(data.type_id, stream))
+        return false;
+
+    if (!Serialize(data.amount, stream))
+        return false;
+
+    return true;
+}
+
+bool Deserialize(CargoSlot* data, const std::vector<uint8_t>& stream, size_t* offset)
+{
+    if (!Deserialize(&data->occupied, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->type_name, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->type_id, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->amount, stream, offset))
+        return false;
+
+    return true;
+}
+
+
+bool Serialize(const std::vector<CargoSlot>& data, std::vector<uint8_t>& stream)
+{
+    uint64_t size = data.size();
+
+    if (!Serialize(size, stream))
+        return false;
+
+    for (const CargoSlot& item : data)
+    {
+        if (!Serialize(item, stream))
+            return false;
+    }
+
+    return true;
+}
+
+bool Deserialize(std::vector<CargoSlot>* data, const std::vector<uint8_t>& stream, size_t* offset)
+{
+    data->clear();
+
+    uint64_t size = 0;
+
+    if (!Deserialize(&size, stream, offset))
+        return false;
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        CargoSlot item;
+        if (!Deserialize(&item, stream, offset))
+            return false;
+
+        data->push_back(item);
+    }
+
+    return true;
+}
+
+
 bool Serialize(const ShipInfo& data, std::vector<uint8_t>& stream)
 {
     if (!Serialize(data.id, stream))
         return false;
 
     if (!Serialize(data.debug_address, stream))
+        return false;
+
+    if (!Serialize(data.name, stream))
+        return false;
+
+    if (!Serialize(data.idle, stream))
+        return false;
+
+    if (!Serialize(data.position, stream))
+        return false;
+
+    if (!Serialize(data.rotation, stream))
+        return false;
+
+    if (!Serialize(data.cargo, stream))
         return false;
 
     return true;
@@ -328,6 +439,44 @@ bool Deserialize(ShipInfo* data, const std::vector<uint8_t>& stream, size_t* off
         return false;
 
     if (!Deserialize(&data->debug_address, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->name, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->idle, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->position, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->rotation, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->cargo, stream, offset))
+        return false;
+
+    return true;
+}
+
+
+bool Serialize(const DebugComponent& data, std::vector<uint8_t>& stream)
+{
+    if (!Serialize(data.id, stream))
+        return false;
+
+    if (!Serialize(data.address, stream))
+        return false;
+
+    return true;
+}
+
+bool Deserialize(DebugComponent* data, const std::vector<uint8_t>& stream, size_t* offset)
+{
+    if (!Deserialize(&data->id, stream, offset))
+        return false;
+
+    if (!Deserialize(&data->address, stream, offset))
         return false;
 
     return true;
@@ -552,6 +701,44 @@ bool Deserialize(std::vector<uint64_t>* data, const std::vector<uint8_t>& stream
     for (size_t i = 0; i < size; ++i)
     {
         uint64_t item;
+        if (!Deserialize(&item, stream, offset))
+            return false;
+
+        data->push_back(item);
+    }
+
+    return true;
+}
+
+
+bool Serialize(const std::vector<DebugComponent>& data, std::vector<uint8_t>& stream)
+{
+    uint64_t size = data.size();
+
+    if (!Serialize(size, stream))
+        return false;
+
+    for (const DebugComponent& item : data)
+    {
+        if (!Serialize(item, stream))
+            return false;
+    }
+
+    return true;
+}
+
+bool Deserialize(std::vector<DebugComponent>* data, const std::vector<uint8_t>& stream, size_t* offset)
+{
+    data->clear();
+
+    uint64_t size = 0;
+
+    if (!Deserialize(&size, stream, offset))
+        return false;
+
+    for (size_t i = 0; i < size; ++i)
+    {
+        DebugComponent item;
         if (!Deserialize(&item, stream, offset))
             return false;
 

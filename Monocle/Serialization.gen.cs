@@ -293,12 +293,134 @@ public class Serializer
 
 
 
+    public static bool Serialize(Vector data, List<byte> buffer)
+    {
+        if (!Serialize(data.x, buffer))
+            return false;
+
+        if (!Serialize(data.y, buffer))
+            return false;
+
+        return true;
+    }
+
+    public static bool Deserialize(out Vector data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new Vector();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.x, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.y, buffer, offset, out offsetAfter))
+            return false;
+
+        return true;
+    }
+
+
+
+    public static bool Serialize(CargoSlot data, List<byte> buffer)
+    {
+        if (!Serialize(data.occupied, buffer))
+            return false;
+
+        if (!Serialize(data.type_name, buffer))
+            return false;
+
+        if (!Serialize(data.type_id, buffer))
+            return false;
+
+        if (!Serialize(data.amount, buffer))
+            return false;
+
+        return true;
+    }
+
+    public static bool Deserialize(out CargoSlot data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new CargoSlot();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.occupied, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.type_name, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.type_id, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.amount, buffer, offset, out offsetAfter))
+            return false;
+
+        return true;
+    }
+
+
+
+    public static bool Serialize(List<CargoSlot> data, List<byte> buffer)
+    {
+        ulong size = (ulong)data.Count;
+        if (!Serialize(size, buffer))
+                return false;
+
+        for (int i = 0; i < data.Count; ++i)
+        {
+            if (!Serialize(data[i], buffer))
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool Deserialize(out List<CargoSlot> data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        ulong size;
+        data = new List<CargoSlot>();
+        offsetAfter = offset;
+
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+        for (ulong i = 0; i < size; ++i)
+        {
+            CargoSlot element;
+            if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
+                return false;
+            data.Add(element);
+        }
+
+        return true;
+    }
+
+
+
     public static bool Serialize(ShipInfo data, List<byte> buffer)
     {
         if (!Serialize(data.id, buffer))
             return false;
 
         if (!Serialize(data.debug_address, buffer))
+            return false;
+
+        if (!Serialize(data.name, buffer))
+            return false;
+
+        if (!Serialize(data.idle, buffer))
+            return false;
+
+        if (!Serialize(data.position, buffer))
+            return false;
+
+        if (!Serialize(data.rotation, buffer))
+            return false;
+
+        if (!Serialize(data.cargo, buffer))
             return false;
 
         return true;
@@ -314,6 +436,54 @@ public class Serializer
         offset = offsetAfter;
 
         if (!Deserialize(out data.debug_address, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.name, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.idle, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.position, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.rotation, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.cargo, buffer, offset, out offsetAfter))
+            return false;
+
+        return true;
+    }
+
+
+
+    public static bool Serialize(DebugComponent data, List<byte> buffer)
+    {
+        if (!Serialize(data.id, buffer))
+            return false;
+
+        if (!Serialize(data.address, buffer))
+            return false;
+
+        return true;
+    }
+
+    public static bool Deserialize(out DebugComponent data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        data = new DebugComponent();
+        offsetAfter = offset;
+
+        if (!Deserialize(out data.id, buffer, offset, out offsetAfter))
+            return false;
+        offset = offsetAfter;
+
+        if (!Deserialize(out data.address, buffer, offset, out offsetAfter))
             return false;
 
         return true;
@@ -533,6 +703,43 @@ public class Serializer
         for (ulong i = 0; i < size; ++i)
         {
             ulong element;
+            if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
+                return false;
+            data.Add(element);
+        }
+
+        return true;
+    }
+
+
+
+    public static bool Serialize(List<DebugComponent> data, List<byte> buffer)
+    {
+        ulong size = (ulong)data.Count;
+        if (!Serialize(size, buffer))
+                return false;
+
+        for (int i = 0; i < data.Count; ++i)
+        {
+            if (!Serialize(data[i], buffer))
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool Deserialize(out List<DebugComponent> data, byte[] buffer, int offset, out int offsetAfter)
+    {
+        ulong size;
+        data = new List<DebugComponent>();
+        offsetAfter = offset;
+
+        if (!Deserialize(out size, buffer, offsetAfter, out offsetAfter))
+                return false;
+
+        for (ulong i = 0; i < size; ++i)
+        {
+            DebugComponent element;
             if (!Deserialize(out element, buffer, offsetAfter, out offsetAfter))
                 return false;
             data.Add(element);

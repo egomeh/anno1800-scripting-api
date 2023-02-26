@@ -37,8 +37,20 @@ bool Deserialize(ResourceConsumption* data, const std::vector<uint8_t>& stream, 
 bool Serialize(const IslandInfo& data, std::vector<uint8_t>& stream);
 bool Deserialize(IslandInfo* data, const std::vector<uint8_t>& stream, size_t* offset);
 
+bool Serialize(const Vector& data, std::vector<uint8_t>& stream);
+bool Deserialize(Vector* data, const std::vector<uint8_t>& stream, size_t* offset);
+
+bool Serialize(const CargoSlot& data, std::vector<uint8_t>& stream);
+bool Deserialize(CargoSlot* data, const std::vector<uint8_t>& stream, size_t* offset);
+
+bool Serialize(const std::vector<CargoSlot>& data, std::vector<uint8_t>& stream);
+bool Deserialize(std::vector<CargoSlot>* data, const std::vector<uint8_t>& stream, size_t* offset);
+
 bool Serialize(const ShipInfo& data, std::vector<uint8_t>& stream);
 bool Deserialize(ShipInfo* data, const std::vector<uint8_t>& stream, size_t* offset);
+
+bool Serialize(const DebugComponent& data, std::vector<uint8_t>& stream);
+bool Deserialize(DebugComponent* data, const std::vector<uint8_t>& stream, size_t* offset);
 
 bool Serialize(const std::vector<IslandInfo>& data, std::vector<uint8_t>& stream);
 bool Deserialize(std::vector<IslandInfo>* data, const std::vector<uint8_t>& stream, size_t* offset);
@@ -57,3 +69,6 @@ bool Deserialize(std::vector<ShipInfo>* data, const std::vector<uint8_t>& stream
 
 bool Serialize(const std::vector<uint64_t>& data, std::vector<uint8_t>& stream);
 bool Deserialize(std::vector<uint64_t>* data, const std::vector<uint8_t>& stream, size_t* offset);
+
+bool Serialize(const std::vector<DebugComponent>& data, std::vector<uint8_t>& stream);
+bool Deserialize(std::vector<DebugComponent>* data, const std::vector<uint8_t>& stream, size_t* offset);

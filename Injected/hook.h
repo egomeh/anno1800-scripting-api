@@ -13,6 +13,21 @@ enum class HookedFunction
     VehicleSortingHook = 4,
 };
 
+enum class DataOffset : uint64_t
+{
+    Invalid = 0,
+    GameStateOffset = 1,
+    AssetNameDatabase = 2,
+    FunctionGUIDToName = 3,
+};
+
+enum class BinaryCRC32 : uint32_t
+{
+    Invalid = 0,
+    Steam = 0xD5A09F29,
+    EpicStore = 0xDBB41535
+};
+
 struct HookData
 {
     uint64_t rax;
@@ -57,7 +72,8 @@ private:
     std::list<HookExecutionRequest> hook_execution_requests;
 };
 
-uint64_t AnnoFunctionOffset(uint32_t binary_crc, HookedFunction function);
+uint64_t AnnoFunctionOffset(BinaryCRC32 binary_crc, HookedFunction function);
+uint64_t AnnoDataOffset(BinaryCRC32 binary_crc, DataOffset function);
 
 // To have an interface for assembly
 extern "C"

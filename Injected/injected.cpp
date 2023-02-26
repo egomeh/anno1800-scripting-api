@@ -23,7 +23,7 @@ extern "C"
     uint64_t get_area_from_tls();
 }
 
-void injected(uint32_t binary_crc)
+void injected(BinaryCRC32 binary_crc)
 {
     ANNO_LOG("Running injected code in Anno 1800");
 
@@ -54,6 +54,9 @@ void injected(uint32_t binary_crc)
     uint64_t entryPoint = (uint64_t)(moduleInfo.EntryPoint);
     uint64_t moduleSize = (uint64_t)(moduleInfo.SizeOfImage);
     uint64_t exeSectionSize = moduleSize - (entryPoint - moduleBase);
+
+    callHandler.module_base = moduleBase;
+    callHandler.binary_crc = binary_crc;
 
     // Scope for memory placements.
     // When exiting this scope, all native code should

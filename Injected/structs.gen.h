@@ -29,9 +29,37 @@ struct IslandInfo
 };
 
 
+struct Vector
+{
+    float x;
+    float y;
+};
+
+
+struct CargoSlot
+{
+    bool occupied;
+    std::string type_name;
+    uint32_t type_id;
+    uint32_t amount;
+};
+
+
 struct ShipInfo
 {
     uint32_t id;
     uint64_t debug_address;
+    std::string name;
+    bool idle;
+    Vector position;
+    float rotation;
+    std::vector<CargoSlot> cargo;
+};
+
+
+struct DebugComponent
+{
+    uint64_t id;
+    uint64_t address;
 };
 

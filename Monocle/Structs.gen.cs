@@ -50,15 +50,68 @@ public struct IslandInfo
 }
 
 
+public struct Vector
+{
+    public Vector()
+    {
+        x = default;
+        y = default;
+    }
+
+    public float x;
+    public float y;
+}
+
+
+public struct CargoSlot
+{
+    public CargoSlot()
+    {
+        occupied = default;
+        type_name = "";
+        type_id = default;
+        amount = default;
+    }
+
+    public bool occupied;
+    public string type_name;
+    public uint type_id;
+    public uint amount;
+}
+
+
 public struct ShipInfo
 {
     public ShipInfo()
     {
         id = default;
         debug_address = default;
+        name = "";
+        idle = default;
+        position = new Vector();
+        rotation = default;
+        cargo = new List<CargoSlot>();
     }
 
     public uint id;
     public ulong debug_address;
+    public string name;
+    public bool idle;
+    public Vector position;
+    public float rotation;
+    public List<CargoSlot> cargo;
+}
+
+
+public struct DebugComponent
+{
+    public DebugComponent()
+    {
+        id = default;
+        address = default;
+    }
+
+    public ulong id;
+    public ulong address;
 }
 

@@ -1,11 +1,15 @@
 #pragma once
 
+#include "Hook.h"
 #include "remote_call_handler_base.gen.h"
 
 class RemoteCallHandlerAnno : public RemoteCallHandlerBase
 {
 public:
 	uint64_t module_base = 0;
+	BinaryCRC32 binary_crc;
+
+	std::string GetNameFromGUID(uint64_t guid);
 
 	virtual bool WriteMessageBox(const std::string& message) override;
 	virtual bool GetGameTime(uint64_t* time, uint64_t* frame) override;
@@ -31,4 +35,6 @@ public:
 	virtual bool DebugGetAreaAddress(const uint32_t& areaID, uint64_t* areaAddress) override;
 	virtual bool DebugGetVehicleLists(std::vector<uint64_t>* vehicleLists);
 	virtual bool GetShipsInRegion(const uint32_t& areaId, std::vector<ShipInfo>* ships) override;
+	virtual bool DebugGetEntityComponets(const uint64_t& entityAddress, std::vector<DebugComponent>* components) override;
+	virtual bool SetIslandResource(const uint32_t& world_id, const uint32_t& island_id, const uint32_t& resource_type, const uint32_t& target_value, uint32_t* previous_value);
 };

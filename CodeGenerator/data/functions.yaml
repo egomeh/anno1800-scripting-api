@@ -55,6 +55,16 @@
         - out:
             - ships: list(ShipInfo)
 
+    - SetIslandResource:
+        - in:
+            - world_id: uint32
+            - island_id: uint32
+            - resource_type: uint32
+            - target_value: uint32
+        - out:
+            - previous_value: uint32
+
+
 - types:
 
     - IslandResource:
@@ -77,7 +87,24 @@
             - name: string
             - debug_address: uint64
 
+    - Vector:
+        - fields:
+            - x: float
+            - y: float
+
+    - CargoSlot:
+        - fields:
+            - occupied: bool
+            - type_name: string
+            - type_id: uint32
+            - amount: uint32
+
     - ShipInfo:
         - fields:
             - id: uint32
             - debug_address: uint64
+            - name: string
+            - idle: bool
+            - position: Vector
+            - rotation: float
+            - cargo: list(CargoSlot)

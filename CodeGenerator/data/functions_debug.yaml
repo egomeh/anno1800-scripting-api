@@ -80,7 +80,6 @@
             - islandId: uint32
             - tradeComponent: uint64
 
-
     - DebugGetAreaAddress:
         - in:
             - areaID: uint32
@@ -90,3 +89,17 @@
     - DebugGetVehicleLists:
         - out:
             - vehicleLists: list(uint64)
+
+    - DebugGetEntityComponets:
+        - in:
+            - entityAddress: uint64
+        - out:
+            - components: list(DebugComponent)
+
+
+- types:
+
+    - DebugComponent:
+        - fields:
+            - id: uint64
+            - address: uint64

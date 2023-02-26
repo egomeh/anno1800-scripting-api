@@ -11,7 +11,7 @@ bool DoesIslandBelongToPlayer(uint64_t address);
 
 bool GetIslandName(uint64_t island_address, std::string& name);
 
-bool GetAreaCode(uint64_t area_address, uint16_t* area_code);
+bool GetAreaCode(uint64_t area_address, uint64_t* area_code);
 
 bool ExtractIslandChainFromAddress(uint64_t address, bool mustBelongToThePlayer, std::vector<IslandInfo>* islands);
 
@@ -22,3 +22,4 @@ bool GetBuildingConversion(uint64_t building_address, std::unordered_map<uint32_
 bool GetBuildingIndustrialConversion(uint64_t building_address, std::unordered_map<uint32_t, double>& conversion_map);
 
 bool GetBuildingBuffConversion(uint64_t building_address, std::unordered_map<uint32_t, double>& conversion_map);
+

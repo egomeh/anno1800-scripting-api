@@ -1,6 +1,9 @@
 #pragma once
 
-void injected(uint32_t annoBinary);
+// Forward declare, see Hook.h
+enum class BinaryCRC32 : uint32_t;
+
+void injected(BinaryCRC32 annoBinary);
 
 /*
 Function bytes

@@ -4,8 +4,8 @@ PUBLIC consumption_hook_trampoline
 PUBLIC vehicle_sorting_hook_trampoline
 
 PUBLIC get_area_from_tls
-PUBLIC virtual_get_component
-PUBLIC try_enqueue_ship_for_trade;
+PUBLIC get_anno_component
+PUBLIC try_enqueue_ship_for_trade
 
 push_volatile MACRO
 pushf
@@ -185,7 +185,7 @@ get_area_from_tls PROC
 push rbx
 push rcx
 mov rax, gs:[58h]
-mov rbx, 15A8h
+mov rbx, 15B0h
 mov rcx, [rax]
 mov rbx, [rbx + rcx]
 mov rax, rbx
@@ -194,14 +194,14 @@ pop rbx
 ret
 get_area_from_tls ENDP
 
-virtual_get_component PROC
+get_anno_component PROC
 sub    rsp, 020h
 mov    rax, QWORD PTR [rcx]
 call   QWORD PTR [rax + 018h]
 nop
 add    rsp, 20h
 ret
-virtual_get_component ENDP
+get_anno_component ENDP
 
 try_enqueue_ship_for_trade PROC
 sub    rsp, 020h

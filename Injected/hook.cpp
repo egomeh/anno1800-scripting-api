@@ -110,24 +110,24 @@ bool HookManager::ExecuteInHookAsync(HookedFunction hook_to_execute, std::functi
     return ExecuteInHookBase(hook_to_execute, function, true);
 }
 
-uint64_t AnnoFunctionOffset(uint32_t binary_crc, HookedFunction function)
+uint64_t AnnoFunctionOffset(BinaryCRC32 binary_crc, HookedFunction function)
 {
-    if (binary_crc == 0)
+    if (binary_crc == BinaryCRC32::Invalid)
     {
         return 0;
     }
-    else if (binary_crc == 0x50F67B49) // Steam
+    else if (binary_crc == BinaryCRC32::Steam)
     {
         switch (function)
         {
         case HookedFunction::Any:                       return 0;
-        case HookedFunction::GameTimeHook:              return 0x4D17D;
-        case HookedFunction::SessionTickHook:           return 0x5FB840;
-        case HookedFunction::ConsumptionHook:           return 0; // 0xAD4CFD;
-        case HookedFunction::VehicleSortingHook:        return 0xD52550;
+        case HookedFunction::GameTimeHook:              return 0x09B0F2;
+        case HookedFunction::SessionTickHook:           return 0x248190;
+        case HookedFunction::ConsumptionHook:           return 0x0; // 0xAD4CFD;
+        case HookedFunction::VehicleSortingHook:        return 0x0;
         }
     }
-    else if (binary_crc == 0xDBB41535) // Epic store
+    else if (binary_crc == BinaryCRC32::EpicStore) // Epic store
     {
         switch (function)
         {
@@ -141,6 +141,37 @@ uint64_t AnnoFunctionOffset(uint32_t binary_crc, HookedFunction function)
 
     return 0;
 }
+
+uint64_t AnnoDataOffset(BinaryCRC32 binary_crc, DataOffset offset)
+{
+    if (binary_crc == BinaryCRC32::Invalid)
+    {
+        return 0;
+    }
+    else if (binary_crc == BinaryCRC32::Steam)
+    {
+        switch (offset)
+        {
+        case DataOffset::Invalid:                       return 0x0;
+        case DataOffset::GameStateOffset:               return 0x5B05820;
+        case DataOffset::AssetNameDatabase:             return 0x5B05B38;
+        case DataOffset::FunctionGUIDToName:            return 0x3ADA6A0;
+        }
+    }
+    else if (binary_crc == BinaryCRC32::EpicStore) // Epic store
+    {
+        switch (offset)
+        {
+        case DataOffset::Invalid:                       return 0x0;
+        case DataOffset::GameStateOffset:               return 0x0;
+        case DataOffset::AssetNameDatabase:             return 0x0;
+        case DataOffset::FunctionGUIDToName:            return 0x0;
+        }
+    }
+
+    return 0;
+}
+
 
 void HookManagerServiceHook(HookedFunction current_hook, HookData hook_data)
 {

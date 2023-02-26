@@ -33,7 +33,7 @@ void entry(HMODULE module)
     }
 
     // Get the file's crc checksum
-    uint32_t binary_crc = 0;
+    uint32_t binary_crc_raw = 0;
     {
         std::ifstream file_in(filename, std::ifstream::binary);
         std::vector<char> buffer(1024, 0);
@@ -41,11 +41,32 @@ void entry(HMODULE module)
         {
             file_in.read(buffer.data(), 1024);
             std::streamsize bytes_read = file_in.gcount();
-            binary_crc = crc_update(binary_crc, buffer.data(), bytes_read);
+            binary_crc_raw = crc_update(binary_crc_raw, buffer.data(), bytes_read);
         }
     }
 
-    ANNO_LOG("Injected into binary with crc %x", binary_crc);
+    ANNO_LOG("Injected into binary with crc %x", binary_crc_raw);
+
+    // Figure out which binary we're in
+    BinaryCRC32 binary_crc = BinaryCRC32::Invalid;
+    switch ((BinaryCRC32)binary_crc_raw)
+    {
+    case BinaryCRC32::Steam:
+    {
+        binary_crc = BinaryCRC32::Steam;
+        break;
+    }
+    case BinaryCRC32::EpicStore:
+    {
+        binary_crc = BinaryCRC32::EpicStore;
+        break;
+    }
+    default:
+    {
+        binary_crc = BinaryCRC32::Invalid;
+        break;
+    }
+    }
 
     std::string mainModuleName = std::string(&filename[lastSeperator + 1], exeStart - lastSeperator - 1);
 

@@ -5,7 +5,7 @@
 
 extern "C"
 {
-	uint64_t virtual_get_component(uint64_t object_address, uint64_t component_id);
+	uint64_t get_anno_component(uint64_t object_address, uint64_t component_id);
 }
 
 bool ExtractResourceNodeInfo(uint64_t address, IslandResource* resourceInfo, bool& known)
@@ -106,12 +106,12 @@ bool ExtractIslandChainFromAddress(uint64_t address, bool mustBelongToThePlayer,
 	return true;
 }
 
-bool GetAreaCode(uint64_t area_address, uint16_t* area_code)
+bool GetAreaCode(uint64_t area_address, uint64_t* area_code)
 {
 	if (!area_address)
 		return false;
 
-	*area_code = *(uint16_t*)(area_address + 0x8);
+	*area_code = *(uint64_t*)(area_address + 0x8) & 0xFFFFFFFF;
 
 	return true;
 }
@@ -126,7 +126,7 @@ bool GetIslandListFromAreaAddress(uint64_t address, uint64_t* list_pointer)
 
 bool GetBuildingConversion(uint64_t building_address, std::unordered_map<uint32_t, double>& conversion_map, uint64_t component_id)
 {
-	uint64_t production_node = virtual_get_component(building_address, component_id);
+	uint64_t production_node = get_anno_component(building_address, component_id);
 
 	if (!production_node)
 		return true;
