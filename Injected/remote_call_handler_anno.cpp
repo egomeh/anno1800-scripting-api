@@ -17,10 +17,10 @@ extern "C"
 std::string RemoteCallHandlerAnno::GetNameFromGUID(uint64_t guid)
 {
 	uint64_t asset_name_database_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::AssetNameDatabase);
-	uint64_t asset_name_database = *(uint64_t*)(asset_name_database_ptr) + 0x30;
+	uint64_t asset_name_database = *(uint64_t*)(asset_name_database_ptr) + 0x28;
 
 	uint64_t guid_to_name_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::FunctionGUIDToName);
-	uint64_t name_ptr = ((uint64_t(*)(uint64_t, uint64_t))(guid_to_name_ptr))(asset_name_database, guid);
+	uint64_t name_ptr = ((uint64_t(*)(uint64_t, uint64_t, uint64_t))(guid_to_name_ptr))(asset_name_database, guid, 1);
 
 	std::string name;
 	ReadAnnoString(name_ptr, name);
@@ -194,14 +194,14 @@ bool RemoteCallHandlerAnno::GetAllAreas(std::vector<uint32_t>* areas)
 	//	areas->push_back(*it);
 	//}
 
-	uint64_t binary_crc_raw = (uint64_t)binary_crc;
-	uint64_t offset = AnnoDataOffset(binary_crc, DataOffset::GameStateOffset);
-	uint64_t game_state_address = module_base + AnnoDataOffset(binary_crc, DataOffset::GameStateOffset);
+	const uint64_t binary_crc_raw = (uint64_t)binary_crc;
+	const uint64_t offset = AnnoDataOffset(binary_crc, DataOffset::GameStateOffset);
+	const uint64_t game_state_address = module_base + offset;
 
 	uint64_t game_state_base = *(uint64_t*)(game_state_address);
 
 	// Iterate over all worlds assuming the list is null-terminated (I have no clue)
-	uint64_t world_iterator = game_state_base + 0x50;
+	uint64_t world_iterator = game_state_base + 0x48;
 	while (true)
 	{
 		uint64_t world_address = *(uint64_t*)world_iterator;

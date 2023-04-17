@@ -153,9 +153,9 @@ uint64_t AnnoDataOffset(BinaryCRC32 binary_crc, DataOffset offset)
         switch (offset)
         {
         case DataOffset::Invalid:                       return 0x0;
-        case DataOffset::GameStateOffset:               return 0x5B05820;
-        case DataOffset::AssetNameDatabase:             return 0x5B05B38;
-        case DataOffset::FunctionGUIDToName:            return 0x3ADA6A0;
+        case DataOffset::GameStateOffset:               return 0x6259698;
+        case DataOffset::AssetNameDatabase:             return 0x6259960;
+        case DataOffset::FunctionGUIDToName:            return 0x3FE07B0;
         }
     }
     else if (binary_crc == BinaryCRC32::EpicStore) // Epic store
