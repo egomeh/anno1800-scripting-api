@@ -1,5 +1,6 @@
 #include "anno_native.h"
 #include "anno_tools.h"
+#include "hook.h"
 #include "log.h"
 #include <set>
 
@@ -59,7 +60,7 @@ bool DoesIslandBelongToPlayer(uint64_t address)
 
 bool GetIslandName(uint64_t island_address, std::string& name)
 {
-	uint64_t name_address = island_address + 0x118;
+	uint64_t name_address = island_address + 0x120;
 	return ReadAnnoString(name_address, name);
 }
 
@@ -118,8 +119,8 @@ bool GetAreaCode(uint64_t area_address, uint64_t* area_code)
 
 bool GetIslandListFromAreaAddress(uint64_t address, uint64_t* list_pointer)
 {
-	uint64_t intermediate_struct = *(uint64_t*)(address + 0x200);
-	*list_pointer = *(uint64_t*)(intermediate_struct + 0x98);
+	uint64_t intermediate_struct = *(uint64_t*)(address + 0x208);
+	*list_pointer = *(uint64_t*)(intermediate_struct + 0x138);
 
 	return true;
 }
@@ -210,5 +211,51 @@ bool GetBuildingIndustrialConversion(uint64_t building_address, std::unordered_m
 bool GetBuildingBuffConversion(uint64_t building_address, std::unordered_map<uint32_t, double>& conversion_map)
 {
 	return GetBuildingConversion(building_address, conversion_map, 708);
+}
+
+bool GetAllAreas(uint64_t module_base, BinaryCRC32 binary_crc, std::vector<uint64_t>& areas, std::vector<uint64_t>& addresses)
+{
+	const uint64_t offset = AnnoDataOffset(binary_crc, DataOffset::GameStateOffset);
+	const uint64_t game_state_address = module_base + offset;
+
+	uint64_t game_state_base = *(uint64_t*)(game_state_address);
+
+	// Iterate over all worlds assuming the list is null-terminated (I have no clue)
+	uint64_t world_iterator = game_state_base + 0x48;
+
+	while (true)
+	{
+		uint64_t world_address = *(uint64_t*)world_iterator;
+
+		if (!world_address)
+			break;
+
+		uint64_t area_code;
+		GetAreaCode(world_address, &area_code);
+		areas.push_back(area_code);
+		addresses.push_back(world_address);
+
+		std::string area_name = GetNameFromGUID(module_base, binary_crc, area_code);
+
+		ANNO_LOG("Found area with name %s at %llx", area_name.c_str(), world_address);
+
+		world_iterator += 8;
+	}
+
+	return true;
+}
+
+std::string GetNameFromGUID(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t guid)
+{
+	uint64_t asset_name_database_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::AssetNameDatabase);
+	uint64_t asset_name_database = *(uint64_t*)(asset_name_database_ptr)+0x28;
+
+	uint64_t guid_to_name_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::FunctionGUIDToName);
+	uint64_t name_ptr = ((uint64_t(*)(uint64_t, uint64_t, uint64_t))(guid_to_name_ptr))(asset_name_database, guid, 1);
+
+	std::string name;
+	ReadAnnoString(name_ptr, name);
+
+	return name;
 }
 

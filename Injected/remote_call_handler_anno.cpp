@@ -14,19 +14,19 @@ extern "C"
 	uint64_t get_anno_component(uint64_t entity_address, uint64_t component_id);
 }
 
-std::string RemoteCallHandlerAnno::GetNameFromGUID(uint64_t guid)
-{
-	uint64_t asset_name_database_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::AssetNameDatabase);
-	uint64_t asset_name_database = *(uint64_t*)(asset_name_database_ptr) + 0x28;
-
-	uint64_t guid_to_name_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::FunctionGUIDToName);
-	uint64_t name_ptr = ((uint64_t(*)(uint64_t, uint64_t, uint64_t))(guid_to_name_ptr))(asset_name_database, guid, 1);
-
-	std::string name;
-	ReadAnnoString(name_ptr, name);
-
-	return name;
-}
+//std::string RemoteCallHandlerAnno::GetNameFromGUID(uint64_t guid)
+//{
+//	uint64_t asset_name_database_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::AssetNameDatabase);
+//	uint64_t asset_name_database = *(uint64_t*)(asset_name_database_ptr) + 0x28;
+//
+//	uint64_t guid_to_name_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::FunctionGUIDToName);
+//	uint64_t name_ptr = ((uint64_t(*)(uint64_t, uint64_t, uint64_t))(guid_to_name_ptr))(asset_name_database, guid, 1);
+//
+//	std::string name;
+//	ReadAnnoString(name_ptr, name);
+//
+//	return name;
+//}
 
 bool RemoteCallHandlerAnno::WriteMessageBox(const std::string& message)
 {
@@ -133,42 +133,73 @@ bool RemoteCallHandlerAnno::DebugGetAreaWithCode(const uint32_t& areaCode, uint6
 
 bool RemoteCallHandlerAnno::GetWorldIslands(const uint32_t& area, const bool& mustBelongToThePlayer, std::vector<IslandInfo>* islands)
 {
-	uint64_t area_address = 0;
-	int attempts = 0;
+	std::vector<uint64_t> areas;
+	std::vector<uint64_t> addresses;
+	::GetAllAreas(module_base, binary_crc, areas, addresses);
 
-	HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
-		[&](HookData data) -> bool
+	for (std::size_t i = 0; i < areas.size(); ++i)
+	{
+		if (areas[i] == (uint64_t)area)
 		{
-			// Don't keep going forever, if you pass a bad code,
-			// we want to return eventually
-			if (++attempts > 512)
-				return true;
+			uint64_t island_list_pointer;
+			GetIslandListFromAreaAddress(addresses[i], &island_list_pointer);
 
-			area_address = get_area_from_tls();
+			// Follow the pointer twice to get past the 'dud' pointers???
+			island_list_pointer = **(uint64_t**)island_list_pointer;
 
-			uint64_t current_area_code = 0;
-			GetAreaCode(area_address, &current_area_code);
-
-			if (current_area_code == area)
-			{
-				uint64_t island_list_pointer;
-				GetIslandListFromAreaAddress(area_address, &island_list_pointer);
-
-				// Follow the pointer twice to get past the 'dud' pointers???
-				island_list_pointer = **(uint64_t**)island_list_pointer;
-
-				ExtractIslandChainFromAddress(island_list_pointer, mustBelongToThePlayer, islands);
-				return true;
-			}
-
-			return false;
-		});
+			ExtractIslandChainFromAddress(island_list_pointer, mustBelongToThePlayer, islands);
+		}
+	}
 
 	return true;
+
+	//uint64_t area_address = 0;
+	//int attempts = 0;
+
+	//HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
+	//	[&](HookData data) -> bool
+	//	{
+	//		// Don't keep going forever, if you pass a bad code,
+	//		// we want to return eventually
+	//		if (++attempts > 512)
+	//			return true;
+
+	//		area_address = get_area_from_tls();
+
+	//		uint64_t current_area_code = 0;
+	//		GetAreaCode(area_address, &current_area_code);
+
+	//		if (current_area_code == area)
+	//		{
+	//			uint64_t island_list_pointer;
+	//			GetIslandListFromAreaAddress(area_address, &island_list_pointer);
+
+	//			// Follow the pointer twice to get past the 'dud' pointers???
+	//			island_list_pointer = **(uint64_t**)island_list_pointer;
+
+
+	//			ANNO_LOG("ptr %llx", island_list_pointer);
+	//			//ExtractIslandChainFromAddress(island_list_pointer, mustBelongToThePlayer, islands);
+	//			return true;
+	//		}
+
+	//		return false;
+	//	});
+
+	//return true;
 }
 
 bool RemoteCallHandlerAnno::GetAllAreas(std::vector<uint32_t>* areas)
 {
+
+	std::vector<uint64_t> collected_areas;
+	std::vector<uint64_t> addresses;
+	::GetAllAreas(module_base, binary_crc, collected_areas, addresses);
+
+	for (uint64_t area_code : collected_areas)
+		areas->push_back((uint32_t)area_code);
+	
+	return true;
 	//constexpr int areas_to_sample = 32;
 	//int counter = 0;
 
@@ -194,40 +225,40 @@ bool RemoteCallHandlerAnno::GetAllAreas(std::vector<uint32_t>* areas)
 	//	areas->push_back(*it);
 	//}
 
-	const uint64_t binary_crc_raw = (uint64_t)binary_crc;
-	const uint64_t offset = AnnoDataOffset(binary_crc, DataOffset::GameStateOffset);
-	const uint64_t game_state_address = module_base + offset;
+	//const uint64_t binary_crc_raw = (uint64_t)binary_crc;
+	//const uint64_t offset = AnnoDataOffset(binary_crc, DataOffset::GameStateOffset);
+	//const uint64_t game_state_address = module_base + offset;
 
-	uint64_t game_state_base = *(uint64_t*)(game_state_address);
+	//uint64_t game_state_base = *(uint64_t*)(game_state_address);
 
-	// Iterate over all worlds assuming the list is null-terminated (I have no clue)
-	uint64_t world_iterator = game_state_base + 0x48;
-	while (true)
-	{
-		uint64_t world_address = *(uint64_t*)world_iterator;
-		
-		if (!world_address)
-			break;
+	//// Iterate over all worlds assuming the list is null-terminated (I have no clue)
+	//uint64_t world_iterator = game_state_base + 0x48;
+	//while (true)
+	//{
+	//	uint64_t world_address = *(uint64_t*)world_iterator;
+	//	
+	//	if (!world_address)
+	//		break;
 
-		uint64_t area_code;
-		GetAreaCode(world_address, &area_code);
-		areas->push_back(area_code);
+	//	uint64_t area_code;
+	//	GetAreaCode(world_address, &area_code);
+	//	areas->push_back((uint32_t)area_code);
 
-		std::string area_name = GetNameFromGUID(area_code);
+	//	std::string area_name = GetNameFromGUID(module_base, binary_crc, area_code);
 
-		ANNO_LOG("Found area with name %s at %llx", area_name.c_str(), world_address);
+	//	ANNO_LOG("Found area with name %s at %llx", area_name.c_str(), world_address);
 
-		world_iterator += 8;
-	}
+	//	world_iterator += 8;
+	//}
 
-	return true;
+	//return true;
 }
 
 
 bool RemoteCallHandlerAnno::DebugGetNameFromGuid(const uint32_t& guid, std::string* name)
 {
 	//bool known;
-	*name = GetNameFromGUID(guid);//, known);
+	*name = GetNameFromGUID(module_base, binary_crc, guid);//, known);
 	return true;
 }
 
@@ -368,7 +399,7 @@ bool RemoteCallHandlerAnno::GetIslandResidentialConsumption(const uint32_t& area
 
 					// This breaks is the list has an unkown in between some konwns...
 					// bool known = false;
-					std::string resource_name = GetNameFromGUID(resource_type);//, known);
+					std::string resource_name = GetNameFromGUID(module_base, binary_crc, resource_type);//, known);
 
 					if (resource_type == 0)
 						break;
@@ -521,7 +552,7 @@ bool RemoteCallHandlerAnno::GetIslandIndustrialConversion(const uint32_t& areaId
 		consumption.rate = (float)conversion.second;
 
 		//bool known_type;
-		consumption.name = GetNameFromGUID(conversion.first);// , known_type);
+		consumption.name = GetNameFromGUID(module_base, binary_crc, conversion.first);// , known_type);
 
 		if (consumption.name.size() > 0)
 			conversions->push_back(consumption);
@@ -766,7 +797,7 @@ bool RemoteCallHandlerAnno::GetShipsInRegion(const uint32_t& areaId, std::vector
 						uint64_t type_struct = *(uint64_t*)(cargo_slot_ptr + 0x8);
 						current_slot.type_id = *(uint32_t*)(type_struct + 0x8);
 						//bool known_type = false;
-						current_slot.type_name = GetNameFromGUID((uint64_t)current_slot.type_id);// , known_type);
+						current_slot.type_name = GetNameFromGUID(module_base, binary_crc, (uint64_t)current_slot.type_id);// , known_type);
 					}
 
 					ship_info.cargo.push_back(current_slot);

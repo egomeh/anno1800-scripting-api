@@ -1,6 +1,7 @@
 #pragma once
 
 #include "structs.gen.h"
+#include "hook.h"
 #include <unordered_map>
 
 bool ExtractResourceNodeInfo(uint64_t address, IslandResource* resourceInfo, bool& known);
@@ -22,4 +23,8 @@ bool GetBuildingConversion(uint64_t building_address, std::unordered_map<uint32_
 bool GetBuildingIndustrialConversion(uint64_t building_address, std::unordered_map<uint32_t, double>& conversion_map);
 
 bool GetBuildingBuffConversion(uint64_t building_address, std::unordered_map<uint32_t, double>& conversion_map);
+
+bool GetAllAreas(uint64_t module_base, BinaryCRC32 binary_crc, std::vector<uint64_t>& areas, std::vector<uint64_t>& addresses);
+
+std::string GetNameFromGUID(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t guid);
 

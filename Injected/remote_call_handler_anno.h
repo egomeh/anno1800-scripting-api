@@ -9,7 +9,7 @@ public:
 	uint64_t module_base = 0;
 	BinaryCRC32 binary_crc;
 
-	std::string GetNameFromGUID(uint64_t guid);
+	//std::string GetNameFromGUID(uint64_t guid);
 
 	virtual bool WriteMessageBox(const std::string& message) override;
 	virtual bool GetGameTime(uint64_t* time, uint64_t* frame) override;

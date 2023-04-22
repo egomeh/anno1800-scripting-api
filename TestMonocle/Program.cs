@@ -19,6 +19,9 @@ class TestRunner
         List<uint> areas;
         telegraph.GetAllAreas(out areas);
 
+        List<IslandInfo> Islands;
+        telegraph.GetWorldIslands(areas[1], true, out Islands);
+
         return;
 
         //uint OldWorldId = 0xBF37;
