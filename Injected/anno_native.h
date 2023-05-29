@@ -4,9 +4,9 @@
 #include "hook.h"
 #include <unordered_map>
 
-bool ExtractResourceNodeInfo(uint64_t address, IslandResource* resourceInfo, bool& known);
+bool ExtractResourceNodeInfo(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t address, IslandResource* resourceInfo, bool& known);
 
-bool ExtractResourceNodeChainInfo(uint64_t address, std::vector<IslandResource>* resourceInfo);
+bool ExtractResourceNodeChainInfo(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t address, std::vector<IslandResource>* resourceInfo);
 
 bool DoesIslandBelongToPlayer(uint64_t address);
 

@@ -9,7 +9,7 @@ extern "C"
 	uint64_t get_anno_component(uint64_t object_address, uint64_t component_id);
 }
 
-bool ExtractResourceNodeInfo(uint64_t address, IslandResource* resourceInfo, bool& known)
+bool ExtractResourceNodeInfo(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t address, IslandResource* resourceInfo, bool& known)
 {
 	if (!address)
 		return false;
@@ -19,7 +19,7 @@ bool ExtractResourceNodeInfo(uint64_t address, IslandResource* resourceInfo, boo
 	resourceInfo->capacity = *(uint32_t*)(address + 0x1C);
 	resourceInfo->amount_ptr = address + 0x20;
 	resourceInfo->amount = *(uint32_t*)(resourceInfo->amount_ptr);
-	resourceInfo->name = GetNameFromGUID(resourceInfo->type_id, known);
+	resourceInfo->name = ::GetNameFromGUID(module_base, binary_crc, resourceInfo->type_id);
 
 	// By the look of it, if this is null, I think it's an invalid node
 	if (!resourceInfo->type_id)
@@ -28,7 +28,7 @@ bool ExtractResourceNodeInfo(uint64_t address, IslandResource* resourceInfo, boo
 	return true;
 }
 
-bool ExtractResourceNodeChainInfo(uint64_t address, std::vector<IslandResource>* resourceChain)
+bool ExtractResourceNodeChainInfo(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t address, std::vector<IslandResource>* resourceChain)
 {
 	std::set<uint64_t> visited_addresses;
 
@@ -37,10 +37,10 @@ bool ExtractResourceNodeChainInfo(uint64_t address, std::vector<IslandResource>*
 		IslandResource resource;
 
 		bool known = false;
-		if (!ExtractResourceNodeInfo(address, &resource, known))
+		if (!ExtractResourceNodeInfo(module_base, binary_crc, address, &resource, known))
 			return true;
 
-		if (known)
+		if (resource.amount > 0)
 			resourceChain->push_back(resource);
 
 		visited_addresses.insert(address);
@@ -54,6 +54,7 @@ bool ExtractResourceNodeChainInfo(uint64_t address, std::vector<IslandResource>*
 bool DoesIslandBelongToPlayer(uint64_t address)
 {
 	// I have almost no clue if this is right...?
+	// Maybe check the code that references this flag
 	uint16_t belong_flag = *(uint16_t*)(address + 0x4e);
 	return belong_flag == 0;
 }
@@ -247,8 +248,8 @@ bool GetAllAreas(uint64_t module_base, BinaryCRC32 binary_crc, std::vector<uint6
 
 std::string GetNameFromGUID(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t guid)
 {
-	uint64_t asset_name_database_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::AssetNameDatabase);
-	uint64_t asset_name_database = *(uint64_t*)(asset_name_database_ptr)+0x28;
+    uint64_t asset_name_database_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::AssetNameDatabase);
+	uint64_t asset_name_database = *(uint64_t*)(asset_name_database_ptr) + 0x28;
 
 	uint64_t guid_to_name_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::FunctionGUIDToName);
 	uint64_t name_ptr = ((uint64_t(*)(uint64_t, uint64_t, uint64_t))(guid_to_name_ptr))(asset_name_database, guid, 1);

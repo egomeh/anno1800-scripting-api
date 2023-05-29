@@ -24,7 +24,7 @@ enum class DataOffset : uint64_t
 enum class BinaryCRC32 : uint32_t
 {
     Invalid = 0,
-    Steam = 0x36609826,
+    Steam = 0x04F4D92D,
     EpicStore = 0xDBB41535
 };
 

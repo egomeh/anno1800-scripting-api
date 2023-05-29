@@ -53,12 +53,12 @@ bool RemoteCallHandlerAnno::GetGameTime(uint64_t* time, uint64_t* frame)
 bool RemoteCallHandlerAnno::DebugGetResourceInfoFromAddress(const uint64_t& address, IslandResource* resource)
 {
 	bool known;
-	return ExtractResourceNodeInfo(address, resource, known);
+	return ExtractResourceNodeInfo(module_base, binary_crc, address, resource, known);
 }
 
 bool RemoteCallHandlerAnno::DebugGetResourceChainInfoFromAddress(const uint64_t& address, std::vector<IslandResource>* resource)
 {
-	return ExtractResourceNodeChainInfo(address, resource);
+	return ExtractResourceNodeChainInfo(module_base, binary_crc, address, resource);
 }
 
 bool RemoteCallHandlerAnno::DebugGetIslandNameFromAddress(const uint64_t& address, std::string* name)
@@ -76,11 +76,12 @@ bool RemoteCallHandlerAnno::DebugReadStringFromAddress(const uint64_t& address, 
 
 bool RemoteCallHandlerAnno::DebugGetIslandResources(const uint64_t& address, std::vector<IslandResource>* resources)
 {
-	uint64_t resource_struct_address = *(uint64_t*)(address + 0x170);
-	uint64_t resource_chain_start = **(uint64_t**)(resource_struct_address + 0x40);
+	uint64_t resource_struct_address = *(uint64_t*)(address + 0x178);
+	uint64_t resource_chain_start = **(uint64_t**)(resource_struct_address + 0x38);
 
-	if (!ExtractResourceNodeChainInfo(resource_chain_start, resources))
-		return false;
+	ANNO_LOG("ptr %llx", resource_chain_start);
+	//if (!ExtractResourceNodeChainInfo(resource_chain_start, resources))
+		//return false;
 
 	return true;
 }
@@ -152,41 +153,6 @@ bool RemoteCallHandlerAnno::GetWorldIslands(const uint32_t& area, const bool& mu
 	}
 
 	return true;
-
-	//uint64_t area_address = 0;
-	//int attempts = 0;
-
-	//HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
-	//	[&](HookData data) -> bool
-	//	{
-	//		// Don't keep going forever, if you pass a bad code,
-	//		// we want to return eventually
-	//		if (++attempts > 512)
-	//			return true;
-
-	//		area_address = get_area_from_tls();
-
-	//		uint64_t current_area_code = 0;
-	//		GetAreaCode(area_address, &current_area_code);
-
-	//		if (current_area_code == area)
-	//		{
-	//			uint64_t island_list_pointer;
-	//			GetIslandListFromAreaAddress(area_address, &island_list_pointer);
-
-	//			// Follow the pointer twice to get past the 'dud' pointers???
-	//			island_list_pointer = **(uint64_t**)island_list_pointer;
-
-
-	//			ANNO_LOG("ptr %llx", island_list_pointer);
-	//			//ExtractIslandChainFromAddress(island_list_pointer, mustBelongToThePlayer, islands);
-	//			return true;
-	//		}
-
-	//		return false;
-	//	});
-
-	//return true;
 }
 
 bool RemoteCallHandlerAnno::GetAllAreas(std::vector<uint32_t>* areas)
@@ -270,51 +236,20 @@ bool RemoteCallHandlerAnno::DebugGetGuidFromName(const std::string& name, uint32
 
 bool RemoteCallHandlerAnno::GetIslandResources(const uint32_t& areaCode, const uint32_t& islandId, std::vector<IslandResource>* resources)
 {
-	int counter = 0;
-	uint64_t areaAddress = 0;
+	std::vector<IslandInfo> Islands;
+	this->GetWorldIslands(areaCode, true, &Islands);
 
-	HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
-		[&](HookData data) -> bool
-		{
-			uint64_t area_address = get_area_from_tls();
-			uint64_t current_area_code = 0;
-			GetAreaCode(area_address, &current_area_code);
+	for (const IslandInfo& island : Islands)
+	{
+		if (island.island_id != islandId)
+			continue;
 
-			if (areaCode == (uint32_t)current_area_code)
-			{
-				// Got the right code
-				std::vector<IslandInfo> islands;
+		uint64_t resource_struct_address = *(uint64_t*)(island.debug_address + 0x178);
+		uint64_t resource_chain_start = **(uint64_t**)(resource_struct_address + 0x38);
 
-				uint64_t island_list_pointer;
-				GetIslandListFromAreaAddress(area_address, &island_list_pointer);
-
-				// Follow the pointer twice to get past the 'dud' pointers???
-				island_list_pointer = **(uint64_t**)island_list_pointer;
-
-				ExtractIslandChainFromAddress(island_list_pointer, false, &islands);
-
-				for (int i = 0; i < islands.size(); ++i)
-				{
-					IslandInfo& island = islands[i];
-
-					if (island.island_id != islandId)
-						continue;
-
-					uint64_t resource_struct_address = *(uint64_t*)(island.debug_address + 0x170);
-					uint64_t resource_chain_start = **(uint64_t**)(resource_struct_address + 0x40);
-
-					if (!ExtractResourceNodeChainInfo(resource_chain_start, resources))
-						return false;
-				}
-
-				return true;
-			}
-
-			if (++counter > 512)
-				return true;
-
+		if (!ExtractResourceNodeChainInfo(module_base, binary_crc, resource_chain_start, resources))
 			return false;
-		});
+	}
 
 	return true;
 }
@@ -327,104 +262,162 @@ bool RemoteCallHandlerAnno::DebugVirtualGetComponentFromAddress(const uint64_t& 
 
 bool RemoteCallHandlerAnno::GetIslandResidentialConsumption(const uint32_t& areaCode, const uint32_t& islandId, std::vector<ResourceConsumption>* resources)
 {
-	int counter = 0;
-	uint64_t areaAddress = 0;
+	std::vector<uint64_t> areas;
+	std::vector<uint64_t> addresses;
+	::GetAllAreas(module_base, binary_crc, areas, addresses);
 
-	uint64_t target_island_address = 0;
+	for (std::size_t i = 0; i < areas.size(); ++i)
+	{
+		if (areas[i] != (uint64_t)areaCode)
+			continue;
 
-	HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
-		[&](HookData data) -> bool
+		uint64_t intermediate_struct = *(uint64_t*)(addresses[i] + 0x208);
+
+		uint64_t list_ptr = *(uint64_t*)(intermediate_struct + 0x58);
+		uint64_t list_end = *(uint64_t*)(intermediate_struct + 0x60);
+
+		while (list_ptr != list_end)
 		{
-			if (++counter > 512)
-				return true;
-
-			uint64_t area_address = get_area_from_tls();
-			uint64_t current_area_code = 0;
-			GetAreaCode(area_address, &current_area_code);
-
-			if (areaCode == (uint32_t)current_area_code)
+			uint16_t current_island_id = *(uint16_t*)(list_ptr);
+			
+			if (current_island_id != islandId)
 			{
-				// Got the right code
-				std::vector<IslandInfo> islands;
-
-				uint64_t island_list_pointer;
-				GetIslandListFromAreaAddress(area_address, &island_list_pointer);
-
-				// Follow the pointer twice to get past the 'dud' pointers???
-				island_list_pointer = **(uint64_t**)island_list_pointer;
-
-				ExtractIslandChainFromAddress(island_list_pointer, false, &islands);
-
-				for (int i = 0; i < islands.size(); ++i)
-				{
-					IslandInfo& island = islands[i];
-
-					if (island.island_id != islandId)
-						continue;
-
-					target_island_address = island.debug_address;
-				}
-
-				return true;
+				list_ptr += 0x10;
+				continue;
 			}
 
-			return false;
-		});
+			uint64_t second_intermediate_struct = *(uint64_t*)(list_ptr + 0x08);
+			uint64_t third_intermediate_struct = *(uint64_t*)(second_intermediate_struct + 0x118);
 
-	if (!target_island_address)
-		return false;
+			uint64_t consume_list_ptr = *(uint64_t*)(third_intermediate_struct + 0x40);
+			uint64_t consume_list_end = *(uint64_t*)(third_intermediate_struct + 0x48);
 
-	counter = 0;
-
-	HookManager::Get().ExecuteInHookSync(HookedFunction::ConsumptionHook,
-		[&](HookData data) -> bool
-		{
-			if (++counter > 512)
-				return true;
-
-			uint64_t island_ptr = *(uint64_t*)(data.rcx + 0x30);
-
-			if (island_ptr == target_island_address)
+			while (consume_list_ptr < consume_list_end)
 			{
-				uint64_t island_consumption_ptr = *(uint64_t*)(data.rcx + 0x38);
+				float rate_modifier = *(float*)(consume_list_ptr + 0xC);
 
-				if (!island_consumption_ptr)
-					return true;
-				
-				uint64_t i = island_consumption_ptr;
-
-				while (true)
+				if (rate_modifier > 0.0f)
 				{
-					uint32_t resource_type = *(uint32_t*)i;
-
-					// This breaks is the list has an unkown in between some konwns...
-					// bool known = false;
-					std::string resource_name = GetNameFromGUID(module_base, binary_crc, resource_type);//, known);
-
-					if (resource_type == 0)
-						break;
-
-					if (resource_name.size() == 0)
-						break;
+					uint32_t resource_type = *(uint32_t*)consume_list_ptr;
+					std::string resource_name = ::GetNameFromGUID(module_base, binary_crc, resource_type);
 
 					ResourceConsumption consumption;
 					consumption.name = resource_name;
 					consumption.type_id = resource_type;
-
-					float rate_modifier = *(float*)(i + 0xC);
-
 					consumption.rate = 60.0f * rate_modifier;
 
 					resources->push_back(consumption);
-
-					i += 0x38;
 				}
 
-				return true;
+				consume_list_ptr += 0x38;
 			}
 
-			return false;
-		});
+			break;
+		}
+		
+		break;
+	}
+
+	return true;
+
+	//int counter = 0;
+	//uint64_t areaAddress = 0;
+
+	//uint64_t target_island_address = 0;
+
+	//HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
+	//	[&](HookData data) -> bool
+	//	{
+	//		if (++counter > 512)
+	//			return true;
+
+	//		uint64_t area_address = get_area_from_tls();
+	//		uint64_t current_area_code = 0;
+	//		GetAreaCode(area_address, &current_area_code);
+
+	//		if (areaCode == (uint32_t)current_area_code)
+	//		{
+	//			// Got the right code
+	//			std::vector<IslandInfo> islands;
+
+	//			uint64_t island_list_pointer;
+	//			GetIslandListFromAreaAddress(area_address, &island_list_pointer);
+
+	//			// Follow the pointer twice to get past the 'dud' pointers???
+	//			island_list_pointer = **(uint64_t**)island_list_pointer;
+
+	//			ExtractIslandChainFromAddress(island_list_pointer, false, &islands);
+
+	//			for (int i = 0; i < islands.size(); ++i)
+	//			{
+	//				IslandInfo& island = islands[i];
+
+	//				if (island.island_id != islandId)
+	//					continue;
+
+	//				target_island_address = island.debug_address;
+	//			}
+
+	//			return true;
+	//		}
+
+	//		return false;
+	//	});
+
+	//if (!target_island_address)
+	//	return false;
+
+	//counter = 0;
+
+	//HookManager::Get().ExecuteInHookSync(HookedFunction::ConsumptionHook,
+	//	[&](HookData data) -> bool
+	//	{
+	//		if (++counter > 512)
+	//			return true;
+
+	//		uint64_t island_ptr = *(uint64_t*)(data.rcx + 0x30);
+
+	//		if (island_ptr == target_island_address)
+	//		{
+	//			uint64_t island_consumption_ptr = *(uint64_t*)(data.rcx + 0x38);
+
+	//			if (!island_consumption_ptr)
+	//				return true;
+	//			
+	//			uint64_t i = island_consumption_ptr;
+
+	//			while (true)
+	//			{
+	//				uint32_t resource_type = *(uint32_t*)i;
+
+	//				// This breaks is the list has an unkown in between some konwns...
+	//				// bool known = false;
+	//				std::string resource_name = GetNameFromGUID(module_base, binary_crc, resource_type);//, known);
+
+	//				if (resource_type == 0)
+	//					break;
+
+	//				if (resource_name.size() == 0)
+	//					break;
+
+	//				ResourceConsumption consumption;
+	//				consumption.name = resource_name;
+	//				consumption.type_id = resource_type;
+
+	//				float rate_modifier = *(float*)(i + 0xC);
+
+	//				consumption.rate = 60.0f * rate_modifier;
+
+	//				resources->push_back(consumption);
+
+	//				i += 0x38;
+	//			}
+
+	//			return true;
+	//		}
+
+	//		return false;
+	//	});
 
 	return true;
 }
@@ -625,7 +618,7 @@ bool RemoteCallHandlerAnno::MinMaxResourcesOnIsland(const uint32_t& areaId, cons
 					uint64_t resource_struct_address = *(uint64_t*)(island.debug_address + 0x170);
 					uint64_t resource_chain_start = **(uint64_t**)(resource_struct_address + 0x40);
 
-					if (!ExtractResourceNodeChainInfo(resource_chain_start, &resources))
+					if (!ExtractResourceNodeChainInfo(module_base, binary_crc, resource_chain_start, &resources))
 						return false;
 
 					for (uint64_t i = 0; i < resources.size(); ++i)
@@ -876,7 +869,7 @@ bool RemoteCallHandlerAnno::SetIslandResource(const uint32_t& world_id, const ui
 
 					std::vector< IslandResource> resources;
 
-					if (!ExtractResourceNodeChainInfo(resource_chain_start, &resources))
+					if (!ExtractResourceNodeChainInfo(module_base, binary_crc, resource_chain_start, &resources))
 						return false;
 
 					for (IslandResource resource : resources)
