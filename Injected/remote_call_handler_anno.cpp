@@ -14,20 +14,6 @@ extern "C"
 	uint64_t get_anno_component(uint64_t entity_address, uint64_t component_id);
 }
 
-//std::string RemoteCallHandlerAnno::GetNameFromGUID(uint64_t guid)
-//{
-//	uint64_t asset_name_database_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::AssetNameDatabase);
-//	uint64_t asset_name_database = *(uint64_t*)(asset_name_database_ptr) + 0x28;
-//
-//	uint64_t guid_to_name_ptr = module_base + AnnoDataOffset(binary_crc, DataOffset::FunctionGUIDToName);
-//	uint64_t name_ptr = ((uint64_t(*)(uint64_t, uint64_t, uint64_t))(guid_to_name_ptr))(asset_name_database, guid, 1);
-//
-//	std::string name;
-//	ReadAnnoString(name_ptr, name);
-//
-//	return name;
-//}
-
 bool RemoteCallHandlerAnno::WriteMessageBox(const std::string& message)
 {
 	MessageBoxA(NULL, message.c_str(), "Write message to log", MB_OK);

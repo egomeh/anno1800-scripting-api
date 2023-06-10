@@ -153,7 +153,7 @@ uint64_t AnnoDataOffset(BinaryCRC32 binary_crc, DataOffset offset)
         switch (offset)
         {
         case DataOffset::Invalid:                       return 0x0;
-        case DataOffset::GameStateOffset:               return 0x6259698;
+        case DataOffset::GameStateOffset:               return 0x6283E38;
         case DataOffset::AssetNameDatabase:             return 0x62840E0;
         case DataOffset::FunctionGUIDToName:            return 0x3FFEED0;
         }

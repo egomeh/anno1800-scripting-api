@@ -15,6 +15,12 @@ class TestRunner
         string GrainName;
         telegraph.DebugGetNameFromGuid(0xF6A10, out GrainName);
 
+        List<uint> Areas;
+        telegraph.GetAllAreas(out Areas);
+
+        string AreaName;
+        telegraph.DebugGetNameFromGuid(Areas[1], out AreaName);
+
         return;
     }
 }
