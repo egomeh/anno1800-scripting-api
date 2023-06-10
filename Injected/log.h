@@ -20,3 +20,5 @@ private:
     Log::Get().Write(__my_line_); \
 }
 
+#define DEBUG_PTR(variable) ANNO_LOG(#variable " %llx", variable)
+

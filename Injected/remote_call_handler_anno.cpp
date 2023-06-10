@@ -131,6 +131,8 @@ bool RemoteCallHandlerAnno::GetWorldIslands(const uint32_t& area, const bool& mu
 			uint64_t island_list_pointer;
 			GetIslandListFromAreaAddress(addresses[i], &island_list_pointer);
 
+			ANNO_LOG("island_list_pointer %llx", island_list_pointer);
+
 			// Follow the pointer twice to get past the 'dud' pointers???
 			island_list_pointer = **(uint64_t**)island_list_pointer;
 
@@ -513,9 +515,6 @@ bool RemoteCallHandlerAnno::GetIslandIndustrialConversion(const uint32_t& areaId
 				uint64_t building_address = *(uint64_t*)building_list_iterator;
 
 				uint32_t building_type_id = *(uint32_t*)(building_address + 8);
-
-				//if (building_type_id == 1010540 || building_type_id == 1010517)
-				//	;//ANNO_LOG("trading post %llx", building_address);
 
 				GetBuildingIndustrialConversion(building_address, conversion_map);
 				GetBuildingBuffConversion(building_address, conversion_map);

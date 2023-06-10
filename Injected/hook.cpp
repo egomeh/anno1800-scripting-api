@@ -122,7 +122,7 @@ uint64_t AnnoFunctionOffset(BinaryCRC32 binary_crc, HookedFunction function)
         {
         case HookedFunction::Any:                       return 0;
         case HookedFunction::GameTimeHook:              return 0x09B0F2;
-        case HookedFunction::SessionTickHook:           return 0x248190;
+        case HookedFunction::SessionTickHook:           return 0x25B270;
         case HookedFunction::ConsumptionHook:           return 0x0; // 0xAD4CFD;
         case HookedFunction::VehicleSortingHook:        return 0x0;
         }

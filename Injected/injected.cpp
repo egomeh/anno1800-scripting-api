@@ -62,16 +62,16 @@ void injected(BinaryCRC32 binary_crc)
     // When exiting this scope, all native code should
     // be as before the injection
     {
-        MemoryReplacement timeAndFrameHook;
-        timeAndFrameHook.SetMemory
-        ({
-            0x48, 0xb9,                                             // movabs rcx, [imm64]
-            EIGHT_BYTES((uint64_t)game_time_hook_trampoline),       // hook address
-            0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
-            0xff, 0xd1                                              // call rcx
-            });
-        uint64_t time_and_frame_offset = AnnoFunctionOffset(binary_crc, HookedFunction::GameTimeHook);
-        timeAndFrameHook.Emplace((void*)(moduleBase + time_and_frame_offset));
+        //MemoryReplacement timeAndFrameHook;
+        //timeAndFrameHook.SetMemory
+        //({
+        //    0x48, 0xb9,                                             // movabs rcx, [imm64]
+        //    EIGHT_BYTES((uint64_t)game_time_hook_trampoline),       // hook address
+        //    0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
+        //    0xff, 0xd1                                              // call rcx
+        //    });
+        //uint64_t time_and_frame_offset = AnnoFunctionOffset(binary_crc, HookedFunction::GameTimeHook);
+        //timeAndFrameHook.Emplace((void*)(moduleBase + time_and_frame_offset));
 
         MemoryReplacement session_tick_hook;
         session_tick_hook.SetMemory
@@ -84,30 +84,30 @@ void injected(BinaryCRC32 binary_crc)
         uint64_t session_tick_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::SessionTickHook);
         session_tick_hook.Emplace((void*)(moduleBase + session_tick_hook_offset));
 
-        MemoryReplacement consumption_hook;
-        consumption_hook.SetMemory
-        ({
-            0x48, 0xbb,                                             // movabs rbx, [imm64]
-            EIGHT_BYTES((uint64_t)consumption_hook_trampoline),     // hook address
-            0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
-            0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
-            0x90, 0x90, 0x90, 0x90,                                 // 4 nops
-            0xff, 0xd3                                              // call rbx
-            });
-        uint64_t consumption_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::ConsumptionHook);
+        //MemoryReplacement consumption_hook;
+        //consumption_hook.SetMemory
+        //({
+        //    0x48, 0xbb,                                             // movabs rbx, [imm64]
+        //    EIGHT_BYTES((uint64_t)consumption_hook_trampoline),     // hook address
+        //    0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
+        //    0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
+        //    0x90, 0x90, 0x90, 0x90,                                 // 4 nops
+        //    0xff, 0xd3                                              // call rbx
+        //    });
+        //uint64_t consumption_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::ConsumptionHook);
         //consumption_hook.Emplace((void*)(moduleBase + consumption_hook_offset));
 
         // Add a hook for when the game is sorting controllable vehicles (on steam: Anno1800.exe+D52550)
-        MemoryReplacement vehicle_sort_hook;
-        vehicle_sort_hook.SetMemory
-        ({
-            0x48, 0xb8,                                             // movabs rax, [imm64]
-            EIGHT_BYTES((uint64_t)vehicle_sorting_hook_trampoline), // hook address
-            0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
-            0xff, 0xd0                                              // call rax
-            });
-        uint64_t vehicle_sort_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::VehicleSortingHook);
-        vehicle_sort_hook.Emplace((void*)(moduleBase + vehicle_sort_hook_offset));
+        //MemoryReplacement vehicle_sort_hook;
+        //vehicle_sort_hook.SetMemory
+        //({
+        //    0x48, 0xb8,                                             // movabs rax, [imm64]
+        //    EIGHT_BYTES((uint64_t)vehicle_sorting_hook_trampoline), // hook address
+        //    0x90, 0x90, 0x90, 0x90, 0x90,                           // 5 nops
+        //    0xff, 0xd0                                              // call rax
+        //    });
+        //uint64_t vehicle_sort_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::VehicleSortingHook);
+        //vehicle_sort_hook.Emplace((void*)(moduleBase + vehicle_sort_hook_offset));
 
         // Handle remote calls until we fail
         while (HandleRemoteCall(socketHandler, callHandler));
