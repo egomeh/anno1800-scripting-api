@@ -131,8 +131,6 @@ bool RemoteCallHandlerAnno::GetWorldIslands(const uint32_t& area, const bool& mu
 			uint64_t island_list_pointer;
 			GetIslandListFromAreaAddress(addresses[i], &island_list_pointer);
 
-			ANNO_LOG("island_list_pointer %llx", island_list_pointer);
-
 			// Follow the pointer twice to get past the 'dud' pointers???
 			island_list_pointer = **(uint64_t**)island_list_pointer;
 
@@ -212,7 +210,7 @@ bool RemoteCallHandlerAnno::GetAllAreas(std::vector<uint32_t>* areas)
 bool RemoteCallHandlerAnno::DebugGetNameFromGuid(const uint32_t& guid, std::string* name)
 {
 	//bool known;
-	*name = GetNameFromGUID(module_base, binary_crc, guid);//, known);
+	*name = GetNameFromGUID(module_base, binary_crc, guid);
 	return true;
 }
 
@@ -470,71 +468,66 @@ bool RemoteCallHandlerAnno::GetIslandIndustrialConversion(const uint32_t& areaId
 {
 	std::unordered_map<uint32_t, double> conversion_map;
 
-	int counter = 0;
+	std::vector<IslandInfo> Islands;
+	this->GetWorldIslands(areaId, true, &Islands);
 
-	HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
-		[&](HookData data) -> bool
-		{
-			if (++counter > 512)
-				return true;
+	IslandInfo target_island;
 
-			uint64_t area_address = get_area_from_tls();
-			uint64_t current_area_code = 0;
-			GetAreaCode(area_address, &current_area_code);
-
-			if (current_area_code != areaId)
-				return false;
-
-			uint64_t step1 = *(uint64_t*)(area_address + 0x200);
-
-			uint64_t island_ptr = *(uint64_t*)(step1 + 0xE8);
-			uint64_t island_ptr_end = *(uint64_t*)(step1 + 0xF0);
-
-			uint64_t step2 = 0;
-			for (uint64_t i = island_ptr; i < island_ptr_end; i += 0x10)
-			{
-				uint16_t current_island_id = *(uint16_t*)i;
-
-				if (islandId == current_island_id)
-				{
-					step2 = *(uint64_t*)(i + 0x8);
-				}
-			}
-
-			if (!step2)
-				return false;
-
-			uint64_t step3 = *(uint64_t*)(step2 + 0x0E0);
-			uint64_t step4 = *(uint64_t*)(step3 + 0x538);
-
-			uint64_t building_list_iterator = *(uint64_t*)(step4 + 0x28);
-			uint64_t building_list_end = *(uint64_t*)(step4 + 0x30);
-
-			for (; building_list_iterator != building_list_end; building_list_iterator += 8)
-			{
-				uint64_t building_address = *(uint64_t*)building_list_iterator;
-
-				uint32_t building_type_id = *(uint32_t*)(building_address + 8);
-
-				GetBuildingIndustrialConversion(building_address, conversion_map);
-				GetBuildingBuffConversion(building_address, conversion_map);
-			}
-
-			return true;
-		});
-
-	for (const std::pair<uint32_t, double> conversion : conversion_map)
+	for (const IslandInfo& island : Islands)
 	{
-		ResourceConsumption consumption;
-		consumption.type_id = conversion.first;
-		consumption.rate = (float)conversion.second;
+		if (island.island_id != islandId)
+			continue;
 
-		//bool known_type;
-		consumption.name = GetNameFromGUID(module_base, binary_crc, conversion.first);// , known_type);
-
-		if (consumption.name.size() > 0)
-			conversions->push_back(consumption);
+		target_island = island;
 	}
+
+	uint64_t path_to_buildings = target_island.debug_address;
+
+	path_to_buildings = path_to_buildings + 0x68;
+
+	path_to_buildings = *(uint64_t*)path_to_buildings;
+
+	path_to_buildings = path_to_buildings + 0x78;
+
+	uint64_t building_list_ptr = *(uint64_t*)path_to_buildings;
+	uint64_t building_list_last = *(uint64_t*)(path_to_buildings + 0x8);
+
+
+	for (; building_list_ptr <= building_list_last; building_list_ptr += 0x8)
+	{
+		uint64_t building = *(uint64_t*)building_list_ptr;
+		building = *(uint64_t*)(building + 0x8);
+
+		uint32_t building_id = *(uint32_t*)(building + 0x8);
+
+		std::string building_name = GetNameFromGUID(module_base, binary_crc, building_id);
+
+		ANNO_LOG("%s", building_name.c_str());
+	}
+
+	//path_to_buildings = *(uint64_t*)path_to_buildings;
+
+	//DEBUG_PTR(path_to_buildings);
+
+	//path_to_buildings = path_to_buildings + 0x60;
+
+	//DEBUG_PTR(path_to_buildings);
+	//
+	//path_to_buildings = *(uint64_t*)path_to_buildings;
+
+	//DEBUG_PTR(path_to_buildings);
+
+	//path_to_buildings = path_to_buildings + 0x18;
+
+	//DEBUG_PTR(path_to_buildings);
+
+	//HookManager::Get().ExecuteInHookSync(HookedFunction::SessionTickHook,
+	//	[&](HookData data) -> bool
+	//	{
+	//		
+
+	//		return true;
+	//	});
 
 	return true;
 }
