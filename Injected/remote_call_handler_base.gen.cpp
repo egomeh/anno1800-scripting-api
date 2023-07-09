@@ -226,7 +226,20 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (11): // DebugGetResourceInfoFromAddress
+        case (11): // DebugFunctionForAdHocInspection
+        {
+            uint64_t address;
+            if (!Deserialize(&address, buffer_in, &offset))
+                return false;
+
+            success = callHandler.DebugFunctionForAdHocInspection(address);
+
+            if (!Serialize(success, buffer_out))
+                return false;
+
+            break;
+        }
+        case (12): // DebugGetResourceInfoFromAddress
         {
             uint64_t address;
             if (!Deserialize(&address, buffer_in, &offset))
@@ -244,7 +257,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (12): // DebugGetResourceChainInfoFromAddress
+        case (13): // DebugGetResourceChainInfoFromAddress
         {
             uint64_t address;
             if (!Deserialize(&address, buffer_in, &offset))
@@ -262,7 +275,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (13): // DebugGetIslandNameFromAddress
+        case (14): // DebugGetIslandNameFromAddress
         {
             uint64_t address;
             if (!Deserialize(&address, buffer_in, &offset))
@@ -280,7 +293,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (14): // DebugReadStringFromAddress
+        case (15): // DebugReadStringFromAddress
         {
             uint64_t address;
             if (!Deserialize(&address, buffer_in, &offset))
@@ -298,7 +311,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (15): // DebugGetIslandResources
+        case (16): // DebugGetIslandResources
         {
             uint64_t address;
             if (!Deserialize(&address, buffer_in, &offset))
@@ -316,7 +329,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (16): // DebugGetIslandChainFromAddress
+        case (17): // DebugGetIslandChainFromAddress
         {
             uint64_t address;
             if (!Deserialize(&address, buffer_in, &offset))
@@ -338,7 +351,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (17): // DebugGetFirstAreaStructAddress
+        case (18): // DebugGetFirstAreaStructAddress
         {
             uint64_t address;
 
@@ -352,7 +365,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (18): // DebugGetAreaWithCode
+        case (19): // DebugGetAreaWithCode
         {
             uint32_t code;
             if (!Deserialize(&code, buffer_in, &offset))
@@ -370,7 +383,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (19): // DebugGetNameFromGuid
+        case (20): // DebugGetNameFromGuid
         {
             uint32_t guid;
             if (!Deserialize(&guid, buffer_in, &offset))
@@ -388,7 +401,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (20): // DebugGetGuidFromName
+        case (21): // DebugGetGuidFromName
         {
             std::string name;
             if (!Deserialize(&name, buffer_in, &offset))
@@ -406,7 +419,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (21): // DebugVirtualGetComponentFromAddress
+        case (22): // DebugVirtualGetComponentFromAddress
         {
             uint64_t address;
             if (!Deserialize(&address, buffer_in, &offset))
@@ -428,7 +441,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (22): // DebugGetIslandBuildingAddresses
+        case (23): // DebugGetIslandBuildingAddresses
         {
             uint32_t areaId;
             if (!Deserialize(&areaId, buffer_in, &offset))
@@ -450,7 +463,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (23): // DebugTryEnqueueShipForTrade
+        case (24): // DebugTryEnqueueShipForTrade
         {
             uint32_t areaId;
             if (!Deserialize(&areaId, buffer_in, &offset))
@@ -471,7 +484,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (24): // DebugGetAreaAddress
+        case (25): // DebugGetAreaAddress
         {
             uint32_t areaID;
             if (!Deserialize(&areaID, buffer_in, &offset))
@@ -489,7 +502,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (25): // DebugGetVehicleLists
+        case (26): // DebugGetVehicleLists
         {
             std::vector<uint64_t> vehicleLists;
 
@@ -503,7 +516,7 @@ bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callH
 
             break;
         }
-        case (26): // DebugGetEntityComponets
+        case (27): // DebugGetEntityComponets
         {
             uint64_t entityAddress;
             if (!Deserialize(&entityAddress, buffer_in, &offset))

@@ -19,6 +19,7 @@ public:
     virtual bool MinMaxResourcesOnIsland(const uint32_t& areaId, const uint32_t& islandId, const uint32_t& lowerBound, const uint32_t& upperBound) {return true;};
     virtual bool GetShipsInRegion(const uint32_t& areaId, std::vector<ShipInfo>* ships) {return true;};
     virtual bool SetIslandResource(const uint32_t& world_id, const uint32_t& island_id, const uint32_t& resource_type, const uint32_t& target_value, uint32_t* previous_value) {return true;};
+    virtual bool DebugFunctionForAdHocInspection(const uint64_t& address) {return true;};
     virtual bool DebugGetResourceInfoFromAddress(const uint64_t& address, IslandResource* resource) {return true;};
     virtual bool DebugGetResourceChainInfoFromAddress(const uint64_t& address, std::vector<IslandResource>* resource) {return true;};
     virtual bool DebugGetIslandNameFromAddress(const uint64_t& address, std::string* name) {return true;};

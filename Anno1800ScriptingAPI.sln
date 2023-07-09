@@ -6,15 +6,11 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monocle", "Monocle\Monocle.csproj", "{B0383AA3-1937-41E8-B7DE-E4A08E21D984}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7987C399-7F4C-407D-86AC-E3B5A69A133C} = {7987C399-7F4C-407D-86AC-E3B5A69A133C}
-		{B77C1EFC-3E7E-49C4-9760-CB89652A675B} = {B77C1EFC-3E7E-49C4-9760-CB89652A675B}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{B77C1EFC-3E7E-49C4-9760-CB89652A675B}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Injected", "Injected\Injected.vcxproj", "{7987C399-7F4C-407D-86AC-E3B5A69A133C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B77C1EFC-3E7E-49C4-9760-CB89652A675B} = {B77C1EFC-3E7E-49C4-9760-CB89652A675B}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestMonocle", "TestMonocle\TestMonocle.csproj", "{A9B22DA0-C866-4B82-BE24-5D9C72278E51}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -28,7 +24,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductionViewer", "Product
 	ProjectSection(ProjectDependencies) = postProject
 		{7987C399-7F4C-407D-86AC-E3B5A69A133C} = {7987C399-7F4C-407D-86AC-E3B5A69A133C}
 		{B0383AA3-1937-41E8-B7DE-E4A08E21D984} = {B0383AA3-1937-41E8-B7DE-E4A08E21D984}
-		{B77C1EFC-3E7E-49C4-9760-CB89652A675B} = {B77C1EFC-3E7E-49C4-9760-CB89652A675B}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GoodMinMax", "GoodMinMax\GoodMinMax.csproj", "{04632788-3251-4981-BA26-B1C9CA895966}"

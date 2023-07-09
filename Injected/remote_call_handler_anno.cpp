@@ -872,3 +872,79 @@ bool RemoteCallHandlerAnno::SetIslandResource(const uint32_t& world_id, const ui
 	return true;
 }
 
+bool RemoteCallHandlerAnno::DebugFunctionForAdHocInspection(const uint64_t& address)
+{
+	std::vector<uint64_t> ids;
+	std::vector<uint64_t> addresses;
+	::GetAllAreas(module_base, binary_crc, ids, addresses);
+
+	uint64_t id = ids[1];
+	uint64_t addr = addresses[1];
+
+	uint64_t chain = *(uint64_t*)(addr + 0x208);
+
+	ANNO_LOG("%llx", chain);
+
+	uint64_t island_ptr = *(uint64_t*)(chain + 0x058);
+	uint64_t island_end = *(uint64_t*)(chain + 0x060);
+
+	ANNO_LOG("%llx", island_ptr);
+	ANNO_LOG("%llx", island_end);
+
+	while (island_ptr < island_end)
+	{
+		uint16_t island_id = *(uint16_t*)(island_ptr);
+
+
+		island_ptr += 0x10;
+	}
+
+	// chain = *(uint64_t*)(chain + 0x58);
+	// chain = *(uint64_t*)(chain + 0xE8);
+
+	//std::set<uint64_t> VisitedNodes;
+	//std::vector<uint64_t> NodesToVisit;
+
+	//NodesToVisit.push_back(address);
+
+	//while (!NodesToVisit.empty())
+	//{
+	//	uint64_t CurrentNode = NodesToVisit.back();
+	//	NodesToVisit.pop_back();
+
+	//	VisitedNodes.insert(CurrentNode);
+
+	//	uint64_t ptr1 = *(uint64_t*)(CurrentNode + 0x00);
+	//	uint64_t ptr2 = *(uint64_t*)(CurrentNode + 0x08);
+	//	uint64_t ptr3 = *(uint64_t*)(CurrentNode + 0x10);
+
+	//	if (VisitedNodes.find(ptr1) == VisitedNodes.end())
+	//		NodesToVisit.push_back(ptr1);
+
+	//	if (VisitedNodes.find(ptr2) == VisitedNodes.end())
+	//		NodesToVisit.push_back(ptr2);
+
+	//	if (VisitedNodes.find(ptr3) == VisitedNodes.end())
+	//		NodesToVisit.push_back(ptr3);
+	//}
+
+	//for (auto it = VisitedNodes.begin(); it != VisitedNodes.end(); ++it)
+	//{
+	//	uint64_t node_address = *it;
+	//	uint64_t building_ptr = *(uint64_t*)(node_address + 0x28);
+
+	//	if (building_ptr)
+	//	{
+	//		uint32_t building_id = *(uint32_t*)(building_ptr + 0x8);
+	//		std::string building_name = ::GetNameFromGUID(module_base, binary_crc, building_id);
+	//		ANNO_LOG("%llx %llx %s", node_address, building_ptr, building_name.c_str());
+	//	}
+	//	else
+	//	{
+	//		ANNO_LOG("%llx %llx %s", node_address, building_ptr, "No building ptr");
+	//	}
+	//}
+
+	return true;
+}
+

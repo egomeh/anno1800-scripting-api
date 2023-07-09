@@ -64,6 +64,10 @@
         - out:
             - previous_value: uint32
 
+    - DebugFunctionForAdHocInspection:
+        - in:
+            - address: uint64
+
 
 - types:
 
