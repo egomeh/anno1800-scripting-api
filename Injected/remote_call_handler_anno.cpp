@@ -466,44 +466,169 @@ bool RemoteCallHandlerAnno::DebugGetIslandBuildingAddresses(const uint32_t& area
 
 bool RemoteCallHandlerAnno::GetIslandIndustrialConversion(const uint32_t& areaId, const uint32_t& islandId, std::vector<ResourceConsumption>* conversions)
 {
-	std::unordered_map<uint32_t, double> conversion_map;
+	std::vector<uint64_t> ids;
+	std::vector<uint64_t> addresses;
+	::GetAllAreas(module_base, binary_crc, ids, addresses);
 
-	std::vector<IslandInfo> Islands;
-	this->GetWorldIslands(areaId, true, &Islands);
+	uint64_t id = 0;
+	uint64_t addr = 0;
 
-	IslandInfo target_island;
-
-	for (const IslandInfo& island : Islands)
+	for (size_t i = 0; i < ids.size(); ++i)
 	{
-		if (island.island_id != islandId)
+		if (ids[i] == areaId)
+		{
+			id = ids[i];
+			addr = addresses[i];
+			break;
+		}
+	}
+
+	if (addr == 0)
+		return true;
+
+	ANNO_LOG("addr %llx", addr);
+
+	uint64_t chain = *(uint64_t*)(addr + 0x208);
+
+	ANNO_LOG("chian %llx", chain);
+
+	uint64_t island_ptr = *(uint64_t*)(chain + 0x058);
+	uint64_t island_end = *(uint64_t*)(chain + 0x060);
+
+	ANNO_LOG("island ptr %llx", island_ptr);
+	ANNO_LOG("island end %llx", island_end);
+
+	uint64_t target_island_struct = 0;
+
+	while (island_ptr < island_end)
+	{
+		uint64_t island_id = (uint64_t) * (uint16_t*)(island_ptr);
+
+		if (island_id == islandId)
+		{
+			target_island_struct = *(uint64_t*)(island_ptr + 0x08);
+		}
+
+		island_ptr += 0x10;
+	}
+
+	ANNO_LOG("island struct %llx", target_island_struct);
+
+	if (!target_island_struct)
+		return true;
+
+	uint64_t chain2 = *(uint64_t*)(target_island_struct + 0x0E8);
+	chain2 = *(uint64_t*)(chain2 + 0x5E0);
+	chain2 = *(uint64_t*)(chain2 + 0x0C8);
+
+	ANNO_LOG("%llx", chain2);
+
+	std::set<uint64_t> VisitedNodes;
+	std::vector<uint64_t> NodesToVisit;
+
+	NodesToVisit.push_back(chain2);
+
+	while (!NodesToVisit.empty())
+	{
+		uint64_t CurrentNode = NodesToVisit.back();
+		NodesToVisit.pop_back();
+
+		if (!CurrentNode)
 			continue;
 
-		target_island = island;
+		VisitedNodes.insert(CurrentNode);
+
+		uint64_t ptr1 = *(uint64_t*)(CurrentNode + 0x00);
+		uint64_t ptr2 = *(uint64_t*)(CurrentNode + 0x08);
+		uint64_t ptr3 = *(uint64_t*)(CurrentNode + 0x10);
+
+		if (VisitedNodes.find(ptr1) == VisitedNodes.end())
+			NodesToVisit.push_back(ptr1);
+
+		if (VisitedNodes.find(ptr2) == VisitedNodes.end())
+			NodesToVisit.push_back(ptr2);
+
+		if (VisitedNodes.find(ptr3) == VisitedNodes.end())
+			NodesToVisit.push_back(ptr3);
 	}
 
-	uint64_t path_to_buildings = target_island.debug_address;
+	std::unordered_map<uint32_t, std::string> id_to_name_map;
+	std::unordered_map<uint32_t, uint32_t> building_count;
 
-	path_to_buildings = path_to_buildings + 0x68;
-
-	path_to_buildings = *(uint64_t*)path_to_buildings;
-
-	path_to_buildings = path_to_buildings + 0x78;
-
-	uint64_t building_list_ptr = *(uint64_t*)path_to_buildings;
-	uint64_t building_list_last = *(uint64_t*)(path_to_buildings + 0x8);
-
-
-	for (; building_list_ptr <= building_list_last; building_list_ptr += 0x8)
+	for (auto it = VisitedNodes.begin(); it != VisitedNodes.end(); ++it)
 	{
-		uint64_t building = *(uint64_t*)building_list_ptr;
-		building = *(uint64_t*)(building + 0x8);
+		uint64_t node_address = *it;
+		uint64_t building_ptr = *(uint64_t*)(node_address + 0x28);
 
-		uint32_t building_id = *(uint32_t*)(building + 0x8);
+		if (building_ptr)
+		{
+			uint32_t building_id = *(uint32_t*)(building_ptr + 0x8);
 
-		std::string building_name = GetNameFromGUID(module_base, binary_crc, building_id);
+			if (id_to_name_map.find(building_id) == id_to_name_map.end())
+			{
+				std::string building_name = ::GetNameFromGUID(module_base, binary_crc, building_id);
+				id_to_name_map.insert(std::pair<uint32_t, std::string>(building_id, building_name));
+			}
 
-		ANNO_LOG("%s", building_name.c_str());
+			if (building_count.find(building_id) == building_count.end())
+			{
+				building_count.insert(std::pair<uint32_t, uint32_t>(building_id, 0));
+			}
+
+			++building_count.find(building_id)->second;
+		}
+		else
+		{
+			ANNO_LOG("%llx %llx %s", node_address, building_ptr, "No building ptr");
+		}
 	}
+
+	for (const std::pair<uint32_t, uint32_t>& building : building_count)
+	{
+		std::string building_name = id_to_name_map.find(building.first)->second;
+		int count = building.second;
+
+		ANNO_LOG("%d %s", count, building_name.c_str());
+	}
+
+	// std::unordered_map<uint32_t, double> conversion_map;
+
+	//std::vector<IslandInfo> Islands;
+	//this->GetWorldIslands(areaId, true, &Islands);
+
+	//IslandInfo target_island;
+
+	//for (const IslandInfo& island : Islands)
+	//{
+	//	if (island.island_id != islandId)
+	//		continue;
+
+	//	target_island = island;
+	//}
+
+	//uint64_t path_to_buildings = target_island.debug_address;
+
+	//path_to_buildings = path_to_buildings + 0x68;
+
+	//path_to_buildings = *(uint64_t*)path_to_buildings;
+
+	//path_to_buildings = path_to_buildings + 0x78;
+
+	//uint64_t building_list_ptr = *(uint64_t*)path_to_buildings;
+	//uint64_t building_list_last = *(uint64_t*)(path_to_buildings + 0x8);
+
+
+	//for (; building_list_ptr <= building_list_last; building_list_ptr += 0x8)
+	//{
+	//	uint64_t building = *(uint64_t*)building_list_ptr;
+	//	building = *(uint64_t*)(building + 0x8);
+
+	//	uint32_t building_id = *(uint32_t*)(building + 0x8);
+
+	//	std::string building_name = GetNameFromGUID(module_base, binary_crc, building_id);
+
+	//	ANNO_LOG("%s", building_name.c_str());
+	//}
 
 	//path_to_buildings = *(uint64_t*)path_to_buildings;
 
@@ -529,7 +654,7 @@ bool RemoteCallHandlerAnno::GetIslandIndustrialConversion(const uint32_t& areaId
 	//		return true;
 	//	});
 
-	return true;
+	// return true;
 }
 
 bool RemoteCallHandlerAnno::DebugTryEnqueueShipForTrade(const uint32_t& areaId, const uint32_t& islandId, const uint64_t& tradeComponent)
@@ -881,6 +1006,8 @@ bool RemoteCallHandlerAnno::DebugFunctionForAdHocInspection(const uint64_t& addr
 	uint64_t id = ids[1];
 	uint64_t addr = addresses[1];
 
+	ANNO_LOG("%llx", addr);
+
 	uint64_t chain = *(uint64_t*)(addr + 0x208);
 
 	ANNO_LOG("%llx", chain);
@@ -891,59 +1018,95 @@ bool RemoteCallHandlerAnno::DebugFunctionForAdHocInspection(const uint64_t& addr
 	ANNO_LOG("%llx", island_ptr);
 	ANNO_LOG("%llx", island_end);
 
+	uint64_t target_island_struct = 0;
+
 	while (island_ptr < island_end)
 	{
-		uint16_t island_id = *(uint16_t*)(island_ptr);
+		uint64_t island_id = (uint64_t)*(uint16_t*)(island_ptr);
 
+		ANNO_LOG("%llx", island_id);
+
+		if (island_id == 0x2242)
+		{
+			target_island_struct = *(uint64_t*)(island_ptr + 0x08);
+		}
 
 		island_ptr += 0x10;
 	}
 
-	// chain = *(uint64_t*)(chain + 0x58);
-	// chain = *(uint64_t*)(chain + 0xE8);
+	if (!target_island_struct)
+		return true;
 
-	//std::set<uint64_t> VisitedNodes;
-	//std::vector<uint64_t> NodesToVisit;
+	uint64_t chain2 = *(uint64_t*)(target_island_struct + 0x0E8);
+	chain2 = *(uint64_t*)(chain2 + 0x5E0);
+	chain2 = *(uint64_t*)(chain2 + 0x0C8);
 
-	//NodesToVisit.push_back(address);
+	ANNO_LOG("%llx", chain2);
 
-	//while (!NodesToVisit.empty())
-	//{
-	//	uint64_t CurrentNode = NodesToVisit.back();
-	//	NodesToVisit.pop_back();
+	std::set<uint64_t> VisitedNodes;
+	std::vector<uint64_t> NodesToVisit;
 
-	//	VisitedNodes.insert(CurrentNode);
+	NodesToVisit.push_back(chain2);
 
-	//	uint64_t ptr1 = *(uint64_t*)(CurrentNode + 0x00);
-	//	uint64_t ptr2 = *(uint64_t*)(CurrentNode + 0x08);
-	//	uint64_t ptr3 = *(uint64_t*)(CurrentNode + 0x10);
+	while (!NodesToVisit.empty())
+	{
+		uint64_t CurrentNode = NodesToVisit.back();
+		NodesToVisit.pop_back();
 
-	//	if (VisitedNodes.find(ptr1) == VisitedNodes.end())
-	//		NodesToVisit.push_back(ptr1);
+		VisitedNodes.insert(CurrentNode);
 
-	//	if (VisitedNodes.find(ptr2) == VisitedNodes.end())
-	//		NodesToVisit.push_back(ptr2);
+		uint64_t ptr1 = *(uint64_t*)(CurrentNode + 0x00);
+		uint64_t ptr2 = *(uint64_t*)(CurrentNode + 0x08);
+		uint64_t ptr3 = *(uint64_t*)(CurrentNode + 0x10);
 
-	//	if (VisitedNodes.find(ptr3) == VisitedNodes.end())
-	//		NodesToVisit.push_back(ptr3);
-	//}
+		if (VisitedNodes.find(ptr1) == VisitedNodes.end())
+			NodesToVisit.push_back(ptr1);
 
-	//for (auto it = VisitedNodes.begin(); it != VisitedNodes.end(); ++it)
-	//{
-	//	uint64_t node_address = *it;
-	//	uint64_t building_ptr = *(uint64_t*)(node_address + 0x28);
+		if (VisitedNodes.find(ptr2) == VisitedNodes.end())
+			NodesToVisit.push_back(ptr2);
 
-	//	if (building_ptr)
-	//	{
-	//		uint32_t building_id = *(uint32_t*)(building_ptr + 0x8);
-	//		std::string building_name = ::GetNameFromGUID(module_base, binary_crc, building_id);
-	//		ANNO_LOG("%llx %llx %s", node_address, building_ptr, building_name.c_str());
-	//	}
-	//	else
-	//	{
-	//		ANNO_LOG("%llx %llx %s", node_address, building_ptr, "No building ptr");
-	//	}
-	//}
+		if (VisitedNodes.find(ptr3) == VisitedNodes.end())
+			NodesToVisit.push_back(ptr3);
+	}
+
+	std::unordered_map<uint32_t, std::string> id_to_name_map;
+	std::unordered_map<uint32_t, uint32_t> building_count;
+
+	for (auto it = VisitedNodes.begin(); it != VisitedNodes.end(); ++it)
+	{
+		uint64_t node_address = *it;
+		uint64_t building_ptr = *(uint64_t*)(node_address + 0x28);
+
+		if (building_ptr)
+		{
+			uint32_t building_id = *(uint32_t*)(building_ptr + 0x8);
+
+			if (id_to_name_map.find(building_id) == id_to_name_map.end())
+			{
+				std::string building_name = ::GetNameFromGUID(module_base, binary_crc, building_id);
+				id_to_name_map.insert(std::pair<uint32_t, std::string>(building_id, building_name));
+			}
+
+			if (building_count.find(building_id) == building_count.end())
+			{
+				building_count.insert(std::pair<uint32_t, uint32_t>(building_id, 0));
+			}
+
+			++building_count.find(building_id)->second;
+		}
+		else
+		{
+			ANNO_LOG("%llx %llx %s", node_address, building_ptr, "No building ptr");
+		}
+	}
+
+	for (const std::pair<uint32_t, uint32_t>& building : building_count)
+	{
+		std::string building_name = id_to_name_map.find(building.first)->second;
+		int count = building.second;
+
+		ANNO_LOG("%d %s", count, building_name.c_str());
+	}
 
 	return true;
 }

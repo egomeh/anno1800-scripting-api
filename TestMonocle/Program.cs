@@ -35,15 +35,19 @@ class TestRunner
     {
         Telegraph telegraph = new Telegraph();
 
-        List<uint> Areas;
-        telegraph.GetAllAreas(out Areas);
+        List<uint> areas;
+        telegraph.GetAllAreas(out areas);
+
+        List<IslandInfo> islands;
+        telegraph.GetWorldIslands(areas[1], true, out islands);
+
+        List<ResourceConsumption> industrial_consumption;
+        telegraph.GetIslandIndustrialConversion(areas[1], islands[1].island_id, out industrial_consumption);
 
         //string GrainName;
         //telegraph.DebugGetNameFromGuid(id, out GrainName);
 
         //Console.WriteLine("{0}", GrainName);
-
-        telegraph.DebugFunctionForAdHocInspection(0x21E5E13DBB0);
 
         return;
     }
