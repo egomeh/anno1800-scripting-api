@@ -21,6 +21,8 @@ class StatsServer
 
     async Task HandleRequest()
     {
+        Telegraph telegraph = new Telegraph();
+
         HttpListener Listener = new HttpListener();
         Listener.Prefixes.Add("http://localhost:8018/");
         Listener.Start();
@@ -38,7 +40,20 @@ class StatsServer
             Console.WriteLine(Request.UserAgent);
             Console.WriteLine();
 
-            byte[] data = Encoding.UTF8.GetBytes("I'm a http server with access to Anno >:)");
+            List<uint> Areas;
+            telegraph.GetAllAreas(out Areas);
+
+            string AreaList = "";
+
+            foreach (uint Area in Areas)
+            {
+                string name;
+                telegraph.DebugGetNameFromGuid(Area, out name);
+
+                AreaList += name + "\n";
+            }
+
+            byte[] data = Encoding.UTF8.GetBytes(AreaList);
             Response.ContentType = "text/html";
             Response.ContentEncoding = Encoding.UTF8;
             Response.ContentLength64 = data.LongLength;
