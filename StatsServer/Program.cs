@@ -24,7 +24,7 @@ class StatsServer
         // Telegraph telegraph = new Telegraph();
 
         HttpListener Listener = new HttpListener();
-        Listener.Prefixes.Add("http://localhost:3035/");
+        Listener.Prefixes.Add("http://host.docker.internal:8888/");
         Listener.Start();
 
         while (true)
