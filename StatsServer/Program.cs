@@ -10,7 +10,7 @@ class StatsServer
         Console.WriteLine("Starting Stats Server");
 
         StatsServer Server = new StatsServer();
-        Server.RunServer();
+        Server.RunServer(); 
     }
 
     void RunServer()
@@ -21,10 +21,10 @@ class StatsServer
 
     async Task HandleRequest()
     {
-        Telegraph telegraph = new Telegraph();
+        // Telegraph telegraph = new Telegraph();
 
         HttpListener Listener = new HttpListener();
-        Listener.Prefixes.Add("http://localhost:8018/");
+        Listener.Prefixes.Add("http://localhost:3035/");
         Listener.Start();
 
         while (true)
@@ -40,21 +40,31 @@ class StatsServer
             Console.WriteLine(Request.UserAgent);
             Console.WriteLine();
 
-            List<uint> Areas;
-            telegraph.GetAllAreas(out Areas);
+            string ResponseString = "{";
 
-            string AreaList = "";
+            ResponseString += "\"session_id\": \"what is this?\",";
+            ResponseString += "\"session_name\": \"More what??\",";
+            ResponseString += "\"session_data\": {";
 
-            foreach (uint Area in Areas)
-            {
-                string name;
-                telegraph.DebugGetNameFromGuid(Area, out name);
+            ResponseString += "\"players\": [";
 
-                AreaList += name + "\n";
-            }
+            ResponseString += "{";
+            ResponseString += "\"player_id\": \"pass :|\",";
+            ResponseString += "\"player_name\": \"You\",";
 
-            byte[] data = Encoding.UTF8.GetBytes(AreaList);
-            Response.ContentType = "text/html";
+            ResponseString += "\"worlds\": [";
+            ResponseString += "]";
+
+            ResponseString += "}";
+
+            ResponseString += "]";
+
+            ResponseString += "}";
+
+            ResponseString += "}";
+
+            byte[] data = Encoding.UTF8.GetBytes(ResponseString);
+            Response.ContentType = "application/json";
             Response.ContentEncoding = Encoding.UTF8;
             Response.ContentLength64 = data.LongLength;
 
