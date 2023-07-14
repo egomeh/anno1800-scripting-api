@@ -1,146 +1,116 @@
-﻿using System.Net;
-using System.Net.Http;
-using System.Reflection.Metadata;
-using System.Text;
 
-using System.Text.Json;
-using Microsoft.Graph;
-using Microsoft.Graph.Models;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-var app = builder.Build();
+Telegraph telegraph = new Telegraph();
 
-if (app.Environment.IsDevelopment())
+var app = WebApplication.Create();
+
+// app.UseHttpsRedirection();
+
+app.MapGet("/anno-stats", () =>
 {
-    app.UseDeveloperExceptionPage();
-}
-
-app.MapGet("/api/person", () => new { Name = "John Doe", Age = 30 });
+    return CreateAnnoStats();
+});
 
 app.Run();
 
-//class StatsServer
-//{
-//    static void Main()
-//    {
-//        Console.WriteLine("Starting Stats Server");
+AnnoStats CreateAnnoStats()
+{
+    List<uint> Areas;
+    telegraph.GetAllAreas(out Areas);
 
-//        StatsServer Server = new StatsServer();
-//        Server.RunServer(); 
-//    }
+    return new AnnoStats
+    (
+        "what",
+        "what",
+        new SessionData
+        (
+            new PlayerData[]{
+            new PlayerData(
+                "whut",
+                "what??",
+                Areas.ConvertAll<WorldData>((uint Area) =>
+                {
+                    string AreaName;
+                    telegraph.DebugGetNameFromGuid(Area, out AreaName);
 
-//    void RunServer()
-//    {
-//        Task HandleTask = HandleRequest();
-//        HandleTask.GetAwaiter().GetResult();
-//    }
+                    List<IslandInfo> AnnoIslands;
+                    telegraph.GetWorldIslands(Area, true, out AnnoIslands);
 
-//    async Task HandleRequest()
-//    {
-//        Telegraph telegraph = new Telegraph();
+                    return new WorldData
+                    (
+                        string.Format("{0}", Area),
+                        AreaName,
+                        AnnoIslands.ConvertAll<IslandData>((IslandInfo island_info) =>
+                        {
+                            List<IslandResource> resources;
+                            telegraph.GetIslandResources(Area, island_info.island_id, out resources);
 
-//        HttpListener Listener = new HttpListener();
-//        Listener.Prefixes.Add("http://*:8888/");
-//        Listener.Start();
+                            return new IslandData
+                            (
+                                String.Format("{0}", island_info.island_id),
+                                island_info.name,
+                                resources.ConvertAll<InventoryItem>((IslandResource resource) =>
+                                {
+                                    return new InventoryItem
+                                    (
+                                        resource.name,
+                                        resource.amount
+                                    );
+                                }).ToArray(),
+                                new string[] { },
+                                new string[] { },
+                                new string[] { },
+                                new string[] { }
+                            );
+                        }).ToArray()
+                    );
+                }).ToArray()
+            )}
+        )
+    );
+}
 
-//        while (true)
-//        {
-//            HttpListenerContext ListenerContext = await Listener.GetContextAsync();
+record InventoryItem
+(
+    string name,
+    int value
+);
 
-//            HttpListenerRequest Request = ListenerContext.Request;
-//            HttpListenerResponse Response = ListenerContext.Response;
+record IslandData
+(
+    string island_id,
+    string island_name,
+    InventoryItem[] island_inventory,
+    string[] island_production,
+    string[] island_consumption,
+    string[] island_buildings_summary,
+    string[] island_production_buildings
+);
 
-//            Console.WriteLine(Request.Url.ToString());
-//            Console.WriteLine(Request.HttpMethod);
-//            Console.WriteLine(Request.UserHostName);
-//            Console.WriteLine(Request.UserAgent);
-//            Console.WriteLine();
+record WorldData
+(
+    string world_id,
+    string world_name,
+    IslandData[] islands
+);
 
-//            string ResponseString = "{";
+record PlayerData
+(
+    string player_id,
+    string player_name,
+    WorldData[] worlds
+);
 
-//            ResponseString += "\"session_id\": \"what is this?\",";
-//            ResponseString += "\"session_name\": \"More what??\",";
-//            ResponseString += "\"session_data\": {";
+record SessionData
+(
+    PlayerData[] players
+);
 
-//            ResponseString += "\"players\": [";
+record AnnoStats
+(
+    string session_id,
+    string session_name,
+    SessionData session_data
+);
 
-//            ResponseString += "{";
-//            ResponseString += "\"player_id\": \"aaa\",";
-//            ResponseString += "\"player_name\": \"You\",";
-
-//            ResponseString += "\"worlds\": [";
-
-//            List<string> Worlds = new List<string>();
-
-//            List<uint> Areas;
-//            telegraph.GetAllAreas(out Areas);
-
-//            foreach (uint Area in Areas)
-//            {
-//                string WorldEntry = "";
-
-//                string AreaName;
-//                telegraph.DebugGetNameFromGuid(Area, out AreaName);
-
-//                WorldEntry += "{";
-//                WorldEntry += String.Format("\"world_id\": {0},", Area);
-//                WorldEntry += String.Format("\"world_name\": \"{0}\",", AreaName);
-//                WorldEntry += "\"islands\": [";
-
-//                List<string> IslandEntries = new List<string>();
-
-//                List<IslandInfo> Islands;
-//                telegraph.GetWorldIslands(Area, true, out Islands);
-
-//                foreach (IslandInfo Island in Islands)
-//                {
-//                    string IslandEntry = "";
-
-//                    IslandEntry += "{";
-//                    IslandEntry += String.Format("\"island_id\": {0},", Island.island_id);
-//                    IslandEntry += String.Format("\"island_name\": \"{0}\"", Island.name);
-
-//                    IslandEntry += "\"island_inventory\": [],";
-//                    IslandEntry += "\"island_production\": [],";
-//                    IslandEntry += "\"island_consumption\": [],";
-//                    IslandEntry += "\"island_buildings_summary\": [],";
-//                    IslandEntry += "\"island_production_buildings\": []";
-
-//                    IslandEntry += "}";
-
-//                    IslandEntries.Add(IslandEntry);
-//                }
-
-//                WorldEntry += String.Join(",", IslandEntries);
-
-//                WorldEntry += "]";
-//                WorldEntry += "}";
-
-//                Worlds.Add(WorldEntry);
-//            }
-
-//            ResponseString += String.Join(",", Worlds);
-
-//            ResponseString += "]";
-
-//            ResponseString += "}";
-
-//            ResponseString += "]";
-
-//            ResponseString += "}";
-
-//            ResponseString += "}";
-
-//            byte[] data = Encoding.UTF8.GetBytes(ResponseString);
-//            Response.ContentType = "application/json";
-//            Response.ContentEncoding = Encoding.UTF8;
-//            Response.ContentLength64 = data.LongLength;
-
-//            await Response.OutputStream.WriteAsync(data, 0, data.Length);
-//            Response.Close();
-//        }
-//    }
-//}
 
