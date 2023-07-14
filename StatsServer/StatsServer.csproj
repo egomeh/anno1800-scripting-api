@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Graph" Version="5.18.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Monocle\Monocle.csproj" />
   </ItemGroup>
 
