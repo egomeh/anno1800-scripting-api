@@ -16,6 +16,22 @@ class CodeGenerator
         m_FunctionTable = functionTable;
     }
 
+    void WriteIfDifferent(string file, string content)
+    {
+        if (File.Exists(file))
+        {
+            string currentContent = File.ReadAllText(file);
+            if (!content.Equals(currentContent))
+            {
+                File.WriteAllText(file, content);
+            }
+        }
+        else
+        {
+            File.WriteAllText(file, content);
+        }
+    }
+
 
     public bool GenerateCode()
     {
@@ -245,7 +261,7 @@ class CodeGenerator
             CSTypeCode += "\n" + code + "\n";
         }
 
-        File.WriteAllText(CSTypesFile, CSTypeCode);
+        WriteIfDifferent(CSTypesFile, CSTypeCode);
 
         return true;
     }
@@ -273,7 +289,7 @@ class CodeGenerator
             CPPTypeCode += "\n" + code + "\n";
         }
 
-        File.WriteAllText(CPPTypesFile, CPPTypeCode);
+        WriteIfDifferent(CPPTypesFile, CPPTypeCode);
 
         return true;
     }
@@ -472,7 +488,7 @@ class CodeGenerator
 
         CSSerializationCode += "}\n";
 
-        File.WriteAllText(CSSerializationFile, CSSerializationCode);
+        WriteIfDifferent(CSSerializationFile, CSSerializationCode);
 
         return true;
     }
@@ -510,7 +526,7 @@ class CodeGenerator
             CPPSerializationCode += "\n" + code + "\n";
         }
 
-        File.WriteAllText(CPPHeaderSerializationFile, CPPSerializationCode);
+        WriteIfDifferent(CPPHeaderSerializationFile, CPPSerializationCode);
 
         return true;
     }
@@ -691,7 +707,7 @@ class CodeGenerator
             CPPSerializationCode += "\n" + code + "\n";
         }
 
-        File.WriteAllText(CPPHeaderSerializationFile, CPPSerializationCode);
+        WriteIfDifferent(CPPHeaderSerializationFile, CPPSerializationCode);
 
         return true;
     }
@@ -959,7 +975,7 @@ class CodeGenerator
 
         CSRemoteCallCode += "}";
 
-        File.WriteAllText(CSRemoteCallFile, CSRemoteCallCode);
+        WriteIfDifferent(CSRemoteCallFile, CSRemoteCallCode);
 
         return true;
     }
@@ -1019,7 +1035,7 @@ class CodeGenerator
 
             code += "bool HandleRemoteCall(SocketHandler& socketHandler, RemoteCallHandlerBase& callHandler);\n";
 
-            File.WriteAllText(CPPRemoteCallHandlerBase, code);
+            WriteIfDifferent(CPPRemoteCallHandlerBase, code);
         }
 
         {
@@ -1116,7 +1132,7 @@ class CodeGenerator
             code += "    return socketHandler.Send(buffer_out);\n";
             code += "}\n";
 
-            File.WriteAllText(CPPRemoteCallHandlerBaseImpl, code);
+            WriteIfDifferent(CPPRemoteCallHandlerBaseImpl, code);
         }
 
         return true;
