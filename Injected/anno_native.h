@@ -10,11 +10,11 @@ bool ExtractResourceNodeChainInfo(uint64_t module_base, BinaryCRC32 binary_crc, 
 
 bool DoesIslandBelongToPlayer(uint64_t address);
 
-bool GetIslandName(uint64_t island_address, std::string& name);
+bool GetIslandName(uint64_t mdoule_base, BinaryCRC32 binary_crc, uint64_t island_address, std::string& name);
 
 bool GetAreaCode(uint64_t area_address, uint64_t* area_code);
 
-bool ExtractIslandChainFromAddress(uint64_t address, bool mustBelongToThePlayer, std::vector<IslandInfo>* islands);
+bool ExtractIslandChainFromAddress(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t address, bool mustBelongToThePlayer, std::vector<IslandInfo>* islands);
 
 bool GetIslandListFromAreaAddress(uint64_t address, uint64_t* list_pointer);
 

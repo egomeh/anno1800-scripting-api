@@ -49,7 +49,9 @@ AnnoStats CreateAnnoStats()
                             (
                                 String.Format("{0}", island_info.island_id),
                                 island_info.name,
-                                resources.ConvertAll<InventoryItem>((IslandResource resource) =>
+                                resources
+                                .Where((IslandResource resource) => !resource.Equals("[Could not retreive]")).ToList()
+                                .ConvertAll<InventoryItem>((IslandResource resource) =>
                                 {
                                     return new InventoryItem
                                     (

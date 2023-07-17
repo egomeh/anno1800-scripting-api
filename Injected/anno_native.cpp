@@ -3,6 +3,7 @@
 #include "hook.h"
 #include "log.h"
 #include <set>
+#include <algorithm>
 
 extern "C"
 {
@@ -37,11 +38,11 @@ bool ExtractResourceNodeChainInfo(uint64_t module_base, BinaryCRC32 binary_crc, 
 		IslandResource resource;
 
 		bool known = false;
-		if (!ExtractResourceNodeInfo(module_base, binary_crc, address, &resource, known))
-			return true;
-
-		if (resource.amount > 0)
-			resourceChain->push_back(resource);
+		if (ExtractResourceNodeInfo(module_base, binary_crc, address, &resource, known))
+		{
+			if (resource.amount > 0)
+				resourceChain->push_back(resource);
+		}
 
 		visited_addresses.insert(address);
 		address = *(uint64_t*)address;
@@ -59,27 +60,34 @@ bool DoesIslandBelongToPlayer(uint64_t address)
 	return belong_flag == 0;
 }
 
-bool GetIslandName(uint64_t island_address, std::string& name)
+bool GetIslandName(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t island_address, std::string& name)
 {
-	uint64_t name_address = island_address + 0x120;
-	return ReadAnnoString(name_address, name);
+	uint32_t name_uid = *(uint32_t*)(island_address + 0x140);
+	name = ::GetNameFromGUID(module_base, binary_crc, (uint64_t)name_uid);
+	return true;
 }
 
-bool ExtractIslandChainFromAddress(uint64_t address, bool mustBelongToThePlayer, std::vector<IslandInfo>* islands)
+bool ExtractIslandChainFromAddress(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t address, bool mustBelongToThePlayer, std::vector<IslandInfo>* islands)
 {
+	std::vector<uint64_t> visited_islands;
+
 	uint64_t current_address = address;
 	int attempts = 0;
 
 	while (true)
 	{
+		visited_islands.push_back(current_address);
+
 		// Don't go on forever if an assumption is wrong
 		if (++attempts > 512)
 			break;
 
 		uint32_t island_id = *(uint32_t*)(current_address + 0x10) & 0xffff;
 		uint64_t current_island_address = current_address + 0x18;
+		uint64_t pointer_that_may_indicate_if_it_is_a_valid_island = *(uint32_t*)(current_island_address + 0x8);
 
-		if ((DoesIslandBelongToPlayer(current_island_address) || !mustBelongToThePlayer) && island_id)
+		if ((DoesIslandBelongToPlayer(current_island_address) || !mustBelongToThePlayer) && island_id
+			&& pointer_that_may_indicate_if_it_is_a_valid_island)
 		{
 			IslandInfo info;
 			info.debug_address = current_island_address;
@@ -87,7 +95,7 @@ bool ExtractIslandChainFromAddress(uint64_t address, bool mustBelongToThePlayer,
 
 			ANNO_LOG("island address %llx", current_island_address);
 
-			bool CouldGetName = GetIslandName(current_island_address, info.name);
+			bool CouldGetName = GetIslandName(module_base, binary_crc, current_island_address, info.name);
 
 			if (CouldGetName && info.name.size() > 0)
 			{
@@ -101,7 +109,7 @@ bool ExtractIslandChainFromAddress(uint64_t address, bool mustBelongToThePlayer,
 
 		current_address = *(uint64_t*)current_address;
 
-		if (current_address == address)
+		if (std::find(visited_islands.begin(), visited_islands.end(), current_address) != visited_islands.end())
 			break;
 	}
 
