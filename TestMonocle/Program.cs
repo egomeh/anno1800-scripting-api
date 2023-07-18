@@ -36,6 +36,7 @@ class TestRunner
         Telegraph telegraph = new Telegraph();
 
         telegraph.DebugGetNameFromGuid(0x29D5, out string name);
+        telegraph.DebugGetNameFromGuid(0xF6A14, out String timber);
 
         telegraph.GetAllAreas(out List<uint> Areas);
 

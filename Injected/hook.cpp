@@ -127,7 +127,7 @@ uint64_t AnnoFunctionOffset(BinaryCRC32 binary_crc, HookedFunction function)
         case HookedFunction::VehicleSortingHook:        return 0x0;
         }
     }
-    else if (binary_crc == BinaryCRC32::EpicStore) // Epic store
+    else if (binary_crc == BinaryCRC32::EpicStore)
     {
         switch (function)
         {
@@ -158,17 +158,16 @@ uint64_t AnnoDataOffset(BinaryCRC32 binary_crc, DataOffset offset)
         case DataOffset::FunctionGUIDToName:            return 0x3FFEED0;
         }
     }
-    else if (binary_crc == BinaryCRC32::EpicStore) // Epic store
+    else if (binary_crc == BinaryCRC32::EpicStore)
     {
         switch (offset)
         {
         case DataOffset::Invalid:                       return 0x0;
-        case DataOffset::GameStateOffset:               return 0x0;
-        case DataOffset::AssetNameDatabase:             return 0x0;
-        case DataOffset::FunctionGUIDToName:            return 0x0;
+        case DataOffset::GameStateOffset:               return 0x627DAB8;
+        case DataOffset::AssetNameDatabase:             return 0x627DD50;
+        case DataOffset::FunctionGUIDToName:            return 0x3FFB570;
         }
     }
-
     return 0;
 }
 
