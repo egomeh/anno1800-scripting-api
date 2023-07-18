@@ -25,7 +25,7 @@ enum class BinaryCRC32 : uint32_t
 {
     Invalid = 0,
     Steam = 0x04F4D92D,
-    EpicStore = 0xDBB41535
+    EpicStore = 0xC6565241,
 };
 
 struct HookData
