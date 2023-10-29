@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Testing">
       <UniqueIdentifier>{a63d9421-cb86-4241-93a1-dbcbedfc52d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\imgui">
+      <UniqueIdentifier>{67253141-54a1-44c7-9e76-9c39d193edaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ui">
+      <UniqueIdentifier>{e9326fa7-0f50-43a5-9afd-d9e1b10e44bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -75,6 +81,9 @@
     <ClInclude Include="log.h">
       <Filter>Source Files\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="ui.h">
+      <Filter>Source Files\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -119,6 +128,30 @@
     <ClCompile Include="log.cpp">
       <Filter>Source Files\Tools</Filter>
     </ClCompile>
+    <ClCompile Include="..\imgui\imgui.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\imgui_demo.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\imgui_draw.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\backends\imgui_impl_dx11.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\backends\imgui_impl_win32.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\imgui_tables.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="trampolines.asm">
@@ -127,5 +160,9 @@
     <MASM Include="test_asm.asm">
       <Filter>Source Files\Testing</Filter>
     </MASM>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\imgui\backends\imgui_impl_metal.mm" />
+    <None Include="..\imgui\backends\imgui_impl_osx.mm" />
   </ItemGroup>
 </Project>

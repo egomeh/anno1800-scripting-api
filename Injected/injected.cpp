@@ -7,11 +7,13 @@
 #include "memory.h"
 #include "hook.h"
 #include "log.h"
+#include "ui.h"
 
 #include <Windows.h>
 #include <string>
 #include <sstream>
 #include <ios>
+#include <array>
 
 extern "C"
 {
@@ -57,6 +59,8 @@ void injected(BinaryCRC32 binary_crc)
 
     callHandler.module_base = moduleBase;
     callHandler.binary_crc = binary_crc;
+
+    UI::Get().EnableHook();
 
     // Scope for memory placements.
     // When exiting this scope, all native code should
@@ -112,6 +116,18 @@ void injected(BinaryCRC32 binary_crc)
         // Handle remote calls until we fail
         while (HandleRemoteCall(socketHandler, callHandler));
     }
+
+    //// Maybe we're not hooking, that would be the case when running in dx11
+    //if (g_device)
+    //    ImGui_ImplDX11_Shutdown();
+
+    //ImGui_ImplWin32_Shutdown();
+    //ImGui::DestroyContext();
+
+    //if (hwnd)
+    //    SetWindowLongPtrW(hwnd, GWLP_WNDPROC, (LONG_PTR)OriginalProcPointerAnno);
+
+    UI::Get().DisableHook();
 
     CloseHandle(anno_process);
 
