@@ -84,6 +84,24 @@
     <ClInclude Include="ui.h">
       <Filter>Source Files\ui</Filter>
     </ClInclude>
+    <ClInclude Include="ui_island_view.h">
+      <Filter>Source Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_id_to_name.h">
+      <Filter>Source Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_area_view.h">
+      <Filter>Source Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_selection_view.h">
+      <Filter>Source Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="anno_entity.h">
+      <Filter>Source Files\anno</Filter>
+    </ClInclude>
+    <ClInclude Include="ui_entity_view.h">
+      <Filter>Source Files\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -150,6 +168,24 @@
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
     <ClCompile Include="ui.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_island_view.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_id_to_name.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_area_view.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_selection_view.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="anno_entity.cpp">
+      <Filter>Source Files\anno</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_entity_view.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
   </ItemGroup>

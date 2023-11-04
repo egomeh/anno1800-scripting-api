@@ -1,4 +1,8 @@
 #include "tools.h"
+#include "hook.h"
+
+BinaryCRC32 g_BinaryCRC;
+uint64_t g_ModuleBase;
 
 std::string utf8_encode(const std::wstring& wstr)
 {

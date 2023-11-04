@@ -20,10 +20,10 @@ private:
     Log::Get().Write(__my_line_); \
 }
 
-#define ANNO_FORMAT(result, format, ...) std::string result; { \
+#define ANNO_FORMAT(__my_result, format, ...) std::string __my_result; { \
     char __my_line_[512]; \
     sprintf_s(__my_line_, format, ##__VA_ARGS__); \
-    result = __my_line_; \
+    __my_result = __my_line_; \
 }
 
 #define DEBUG_PTR(variable) ANNO_LOG(#variable " %llx", variable)

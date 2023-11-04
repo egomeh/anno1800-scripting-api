@@ -4,6 +4,11 @@
 #include "hook.h"
 #include <unordered_map>
 
+extern "C"
+{
+	uint64_t get_anno_component(uint64_t object_address, uint64_t component_id);
+}
+
 bool ExtractResourceNodeInfo(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t address, IslandResource* resourceInfo, bool& known);
 
 bool ExtractResourceNodeChainInfo(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t address, std::vector<IslandResource>* resourceInfo);

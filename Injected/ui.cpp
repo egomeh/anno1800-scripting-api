@@ -11,7 +11,6 @@
 // To get the address of present
 #pragma comment (lib, "d3d11.lib")
 
-#include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
 
@@ -48,6 +47,26 @@ UI& UI::Get()
 {
     static UI ui;
     return ui;
+}
+
+void UI::RegsiterDebugWindow(DebugWindow* Window)
+{
+    DebugWindowInfo NewInfo;
+    NewInfo.Enabled = false;
+    NewInfo.Window = Window;
+    DebugWindows.push_back(NewInfo);
+}
+
+void UI::UnregisterDebugWindow(DebugWindow* Window)
+{
+    for (auto it = DebugWindows.begin(); it != DebugWindows.end(); ++it)
+    {
+        if (it->Window != Window)
+            continue;
+
+        DebugWindows.erase(it);
+        break;
+    }
 }
 
 void UI::EnableHook()
@@ -189,7 +208,32 @@ bool UI::OnWinProc(HWND WindowHandle, UINT uMsg, WPARAM WParam, LPARAM LParam)
 
 void UI::Render()
 {
-    ImGui::Begin("Hello, Anno!");
-    ImGui::Text("This is a ui thingy");
+    ImGui::Begin("Anno Scriptig API debug menu");
+
+    ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+
+    if (ImGui::BeginTabBar("Debug Views", tab_bar_flags))
+    {
+        for (auto& DebugWindow : DebugWindows)
+        {
+            if (ImGui::BeginTabItem(DebugWindow.Window->GetName()))
+            {
+                DebugWindow.Window->Render();
+                ImGui::EndTabItem();
+            }
+        }
+        ImGui::EndTabBar();
+    }
     ImGui::End();
 }
+
+DebugWindow::DebugWindow()
+{
+    UI::Get().RegsiterDebugWindow(this);
+}
+
+DebugWindow::~DebugWindow()
+{
+    UI::Get().UnregisterDebugWindow(this);
+}
+

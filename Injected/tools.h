@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "global_includes.h"
+#include "hook.h"
 
 template<typename T>
 class ScopedAllocator
@@ -30,6 +31,10 @@ public:
 private:
     T* m_data;
 };
+
+extern BinaryCRC32 g_BinaryCRC;
+extern uint64_t g_ModuleBase;
+
 
 std::string utf8_encode(const std::wstring& wstr);
 std::wstring utf8_decode(const std::string& str);

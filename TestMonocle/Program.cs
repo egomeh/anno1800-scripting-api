@@ -1,4 +1,6 @@
-﻿class Program
+﻿using System.Net;
+
+class Program
 {
     static void Main(string[] args)
     {
@@ -39,8 +41,7 @@ class TestRunner
         //telegraph.DebugGetNameFromGuid(0xF6A14, out String timber);
         //telegraph.DebugGetNameFromGuid(0x29D5, out string name);
 
-        //telegraph.GetAllAreas(out List<uint> Areas);
-
+        // telegraph.GetAllAreas(out List<uint> Areas);
         //telegraph.GetWorldIslands(Areas[1], true, out List<IslandInfo> islands);
 
         //List<ResourceConsumption> industrial_consumption;
@@ -54,4 +55,3 @@ class TestRunner
         return;
     }
 }
-

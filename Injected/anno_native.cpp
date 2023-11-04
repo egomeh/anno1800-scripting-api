@@ -5,11 +5,6 @@
 #include <set>
 #include <algorithm>
 
-extern "C"
-{
-	uint64_t get_anno_component(uint64_t object_address, uint64_t component_id);
-}
-
 bool ExtractResourceNodeInfo(uint64_t module_base, BinaryCRC32 binary_crc, uint64_t address, IslandResource* resourceInfo, bool& known)
 {
 	if (!address)
@@ -246,7 +241,7 @@ bool GetAllAreas(uint64_t module_base, BinaryCRC32 binary_crc, std::vector<uint6
 
 		std::string area_name = GetNameFromGUID(module_base, binary_crc, area_code);
 
-		ANNO_LOG("Found area with name %s at %llx", area_name.c_str(), world_address);
+		/// ANNO_LOG("Found area with name %s at %llx", area_name.c_str(), world_address);
 
 		world_iterator += 8;
 	}
