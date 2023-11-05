@@ -40,7 +40,7 @@ void DisplayAnnoEntity(AnnoEntity& Entity)
 		for (auto& Component : Components)
 		{
 			ANNO_FORMAT(component_tree_id, "Components %llx", Component->GetAddress());
-			ANNO_LOG(component_tree_id.c_str());
+			// ANNO_LOG(component_tree_id.c_str());
 
 			if (ImGui::TreeNode(component_tree_id.c_str(), "%lx %s", Component->GetId(), Component->GetName().c_str()))
 			{

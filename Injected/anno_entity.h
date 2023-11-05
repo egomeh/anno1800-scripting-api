@@ -96,6 +96,21 @@ private:
 	std::vector<SecondaryProduction> SecondaryProductions;
 };
 
+class AnnoComponent_Movement : public AnnoComponent
+{
+public:
+	AnnoComponent_Movement(uint32_t id, uint64_t _address);
+	virtual ~AnnoComponent_Movement();
+
+	virtual void Render() override;
+
+	virtual std::string GetName();
+
+private:
+
+	float x, y, rotation;
+};
+
 
 class AnnoEntity
 {

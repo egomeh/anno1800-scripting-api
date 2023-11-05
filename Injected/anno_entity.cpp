@@ -113,6 +113,8 @@ std::shared_ptr<AnnoComponent> GetComponentFromEntity(AnnoEntity& Entity, uint32
 		return std::make_shared<AnnoComponent_InternalStorage>(ComponentId, component_address);
 	else if (ComponentId == 0x301)
 		return std::make_shared<AnnoComponent_Production>(ComponentId, component_address);
+	else if (ComponentId == 0x141)
+		return std::make_shared<AnnoComponent_Movement>(ComponentId, component_address);
 
 	return std::make_shared<AnnoComponent>(ComponentId, component_address);
 }
@@ -276,4 +278,26 @@ void AnnoComponent_Production::Render()
 std::string AnnoComponent_Production::GetName()
 {
 	return "Production";
+}
+
+AnnoComponent_Movement::AnnoComponent_Movement(uint32_t id, uint64_t _address) : AnnoComponent(id, _address)
+{
+	x = *(float*)(address + 0x2C);
+	y = *(float*)(address + 0x30);
+	rotation = *(float*)(address + 0x34);
+}
+
+AnnoComponent_Movement::~AnnoComponent_Movement()
+{
+}
+
+void AnnoComponent_Movement::Render()
+{
+	ImGui::Text("Position = (%.0f, %.0f)", x, y);
+	ImGui::Text("rotation = %.2f", rotation);
+}
+
+std::string AnnoComponent_Movement::GetName()
+{
+	return "Movement";
 }
