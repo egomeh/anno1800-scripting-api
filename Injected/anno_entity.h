@@ -108,7 +108,14 @@ public:
 
 private:
 
+	struct WayPoint
+	{
+		float x;
+		float y;
+	};
+
 	float x, y, rotation;
+	std::vector<WayPoint> Waypoints;
 };
 
 

@@ -285,6 +285,21 @@ AnnoComponent_Movement::AnnoComponent_Movement(uint32_t id, uint64_t _address) :
 	x = *(float*)(address + 0x2C);
 	y = *(float*)(address + 0x30);
 	rotation = *(float*)(address + 0x34);
+
+	uint32_t nWaypoints = *(uint32_t*)(address + 0x20);
+	uint64_t waypoint_ptr = *(uint64_t*)(address + 0x10);
+
+	for (uint32_t i = 0; i < nWaypoints; ++i)
+	{
+		WayPoint wp;
+
+		uint64_t waypoint_sruct_ptr = *(uint64_t*)(waypoint_ptr + i * 8);
+
+		//ANNO_LOG("waypoint_ptr %llx", waypoint_sruct_ptr);
+		wp.x = *(float*)(waypoint_sruct_ptr + sizeof(float));
+		wp.y = *(float*)(waypoint_sruct_ptr + 2 * sizeof(float));
+		Waypoints.push_back(wp);
+	}
 }
 
 AnnoComponent_Movement::~AnnoComponent_Movement()
@@ -295,6 +310,11 @@ void AnnoComponent_Movement::Render()
 {
 	ImGui::Text("Position = (%.0f, %.0f)", x, y);
 	ImGui::Text("rotation = %.2f", rotation);
+
+	for (const WayPoint wp : Waypoints)
+	{
+		ImGui::Text("Waypoint %.1f, %.1f", wp.x, wp.y);
+	}
 }
 
 std::string AnnoComponent_Movement::GetName()
