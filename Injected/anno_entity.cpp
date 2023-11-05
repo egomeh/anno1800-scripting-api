@@ -289,16 +289,21 @@ AnnoComponent_Movement::AnnoComponent_Movement(uint32_t id, uint64_t _address) :
 	uint32_t nWaypoints = *(uint32_t*)(address + 0x20);
 	uint64_t waypoint_ptr = *(uint64_t*)(address + 0x10);
 
-	for (uint32_t i = 0; i < nWaypoints; ++i)
+	uint64_t waypoint_sruct_ptr = *(uint64_t*)(waypoint_ptr);
+	uint64_t waypoint_sruct_end = *(uint64_t*)(waypoint_ptr + 8);
+
+	ANNO_LOG("%llx %llx", waypoint_sruct_ptr, waypoint_sruct_end);
+
+	while (waypoint_sruct_ptr != waypoint_sruct_end)
 	{
 		WayPoint wp;
-
-		uint64_t waypoint_sruct_ptr = *(uint64_t*)(waypoint_ptr + i * 8);
-
+			
 		//ANNO_LOG("waypoint_ptr %llx", waypoint_sruct_ptr);
 		wp.x = *(float*)(waypoint_sruct_ptr + sizeof(float));
 		wp.y = *(float*)(waypoint_sruct_ptr + 2 * sizeof(float));
 		Waypoints.push_back(wp);
+
+		waypoint_sruct_ptr += 0x10;
 	}
 }
 
