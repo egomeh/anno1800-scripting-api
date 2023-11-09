@@ -102,6 +102,12 @@
     <ClInclude Include="ui_entity_view.h">
       <Filter>Source Files\ui</Filter>
     </ClInclude>
+    <ClInclude Include="ui_debugger_test.h">
+      <Filter>Source Files\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="hardware_breakpoints.h">
+      <Filter>Source Files\Tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -186,6 +192,9 @@
       <Filter>Source Files\anno</Filter>
     </ClCompile>
     <ClCompile Include="ui_entity_view.cpp">
+      <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="ui_debugger_test.cpp">
       <Filter>Source Files\ui</Filter>
     </ClCompile>
   </ItemGroup>

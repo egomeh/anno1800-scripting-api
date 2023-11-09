@@ -160,6 +160,7 @@
     <ClInclude Include="anno_entity.h" />
     <ClInclude Include="anno_native.h" />
     <ClInclude Include="anno_tools.h" />
+    <ClInclude Include="hardware_breakpoints.h" />
     <ClInclude Include="ui.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="global_includes.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="testing.h" />
     <ClInclude Include="tools.h" />
     <ClInclude Include="ui_area_view.h" />
+    <ClInclude Include="ui_debugger_test.h" />
     <ClInclude Include="ui_entity_view.h" />
     <ClInclude Include="ui_id_to_name.h" />
     <ClInclude Include="ui_island_view.h" />
@@ -206,6 +208,7 @@
     <ClCompile Include="testing.cpp" />
     <ClCompile Include="tools.cpp" />
     <ClCompile Include="ui_area_view.cpp" />
+    <ClCompile Include="ui_debugger_test.cpp" />
     <ClCompile Include="ui_entity_view.cpp" />
     <ClCompile Include="ui_id_to_name.cpp" />
     <ClCompile Include="ui_island_view.cpp" />
