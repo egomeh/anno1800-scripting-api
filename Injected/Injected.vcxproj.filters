@@ -108,6 +108,9 @@
     <ClInclude Include="hardware_breakpoints.h">
       <Filter>Source Files\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="Zydis.h">
+      <Filter>Source Files\Tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -196,6 +199,9 @@
     </ClCompile>
     <ClCompile Include="ui_debugger_test.cpp">
       <Filter>Source Files\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="Zydis.c">
+      <Filter>Source Files\Tools</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -11,6 +11,8 @@
 #include "anno_tools.h"
 #include "anno_native.h"
 
+#include "Zydis.h"
+
 static DebuggerTestDebugWindow g_AreaVieweDebugWindow;
 
 static bool Tracing = false;
@@ -20,24 +22,30 @@ std::vector<uint32_t> hits;
 
 long WINAPI TestDebugHandler(PEXCEPTION_POINTERS exception)
 {
-    EnterCriticalSection(&TraceCS);
+    //EnterCriticalSection(&TraceCS);
 
-    DWORD CurrentThread = GetCurrentThreadId();
+    //DWORD CurrentThread = GetCurrentThreadId();
 
     // Eoah dude, this is hit so many times! :O
-    ANNO_LOG("Hit here %lx", CurrentThread);
+    //ANNO_LOG("Hit here %lx", CurrentThread);
 
-    hits.push_back(CurrentThread);
+    //hits.push_back(CurrentThread);
 
-    LeaveCriticalSection(&TraceCS);
+    ZyanU64 runtime_address = exception->ContextRecord->Rip;
+
+    ZydisDisassembledInstruction instruction;
+    ZydisDisassembleIntel(ZYDIS_MACHINE_MODE_LONG_64, runtime_address, (void*)runtime_address, 0x20, &instruction);
+
+    //ANNO_LOG("Broke on %llx instruction was %s moving rip by %lx", runtime_address, instruction.text,(uint32_t)instruction.info.length);
+    exception->ContextRecord->Rip += (uint64_t)instruction.info.length;
+
+    //LeaveCriticalSection(&TraceCS);
 
     return EXCEPTION_CONTINUE_EXECUTION;
 }
 
 DebuggerTestDebugWindow::DebuggerTestDebugWindow() : DebugWindow()
 {
-    TraceStartBP.label = "Trace Start";
-
     int i = 0;
     for (auto& BP : Breakpoints)
     {
@@ -56,46 +64,47 @@ DebuggerTestDebugWindow::~DebuggerTestDebugWindow()
 
 void DebuggerTestDebugWindow::Render()
 {
-    if (!Tracing)
+    if (Tracing)
     {
-        bool TraceButtonPressed = ImGui::Button("Start Trace");
+        ANNO_LOG("Stopping trace");
+        for (auto& BP : Breakpoints)
+        {
+            BP.HardwareBreakpoint.Clear();
+        }
 
-        TraceStartBP.Draw();
+        Sleep(500);
+
+        RemoveVectoredExceptionHandler(HandlerHandle);
+
+        Tracing = false;
+        return;
+    }
+
+    bool TraceButtonPressed = ImGui::Button("Start Trace");
+
+    for (auto& BP : Breakpoints)
+    {
+        BP.Draw();
+    }
+
+    if (TraceButtonPressed)
+    {
+        ANNO_LOG("Running trace");
+        hits.clear();
+
+        Tracing = true;
+
+        HandlerHandle = AddVectoredExceptionHandler(TRUE, &TestDebugHandler);
 
         for (auto& BP : Breakpoints)
         {
-            BP.Draw();
-        }
+            if (!BP.enabled)
+                continue;
 
-        if (TraceButtonPressed)
-        {
-            hits.clear();
-
-            Tracing = true;
-
-            HandlerHandle = AddVectoredExceptionHandler(1, &TestDebugHandler);
-            TraceStartBP.HardwareBreakpoint.Set((void*)TraceStartBP.actual_address, 1, HardwareBreakpoint::Condition::Execute);
+            ANNO_LOG("Enabling breakpoint for address %llx", BP.actual_address);
+            BP.HardwareBreakpoint.Set((void*)BP.actual_address, 1, HardwareBreakpoint::Condition::Execute);
         }
     }
-    else
-    {
-        bool StopTraceButtonPressed = ImGui::Button("Stop Trace");
-
-        if (StopTraceButtonPressed)
-        {
-            Tracing = false;
-
-            TraceStartBP.HardwareBreakpoint.Clear();
-            RemoveVectoredContinueHandler(HandlerHandle);
-        }
-    }
-
-    //EnterCriticalSection(&TraceCS);
-    //for (const uint32_t& thread_id : hits)
-    //{
-    //    ImGui::Text("%lx", thread_id);
-    //}
-    //LeaveCriticalSection(&TraceCS);
 }
 
 const char* DebuggerTestDebugWindow::GetName()

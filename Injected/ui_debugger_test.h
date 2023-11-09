@@ -31,8 +31,7 @@ public:
 		void Draw();
 	};
 
-	BreakpointInfo TraceStartBP;
-	std::array<BreakpointInfo, 3> Breakpoints;
+	std::array<BreakpointInfo, 4> Breakpoints;
 };
 
 

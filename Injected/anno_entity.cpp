@@ -292,8 +292,6 @@ AnnoComponent_Movement::AnnoComponent_Movement(uint32_t id, uint64_t _address) :
 	uint64_t waypoint_sruct_ptr = *(uint64_t*)(waypoint_ptr);
 	uint64_t waypoint_sruct_end = *(uint64_t*)(waypoint_ptr + 8);
 
-	ANNO_LOG("%llx %llx", waypoint_sruct_ptr, waypoint_sruct_end);
-
 	while (waypoint_sruct_ptr != waypoint_sruct_end)
 	{
 		WayPoint wp;
