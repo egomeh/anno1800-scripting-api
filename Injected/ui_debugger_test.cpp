@@ -22,9 +22,21 @@ std::vector<uint32_t> hits;
 
 long WINAPI TestDebugHandler(PEXCEPTION_POINTERS exception)
 {
-    //EnterCriticalSection(&TraceCS);
+   // if (exception->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION)
+    //{
+   //     LeaveCriticalSection(&TraceCS);
+   //     return EXCEPTION_CONTINUE_SEARCH;
+   // }
 
-    //DWORD CurrentThread = GetCurrentThreadId();
+    exception->ContextRecord->EFlags &= ~(1 << 8);
+    exception->ContextRecord->EFlags |= 0x00010000;
+
+    if (!Tracing)
+        return EXCEPTION_CONTINUE_EXECUTION;
+
+    EnterCriticalSection(&TraceCS);
+
+    DWORD CurrentThread = GetCurrentThreadId();
 
     // Eoah dude, this is hit so many times! :O
     //ANNO_LOG("Hit here %lx", CurrentThread);
@@ -36,10 +48,13 @@ long WINAPI TestDebugHandler(PEXCEPTION_POINTERS exception)
     ZydisDisassembledInstruction instruction;
     ZydisDisassembleIntel(ZYDIS_MACHINE_MODE_LONG_64, runtime_address, (void*)runtime_address, 0x20, &instruction);
 
-    //ANNO_LOG("Broke on %llx instruction was %s moving rip by %lx", runtime_address, instruction.text,(uint32_t)instruction.info.length);
-    exception->ContextRecord->Rip += (uint64_t)instruction.info.length;
+    ANNO_LOG("Broke on %llx instruction was %s", runtime_address, instruction.text);
 
-    //LeaveCriticalSection(&TraceCS);
+    //exception->ContextRecord->Rip += (uint64_t)instruction.info.length;
+
+    // Unset trap flag
+
+    LeaveCriticalSection(&TraceCS);
 
     return EXCEPTION_CONTINUE_EXECUTION;
 }
