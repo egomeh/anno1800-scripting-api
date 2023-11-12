@@ -74,7 +74,7 @@ bool ForEachThreadInProcess(T&& function)
                 if (threadEntry.th32OwnerProcessID == currentProcessID)
                 {
                     HANDLE thread = OpenThread(THREAD_ALL_ACCESS, FALSE, threadEntry.th32ThreadID);
-                    if (thread != NULL)
+                    if (thread != NULL) 
                     {
                         function(threadEntry.th32ThreadID, thread);
                         CloseHandle(thread);

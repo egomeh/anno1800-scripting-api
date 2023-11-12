@@ -182,6 +182,7 @@
     <ClInclude Include="ui_id_to_name.h" />
     <ClInclude Include="ui_island_view.h" />
     <ClInclude Include="ui_selection_view.h" />
+    <ClInclude Include="ui_time_view.h" />
     <ClInclude Include="Zydis.h" />
   </ItemGroup>
   <ItemGroup>
@@ -214,6 +215,7 @@
     <ClCompile Include="ui_id_to_name.cpp" />
     <ClCompile Include="ui_island_view.cpp" />
     <ClCompile Include="ui_selection_view.cpp" />
+    <ClCompile Include="ui_time_view.cpp" />
     <ClCompile Include="Zydis.c" />
   </ItemGroup>
   <ItemGroup>

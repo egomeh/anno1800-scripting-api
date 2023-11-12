@@ -18,17 +18,14 @@ static DebuggerTestDebugWindow g_AreaVieweDebugWindow;
 static bool Tracing = false;
 static CRITICAL_SECTION TraceCS;
 
-std::vector<uint32_t> hits;
+std::vector<std::string> hits;
 
 long WINAPI TestDebugHandler(PEXCEPTION_POINTERS exception)
 {
-   // if (exception->ExceptionRecord->ExceptionCode == EXCEPTION_ACCESS_VIOLATION)
-    //{
-   //     LeaveCriticalSection(&TraceCS);
-   //     return EXCEPTION_CONTINUE_SEARCH;
-   // }
-
+    // Rest trap flag
     exception->ContextRecord->EFlags &= ~(1 << 8);
+
+    // Set Continue flag
     exception->ContextRecord->EFlags |= 0x00010000;
 
     if (!Tracing)
@@ -38,19 +35,13 @@ long WINAPI TestDebugHandler(PEXCEPTION_POINTERS exception)
 
     DWORD CurrentThread = GetCurrentThreadId();
 
-    // Eoah dude, this is hit so many times! :O
-    //ANNO_LOG("Hit here %lx", CurrentThread);
-
-    //hits.push_back(CurrentThread);
-
     ZyanU64 runtime_address = exception->ContextRecord->Rip;
 
     ZydisDisassembledInstruction instruction;
     ZydisDisassembleIntel(ZYDIS_MACHINE_MODE_LONG_64, runtime_address, (void*)runtime_address, 0x20, &instruction);
 
-    ANNO_LOG("Broke on %llx instruction was %s", runtime_address, instruction.text);
-
-    //exception->ContextRecord->Rip += (uint64_t)instruction.info.length;
+    ANNO_FORMAT(entry, "Thread %lx broke on %llx instruction was %s", CurrentThread, runtime_address, instruction.text);
+    hits.push_back(entry);
 
     // Unset trap flag
 
@@ -102,10 +93,16 @@ void DebuggerTestDebugWindow::Render()
         BP.Draw();
     }
 
+    for (std::string& hit : hits)
+    {
+        ImGui::Text(hit.c_str());
+    }
+
     if (TraceButtonPressed)
     {
         ANNO_LOG("Running trace");
         hits.clear();
+        hits.reserve(0x1000);
 
         Tracing = true;
 

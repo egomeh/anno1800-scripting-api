@@ -16,9 +16,10 @@ enum class HookedFunction
 enum class DataOffset : uint64_t
 {
     Invalid = 0,
-    GameStateOffset = 1,
-    AssetNameDatabase = 2,
-    FunctionGUIDToName = 3,
+    TimeStructOffset = 1,
+    GameStateOffset = 2,
+    AssetNameDatabase = 3,
+    FunctionGUIDToName = 4
 };
 
 enum class BinaryCRC32 : uint32_t
