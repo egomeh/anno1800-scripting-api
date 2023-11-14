@@ -9,7 +9,7 @@
 #include "anno_native.h"
 
 
-static AreaVieweDebugWindow g_AreaVieweDebugWindow;
+// static AreaVieweDebugWindow g_AreaVieweDebugWindow;
 
 AreaVieweDebugWindow::AreaVieweDebugWindow() : DebugWindow()
 {

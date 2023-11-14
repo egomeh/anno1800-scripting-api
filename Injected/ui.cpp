@@ -112,6 +112,14 @@ void UI::EnableHook()
         SAFE_RELEASE(pSwapchain);
         SAFE_RELEASE(pDevice);
     }
+    else
+    {
+        if (hr == 0)
+            ANNO_LOG("Unable to create D3D device");
+
+        if (!pSwapchain)
+            ANNO_LOG("Unable to create swapchain");
+    }
 
     ANNO_LOG("Present Function VTable Address: %llx", PresentFunctionVTableEntry);
     ANNO_LOG("Present Function Address: %llx", OriginalPresentFunctionDx11);

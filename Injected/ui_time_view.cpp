@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <chrono>
 
 #include "ui.h"
 #include "log.h"
@@ -9,7 +10,7 @@
 #include "anno_native.h"
 
 
-static TimeVieweDebugWindow g_AreaVieweDebugWindow;
+/// static TimeVieweDebugWindow g_AreaVieweDebugWindow;
 
 TimeVieweDebugWindow::TimeVieweDebugWindow() : DebugWindow()
 {
@@ -34,6 +35,16 @@ void TimeVieweDebugWindow::Render()
 	uint64_t Time_ms = *(uint64_t*)(TimestructBaseAddress + 0x60);
 	uint64_t FrameNumber = *(uint64_t*)(TimestructBaseAddress + 0x70);
 	ImGui::Text("Frame Nr. %llu", FrameNumber);
+
+	std::chrono::milliseconds ms(Time_ms);
+	auto secs = std::chrono::duration_cast<std::chrono::seconds>(ms);
+	ms -= std::chrono::duration_cast<std::chrono::milliseconds>(secs);
+	auto mins = std::chrono::duration_cast<std::chrono::minutes>(secs);
+	secs -= std::chrono::duration_cast<std::chrono::seconds>(mins);
+	auto hour = std::chrono::duration_cast<std::chrono::hours>(mins);
+	mins -= std::chrono::duration_cast<std::chrono::minutes>(hour);
+
+	ImGui::Text("%llu hours %llu minutes %llu seconds", hour.count(), mins.count(), secs.count());
 }
 
 const char* TimeVieweDebugWindow::GetName()

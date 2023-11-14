@@ -32,6 +32,9 @@ public:
 	};
 
 	std::array<BreakpointInfo, 4> Breakpoints;
+
+	void StartTrace();
+	void StopTrace();
 };
 
 

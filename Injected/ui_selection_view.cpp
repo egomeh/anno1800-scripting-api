@@ -12,7 +12,7 @@
 
 #include "ui_entity_view.h"
 
-static SelectionVieweDebugWindow g_AreaVieweDebugWindow;
+// static SelectionVieweDebugWindow g_AreaVieweDebugWindow;
 
 SelectionVieweDebugWindow::SelectionVieweDebugWindow() : DebugWindow()
 {

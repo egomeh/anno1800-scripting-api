@@ -9,7 +9,7 @@
 #include "anno_native.h"
 
 
-static IdToNameDebugWindow g_IdToNameDebugWindow;
+// static IdToNameDebugWindow g_IdToNameDebugWindow;
 
 IdToNameDebugWindow::IdToNameDebugWindow() : DebugWindow()
 {

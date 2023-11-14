@@ -9,7 +9,7 @@
 #include "anno_native.h"
 
 
-static IslandViewDebugWindow g_IslandViewDebugWindow;
+// static IslandViewDebugWindow g_IslandViewDebugWindow;
 
 IslandViewDebugWindow::IslandViewDebugWindow() : DebugWindow()
 {

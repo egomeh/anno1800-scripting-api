@@ -13,8 +13,9 @@
 
 #include "Zydis.h"
 
-static DebuggerTestDebugWindow g_AreaVieweDebugWindow;
+// static DebuggerTestDebugWindow g_AreaVieweDebugWindow;
 
+static uint64_t frame_count_at_request = 0;
 static bool Tracing = false;
 static CRITICAL_SECTION TraceCS;
 
@@ -33,6 +34,18 @@ long WINAPI TestDebugHandler(PEXCEPTION_POINTERS exception)
 
     EnterCriticalSection(&TraceCS);
 
+    uint64_t TimestructOffset = AnnoDataOffset(g_BinaryCRC, DataOffset::TimeStructOffset);
+    uint64_t ActualOffset = TimestructOffset + g_ModuleBase;
+
+    uint64_t TimestructBaseAddress = *(uint64_t*)(ActualOffset);
+    uint64_t FrameNumber = *(uint64_t*)(TimestructBaseAddress + 0x70);
+
+    if (FrameNumber != (frame_count_at_request + 1))
+    {
+        LeaveCriticalSection(&TraceCS);
+        return EXCEPTION_CONTINUE_EXECUTION;
+    }
+
     DWORD CurrentThread = GetCurrentThreadId();
 
     ZyanU64 runtime_address = exception->ContextRecord->Rip;
@@ -40,7 +53,7 @@ long WINAPI TestDebugHandler(PEXCEPTION_POINTERS exception)
     ZydisDisassembledInstruction instruction;
     ZydisDisassembleIntel(ZYDIS_MACHINE_MODE_LONG_64, runtime_address, (void*)runtime_address, 0x20, &instruction);
 
-    ANNO_FORMAT(entry, "Thread %lx broke on %llx instruction was %s", CurrentThread, runtime_address, instruction.text);
+    ANNO_FORMAT(entry, "Thread %lx broke on %llx instruction was %s frame # %llu", CurrentThread, runtime_address, instruction.text, FrameNumber);
     hits.push_back(entry);
 
     // Unset trap flag
@@ -70,22 +83,6 @@ DebuggerTestDebugWindow::~DebuggerTestDebugWindow()
 
 void DebuggerTestDebugWindow::Render()
 {
-    if (Tracing)
-    {
-        ANNO_LOG("Stopping trace");
-        for (auto& BP : Breakpoints)
-        {
-            BP.HardwareBreakpoint.Clear();
-        }
-
-        Sleep(500);
-
-        RemoveVectoredExceptionHandler(HandlerHandle);
-
-        Tracing = false;
-        return;
-    }
-
     bool TraceButtonPressed = ImGui::Button("Start Trace");
 
     for (auto& BP : Breakpoints)
@@ -100,28 +97,68 @@ void DebuggerTestDebugWindow::Render()
 
     if (TraceButtonPressed)
     {
-        ANNO_LOG("Running trace");
-        hits.clear();
-        hits.reserve(0x1000);
-
-        Tracing = true;
-
-        HandlerHandle = AddVectoredExceptionHandler(TRUE, &TestDebugHandler);
-
-        for (auto& BP : Breakpoints)
-        {
-            if (!BP.enabled)
-                continue;
-
-            ANNO_LOG("Enabling breakpoint for address %llx", BP.actual_address);
-            BP.HardwareBreakpoint.Set((void*)BP.actual_address, 1, HardwareBreakpoint::Condition::Execute);
-        }
+        StartTrace();
     }
+    
+    uint64_t TimestructOffset = AnnoDataOffset(g_BinaryCRC, DataOffset::TimeStructOffset);
+    uint64_t ActualOffset = TimestructOffset + g_ModuleBase;
+
+    uint64_t TimestructBaseAddress = *(uint64_t*)(ActualOffset);
+    uint64_t FrameNumber = *(uint64_t*)(TimestructBaseAddress + 0x70);
+
+    if (FrameNumber > frame_count_at_request + 1)
+        StopTrace();
 }
 
 const char* DebuggerTestDebugWindow::GetName()
 {
     return "Debugger test";
+}
+
+void DebuggerTestDebugWindow::StartTrace()
+{
+    ANNO_LOG("Running trace");
+    hits.clear();
+    hits.reserve(0x1000);
+
+    uint64_t TimestructOffset = AnnoDataOffset(g_BinaryCRC, DataOffset::TimeStructOffset);
+    uint64_t ActualOffset = TimestructOffset + g_ModuleBase;
+
+    uint64_t TimestructBaseAddress = *(uint64_t*)(ActualOffset);
+    uint64_t FrameNumber = *(uint64_t*)(TimestructBaseAddress + 0x70);
+
+    frame_count_at_request = FrameNumber;
+    Tracing = true;
+
+    HandlerHandle = AddVectoredExceptionHandler(TRUE, &TestDebugHandler);
+
+    for (auto& BP : Breakpoints)
+    {
+        if (!BP.enabled)
+            continue;
+
+        ANNO_LOG("Enabling breakpoint for address %llx", BP.actual_address);
+        BP.HardwareBreakpoint.Set((void*)BP.actual_address, 1, HardwareBreakpoint::Condition::Execute);
+    }
+}
+
+void DebuggerTestDebugWindow::StopTrace()
+{
+    if (!Tracing)
+        return;
+
+    ANNO_LOG("Stopping trace");
+    for (auto& BP : Breakpoints)
+    {
+        BP.HardwareBreakpoint.Clear();
+    }
+
+    Sleep(500);
+
+    RemoveVectoredExceptionHandler(HandlerHandle);
+
+    Tracing = false;
+    return;
 }
 
 void DebuggerTestDebugWindow::BreakpointInfo::Draw()
