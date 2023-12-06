@@ -80,16 +80,16 @@ void injected(BinaryCRC32 binary_crc)
         //uint64_t time_and_frame_offset = AnnoFunctionOffset(binary_crc, HookedFunction::GameTimeHook);
         //timeAndFrameHook.Emplace((void*)(moduleBase + time_and_frame_offset));
 
-        //MemoryReplacement session_tick_hook;
-        //session_tick_hook.SetMemory
-        //({
-        //    0x48, 0xb8,                                             // movabs rax, [imm64]
-        //    EIGHT_BYTES((uint64_t)session_tick_hook_trampoline),    // hook address
-        //    0x90, 0x90, 0x90, 0x90,                                 // 4 nops
-        //    0xff, 0xd0                                              // call rax
-        //    });
-        //uint64_t session_tick_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::SessionTickHook);
-        //session_tick_hook.Emplace((void*)(moduleBase + session_tick_hook_offset));
+        MemoryReplacement session_tick_hook;
+        session_tick_hook.SetMemory
+        ({
+            0x48, 0xb8,                                             // movabs rax, [imm64]
+            EIGHT_BYTES((uint64_t)session_tick_hook_trampoline),    // hook address
+            0x90, 0x90, 0x90, 0x90,                                 // 4 nops
+            0xff, 0xd0                                              // call rax
+            });
+        uint64_t session_tick_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::SessionTickHook);
+        session_tick_hook.Emplace((void*)(moduleBase + session_tick_hook_offset));
 
         //MemoryReplacement consumption_hook;
         //consumption_hook.SetMemory

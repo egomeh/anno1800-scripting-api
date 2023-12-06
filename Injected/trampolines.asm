@@ -17,9 +17,11 @@ push   r8
 push   r9
 push   r10
 push   r11
+sub rsp, 06h
 ENDM
 
 pop_volatile MACRO
+add rsp, 06h
 pop    r11
 pop    r10
 pop    r9
@@ -186,8 +188,7 @@ push rbx
 push rcx
 mov rax, gs:[58h]
 mov rbx, 1580h
-mov rcx, [rax]
-mov rbx, [rbx + rcx]
+add rbx, [rax]
 mov rax, rbx
 pop rcx
 pop rbx

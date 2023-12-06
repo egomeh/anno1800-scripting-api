@@ -3,6 +3,8 @@
 #include <sstream>
 #include <iostream>
 #include <sstream>
+#include <atomic>
+#include <algorithm>
 
 #include "Windows.h"
 
@@ -13,13 +15,33 @@
 
 #include "Zydis.h"
 
-// static DebuggerTestDebugWindow g_AreaVieweDebugWindow;
+extern "C"
+{
+    uint64_t get_area_from_tls();
+}
+
+static DebuggerTestDebugWindow g_DebuggerVieweDebugWindow;
 
 static uint64_t frame_count_at_request = 0;
 static bool Tracing = false;
+static bool Collect_CriticalSections = false;
 static CRITICAL_SECTION TraceCS;
 
 std::vector<std::string> hits;
+std::vector<uint64_t> CriticalSections_list;
+
+class SpinLock {
+    std::atomic_flag locked = ATOMIC_FLAG_INIT;
+public:
+    void lock() {
+        while (locked.test_and_set(std::memory_order_acquire)) { ; }
+    }
+    void unlock() {
+        locked.clear(std::memory_order_release);
+    }
+};
+
+SpinLock HitLock;
 
 long WINAPI TestDebugHandler(PEXCEPTION_POINTERS exception)
 {
@@ -32,33 +54,78 @@ long WINAPI TestDebugHandler(PEXCEPTION_POINTERS exception)
     if (!Tracing)
         return EXCEPTION_CONTINUE_EXECUTION;
 
-    EnterCriticalSection(&TraceCS);
-
     uint64_t TimestructOffset = AnnoDataOffset(g_BinaryCRC, DataOffset::TimeStructOffset);
     uint64_t ActualOffset = TimestructOffset + g_ModuleBase;
 
     uint64_t TimestructBaseAddress = *(uint64_t*)(ActualOffset);
     uint64_t FrameNumber = *(uint64_t*)(TimestructBaseAddress + 0x70);
 
-    if (FrameNumber != (frame_count_at_request + 1))
+    if ((FrameNumber <= frame_count_at_request) || (FrameNumber > (frame_count_at_request + g_DebuggerVieweDebugWindow.FramesToTrace)))
     {
-        LeaveCriticalSection(&TraceCS);
         return EXCEPTION_CONTINUE_EXECUTION;
     }
 
     DWORD CurrentThread = GetCurrentThreadId();
+    HANDLE CurrentThreadHandle = GetCurrentThread();
 
     ZyanU64 runtime_address = exception->ContextRecord->Rip;
 
     ZydisDisassembledInstruction instruction;
     ZydisDisassembleIntel(ZYDIS_MACHINE_MODE_LONG_64, runtime_address, (void*)runtime_address, 0x20, &instruction);
 
-    ANNO_FORMAT(entry, "Thread %lx broke on %llx instruction was %s frame # %llu", CurrentThread, runtime_address, instruction.text, FrameNumber);
-    hits.push_back(entry);
+    uint64_t area_in_tls = get_area_from_tls();
 
-    // Unset trap flag
+    std::string area_name = "nullptr";
 
-    LeaveCriticalSection(&TraceCS);
+    uint64_t area_base_address = 0;
+
+    if (area_in_tls)
+    {
+        area_base_address = *(uint64_t*)(area_in_tls);
+
+        if (area_base_address)
+        {
+            uint32_t area_code = *(uint32_t*)(area_base_address + 0x8);
+            area_name = GetNameFromGUID(g_ModuleBase, g_BinaryCRC, area_code);
+        }
+    }
+
+    std::string breakpoint_name = "unkonwn breakpoint";
+
+    if (runtime_address == g_DebuggerVieweDebugWindow.Breakpoints[0].actual_address)
+        breakpoint_name = "Breakpoint 1";
+    if (runtime_address == g_DebuggerVieweDebugWindow.Breakpoints[1].actual_address)
+        breakpoint_name = "Breakpoint 2";
+    if (runtime_address == g_DebuggerVieweDebugWindow.Breakpoints[2].actual_address)
+        breakpoint_name = "Breakpoint 3";
+    if (runtime_address == g_DebuggerVieweDebugWindow.Breakpoints[3].actual_address)
+        breakpoint_name = "Breakpoint 4";
+
+    uint64_t argument1 = exception->ContextRecord->Rcx;
+
+    // ANNO_FORMAT(entry, "Thread %lx broke on %llx instruction was %s frame # %llu area is %llx %llx %s", CurrentThread, runtime_address, instruction.text, FrameNumber, area_in_tls, area_base_address, area_name.c_str());
+    ANNO_FORMAT(entry, "Thread %lx broke on %s frame is %llu area %s argument 1 %llx", CurrentThread, breakpoint_name.c_str(), FrameNumber, area_name.c_str(), argument1);
+
+    for (uint64_t Critical_section : CriticalSections_list)
+    {
+        LPCRITICAL_SECTION pCS = (LPCRITICAL_SECTION)Critical_section;
+        if (pCS->OwningThread == CurrentThreadHandle)
+        {
+            ANNO_LOG("Was an owning thread");
+        }
+    }
+
+    HitLock.lock();
+    if (Collect_CriticalSections)
+    {
+        if (std::find(CriticalSections_list.begin(), CriticalSections_list.end(), argument1) == CriticalSections_list.end())
+            CriticalSections_list.push_back(argument1);
+    }
+    else
+    {
+        hits.push_back(entry);
+    }
+    HitLock.unlock();
 
     return EXCEPTION_CONTINUE_EXECUTION;
 }
@@ -85,6 +152,23 @@ void DebuggerTestDebugWindow::Render()
 {
     bool TraceButtonPressed = ImGui::Button("Start Trace");
 
+    ImGui::SameLine();
+
+    bool CollectButtonPressed = ImGui::Button("Collect Critical Sections");
+
+    ImGui::SameLine();
+
+    ImGui::PushItemWidth(25);
+    if (ImGui::InputText("Frames", FramesToTraceBuffer, 1024, ImGuiInputTextFlags_CharsDecimal))
+    {
+        std::stringstream ss;
+        ss << std::dec << FramesToTraceBuffer;
+        ss >> FramesToTrace;
+    }
+    ImGui::PopItemWidth();
+
+    ImGui::Text("Currently collected %llu critical sections", (uint64_t)CriticalSections_list.size());
+
     for (auto& BP : Breakpoints)
     {
         BP.Draw();
@@ -92,11 +176,23 @@ void DebuggerTestDebugWindow::Render()
 
     for (std::string& hit : hits)
     {
-        ImGui::Text(hit.c_str());
+        char buffer[1024];
+        sprintf_s(buffer, hit.c_str());
+        ImGui::PushID((uint64_t)hit.c_str());
+        ImGui::PushItemWidth(ImGui::GetWindowSize().x);
+        ImGui::InputText("", buffer, 1024, ImGuiInputTextFlags_ReadOnly);
+        ImGui::PopItemWidth();
+        ImGui::PopID();
     }
 
     if (TraceButtonPressed)
     {
+        StartTrace();
+    }
+
+    if (CollectButtonPressed)
+    {
+        Collect_CriticalSections = true;
         StartTrace();
     }
     
@@ -106,7 +202,8 @@ void DebuggerTestDebugWindow::Render()
     uint64_t TimestructBaseAddress = *(uint64_t*)(ActualOffset);
     uint64_t FrameNumber = *(uint64_t*)(TimestructBaseAddress + 0x70);
 
-    if (FrameNumber > frame_count_at_request + 1)
+    // Maybe critical section this??
+    if (FrameNumber > frame_count_at_request + FramesToTrace)
         StopTrace();
 }
 
@@ -120,6 +217,7 @@ void DebuggerTestDebugWindow::StartTrace()
     ANNO_LOG("Running trace");
     hits.clear();
     hits.reserve(0x1000);
+    CriticalSections_list.clear();
 
     uint64_t TimestructOffset = AnnoDataOffset(g_BinaryCRC, DataOffset::TimeStructOffset);
     uint64_t ActualOffset = TimestructOffset + g_ModuleBase;
@@ -132,13 +230,23 @@ void DebuggerTestDebugWindow::StartTrace()
 
     HandlerHandle = AddVectoredExceptionHandler(TRUE, &TestDebugHandler);
 
-    for (auto& BP : Breakpoints)
+    if (Collect_CriticalSections)
     {
-        if (!BP.enabled)
-            continue;
+        uint64_t TryEnterCriticalSectionAddress = (uint64_t)&TryEnterCriticalSection;
 
-        ANNO_LOG("Enabling breakpoint for address %llx", BP.actual_address);
-        BP.HardwareBreakpoint.Set((void*)BP.actual_address, 1, HardwareBreakpoint::Condition::Execute);
+        ANNO_LOG("Setting breakpoint on TryEnterCriticalSection at location %llx", TryEnterCriticalSectionAddress);
+        Breakpoints[0].HardwareBreakpoint.Set((void*)TryEnterCriticalSectionAddress, 1, HardwareBreakpoint::Condition::Execute);
+    }
+    else
+    {
+        for (auto& BP : Breakpoints)
+        {
+            if (!BP.enabled)
+                continue;
+
+            ANNO_LOG("Enabling breakpoint for address %llx", BP.actual_address);
+            BP.HardwareBreakpoint.Set((void*)BP.actual_address, 1, HardwareBreakpoint::Condition::Execute);
+        }
     }
 }
 
@@ -158,6 +266,7 @@ void DebuggerTestDebugWindow::StopTrace()
     RemoveVectoredExceptionHandler(HandlerHandle);
 
     Tracing = false;
+    Collect_CriticalSections = false;
     return;
 }
 

@@ -224,11 +224,13 @@ void UI::Render()
     {
         for (auto& DebugWindow : DebugWindows)
         {
+            ImGui::PushID((void*)&DebugWindow);
             if (ImGui::BeginTabItem(DebugWindow.Window->GetName()))
             {
                 DebugWindow.Window->Render();
                 ImGui::EndTabItem();
             }
+            ImGui::PopID();
         }
         ImGui::EndTabBar();
     }

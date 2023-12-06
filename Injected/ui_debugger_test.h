@@ -35,6 +35,9 @@ public:
 
 	void StartTrace();
 	void StopTrace();
+
+	char FramesToTraceBuffer[1024];
+	uint32_t FramesToTrace;
 };
 
 

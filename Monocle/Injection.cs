@@ -24,21 +24,10 @@ class Injection
     [DllImport("kernel32.dll")]
     static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttributes, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
 
-    /**
-     * This method allows to inject the source code of Injected.cpp and .h, into Anno1800.exe process
-     * 
-     * Author : egomeh (https://github.com/egomeh)
-     **/
     public static bool InjectDLL(string processName, string DLLPath)
     {
         Process[] processes = Process.GetProcessesByName(processName);
 
-        /**
-         * Checks every 15 seconds (15,000 ms), if a process has opened with the name in parameter "processName".
-         * After 40 tries (40 * 15 seconds = 10 minutes), the loop and finally the program exits interrupt.
-         * 
-         * Author : Seynax (https://github.com/seynax)
-        **/
         {
             int attempt = 0;
             while (true)

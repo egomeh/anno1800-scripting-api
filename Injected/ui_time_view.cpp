@@ -10,7 +10,7 @@
 #include "anno_native.h"
 
 
-/// static TimeVieweDebugWindow g_AreaVieweDebugWindow;
+static TimeVieweDebugWindow g_AreaVieweDebugWindow;
 
 TimeVieweDebugWindow::TimeVieweDebugWindow() : DebugWindow()
 {

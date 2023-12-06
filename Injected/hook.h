@@ -19,7 +19,8 @@ enum class DataOffset : uint64_t
     TimeStructOffset = 1,
     GameStateOffset = 2,
     AssetNameDatabase = 3,
-    FunctionGUIDToName = 4
+    FunctionGUIDToName = 4,
+    FunctionMoveObjects = 5,
 };
 
 enum class BinaryCRC32 : uint32_t

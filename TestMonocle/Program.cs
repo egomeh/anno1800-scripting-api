@@ -51,7 +51,6 @@ class TestRunner
         //telegraph.DebugGetNameFromGuid(id, out GrainName);
 
         //Console.WriteLine("{0}", GrainName);
-
         return;
     }
 }
