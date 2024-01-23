@@ -743,8 +743,6 @@ class CodeGenerator
         CSRemoteCallCode += "*The program sets up a local network and listens in order to accept a future client.\n";
         CSRemoteCallCode += "* Then it injects a source code in the form of .dll in the Anno1800.exe process through the class Injection.cs\n";
         CSRemoteCallCode += "* After injecting, the program sets up a gateway through a local network between itself and the injected code\n";
-        CSRemoteCallCode += "* \n";
-        CSRemoteCallCode += "* Author : egomeh (https://github.com/egomeh)\n";
         CSRemoteCallCode += "*\n";
         CSRemoteCallCode += "**/\n";
         CSRemoteCallCode += "public class Telegraph\n{\n";
@@ -759,8 +757,6 @@ class CodeGenerator
         CSRemoteCallCode += "        /**\n";
         CSRemoteCallCode += "         * Searches for the first IP that matches the pattern \"x.x.x.x\" with x between one and three digits\n";
         CSRemoteCallCode += "         * (This is a resolution that prevents the program from using a non-functional ip (:::1) as a user had)\n";
-        CSRemoteCallCode += "         * \n";
-        CSRemoteCallCode += "         * Author : Seynax (https://github.com/seynax)\n";
         CSRemoteCallCode += "        **/\n";
         CSRemoteCallCode += "        {\n";
         CSRemoteCallCode += "            for (int i = 0; i < ipHostInfo.AddressList.Count(); i++)\n";
@@ -796,18 +792,20 @@ class CodeGenerator
         CSRemoteCallCode += "        string temporaryPath = Path.GetTempPath();\n";
         CSRemoteCallCode += "        string targetDllPath = Path.Combine(temporaryPath, \"Injected.dll\");\n\n";
 
-        CSRemoteCallCode += "        using (Stream inStream = assembly.GetManifestResourceStream(\"Monocle.Injected.dll\"))\n";
+        CSRemoteCallCode += "        using (Stream? inStream = assembly.GetManifestResourceStream(\"Monocle.Injected.dll\"))\n";
         CSRemoteCallCode += "        using (FileStream outStream = File.OpenWrite(targetDllPath))\n";
         CSRemoteCallCode += "        {\n";
-        CSRemoteCallCode += "            BinaryReader reader = new BinaryReader(inStream);\n";
-        CSRemoteCallCode += "            BinaryWriter writer = new BinaryWriter(outStream);\n\n";
+        CSRemoteCallCode += "            if (inStream != null) {\n";
+        CSRemoteCallCode += "               BinaryReader reader = new BinaryReader(inStream);\n";
+        CSRemoteCallCode += "               BinaryWriter writer = new BinaryWriter(outStream);\n\n";
 
-        CSRemoteCallCode += "            byte[] buffer = new Byte[1024];\n";
-        CSRemoteCallCode += "            int bytesRead;\n\n";
+        CSRemoteCallCode += "               byte[] buffer = new Byte[1024];\n";
+        CSRemoteCallCode += "               int bytesRead;\n\n";
 
-        CSRemoteCallCode += "            while ((bytesRead = inStream.Read(buffer, 0, 1024)) > 0)\n";
-        CSRemoteCallCode += "            {\n";
-        CSRemoteCallCode += "                outStream.Write(buffer, 0, bytesRead);\n";
+        CSRemoteCallCode += "               while ((bytesRead = inStream.Read(buffer, 0, 1024)) > 0)\n";
+        CSRemoteCallCode += "               {\n";
+        CSRemoteCallCode += "                   outStream.Write(buffer, 0, bytesRead);\n";
+        CSRemoteCallCode += "               }\n";
         CSRemoteCallCode += "            }\n";
         CSRemoteCallCode += "        }\n\n";
 

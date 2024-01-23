@@ -13,7 +13,7 @@ void DisplayAnnoEntity(AnnoEntity& Entity)
 {
 	ImGui::Text("Type: %lx %s", Entity.GetTypeId(), Entity.GetTypeName().c_str());
 
-	ImGui::PushID(Entity.GetAddress());
+	ImGui::PushID((void*)Entity.GetAddress());
 	ImGui::Text("Entity Address: %llx", Entity.GetAddress());
 	ImGui::SameLine();
 	if (ImGui::Button("Copy to clipboard"))

@@ -37,7 +37,7 @@ namespace ProductionViewer
         public Telegraph telegraph = new Telegraph();
 
         public delegate void GameStateUpdateHandler(object sender, GameState gameState);
-        public event GameStateUpdateHandler GameStateUpdate;
+        public event GameStateUpdateHandler? GameStateUpdate;
 
         public App()
         {

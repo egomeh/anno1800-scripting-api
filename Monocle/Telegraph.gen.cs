@@ -25,8 +25,6 @@ class Windows
 *The program sets up a local network and listens in order to accept a future client.
 * Then it injects a source code in the form of .dll in the Anno1800.exe process through the class Injection.cs
 * After injecting, the program sets up a gateway through a local network between itself and the injected code
-* 
-* Author : egomeh (https://github.com/egomeh)
 *
 **/
 public class Telegraph
@@ -41,8 +39,6 @@ public class Telegraph
         /**
          * Searches for the first IP that matches the pattern "x.x.x.x" with x between one and three digits
          * (This is a resolution that prevents the program from using a non-functional ip (:::1) as a user had)
-         * 
-         * Author : Seynax (https://github.com/seynax)
         **/
         {
             for (int i = 0; i < ipHostInfo.AddressList.Count(); i++)
@@ -78,18 +74,20 @@ public class Telegraph
         string temporaryPath = Path.GetTempPath();
         string targetDllPath = Path.Combine(temporaryPath, "Injected.dll");
 
-        using (Stream inStream = assembly.GetManifestResourceStream("Monocle.Injected.dll"))
+        using (Stream? inStream = assembly.GetManifestResourceStream("Monocle.Injected.dll"))
         using (FileStream outStream = File.OpenWrite(targetDllPath))
         {
-            BinaryReader reader = new BinaryReader(inStream);
-            BinaryWriter writer = new BinaryWriter(outStream);
+            if (inStream != null) {
+               BinaryReader reader = new BinaryReader(inStream);
+               BinaryWriter writer = new BinaryWriter(outStream);
 
-            byte[] buffer = new Byte[1024];
-            int bytesRead;
+               byte[] buffer = new Byte[1024];
+               int bytesRead;
 
-            while ((bytesRead = inStream.Read(buffer, 0, 1024)) > 0)
-            {
-                outStream.Write(buffer, 0, bytesRead);
+               while ((bytesRead = inStream.Read(buffer, 0, 1024)) > 0)
+               {
+                   outStream.Write(buffer, 0, bytesRead);
+               }
             }
         }
 

@@ -116,6 +116,25 @@ void injected(BinaryCRC32 binary_crc)
         //uint64_t vehicle_sort_hook_offset = AnnoFunctionOffset(binary_crc, HookedFunction::VehicleSortingHook);
         //vehicle_sort_hook.Emplace((void*)(moduleBase + vehicle_sort_hook_offset));
 
+
+        //std::array<uint64_t, 1> ShipList = { 0x000000030000047F };
+
+        //struct _ShipList
+        //{
+        //    uint64_t IdsBegin;
+        //    uint64_t IdsEnd;
+        //} ShipIdDelimiterPtr { (uint64_t)ShipList.data(), (uint64_t)ShipList.data() + sizeof(uint64_t) };
+
+        //struct _Coordinate
+        //{
+        //    float x, y;
+        //} Coordinate = { 1450.f, 1550.f };
+
+        //uint64_t MoveShipsFunctionAddress = g_ModuleBase + 0x08C04C0;
+        //auto MoveShipsFunction = reinterpret_cast<void(*)(uint64_t, _ShipList, _Coordinate*)>(MoveShipsFunctionAddress);
+
+        //MoveShipsFunction(0, ShipIdDelimiterPtr, &Coordinate);
+
         // Handle remote calls until we fail
         while (HandleRemoteCall(socketHandler, callHandler));
     }

@@ -121,8 +121,8 @@ void UI::EnableHook()
             ANNO_LOG("Unable to create swapchain");
     }
 
-    ANNO_LOG("Present Function VTable Address: %llx", PresentFunctionVTableEntry);
-    ANNO_LOG("Present Function Address: %llx", OriginalPresentFunctionDx11);
+    ANNO_LOG("Present Function VTable Address: %llx", (uint64_t)PresentFunctionVTableEntry);
+    ANNO_LOG("Present Function Address: %llx", (uint64_t)OriginalPresentFunctionDx11);
 
     OriginalProcPointerAnno = (WndProcPointer)WinProcFunction;
 

@@ -25,7 +25,7 @@ void AreaVieweDebugWindow::Render()
     {
         std::string result = GetNameFromGUID(g_ModuleBase, g_BinaryCRC, *(uint32_t*)(address + 8));
 
-        ImGui::PushID(address);
+        ImGui::PushID((void*)address);
         if (ImGui::Button("Copy address"))
         {
             ImGuiIO& io = ImGui::GetIO();

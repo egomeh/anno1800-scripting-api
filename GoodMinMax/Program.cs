@@ -9,10 +9,10 @@ class GoodsMinMax
 
     public static void Run()
     {
-        Console.CancelKeyPress += delegate (object sender, ConsoleCancelEventArgs e) {
-            e.Cancel = true;
-            GoodsMinMax.keepRunning = false;
-        };
+        //Console.CancelKeyPress += delegate (object sender, ConsoleCancelEventArgs e) {
+        //    e.Cancel = true;
+        //    GoodsMinMax.keepRunning = false;
+        //};
 
         Console.WriteLine("Drawing wand...");
         Console.WriteLine("Yelling \"Resourcius minimalus maximus\"");

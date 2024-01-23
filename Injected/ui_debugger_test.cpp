@@ -178,7 +178,7 @@ void DebuggerTestDebugWindow::Render()
     {
         char buffer[1024];
         sprintf_s(buffer, hit.c_str());
-        ImGui::PushID((uint64_t)hit.c_str());
+        ImGui::PushID((void*)hit.c_str());
         ImGui::PushItemWidth(ImGui::GetWindowSize().x);
         ImGui::InputText("", buffer, 1024, ImGuiInputTextFlags_ReadOnly);
         ImGui::PopItemWidth();
