@@ -2,7 +2,6 @@
 #include <string>
 #include <fstream>
 #include "structs.gen.h"
-#include "serialization.gen.h"
 #include "testing.h"
 #include "injected.h"
 #include "process.h"

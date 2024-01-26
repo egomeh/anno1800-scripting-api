@@ -1,8 +1,4 @@
-#include "serialization.gen.h"
 #include "structs.gen.h"
-#include "remote_call_handler_anno.h"
-#include "remote_call_handler_base.gen.h"
-#include "serialization.gen.h"
 #include "tools.h"
 #include "memory.h"
 #include "hook.h"
@@ -29,11 +25,6 @@ void injected(BinaryCRC32 binary_crc)
 {
     ANNO_LOG("Running injected code in Anno 1800");
 
-	SocketHandler socketHandler;
-	RemoteCallHandlerAnno callHandler;
-
-    socketHandler.Initialize();
-
     HookManager::Get().Initialize();
 
     HANDLE anno_process = GetCurrentProcess();
@@ -56,9 +47,6 @@ void injected(BinaryCRC32 binary_crc)
     uint64_t entryPoint = (uint64_t)(moduleInfo.EntryPoint);
     uint64_t moduleSize = (uint64_t)(moduleInfo.SizeOfImage);
     uint64_t exeSectionSize = moduleSize - (entryPoint - moduleBase);
-
-    callHandler.module_base = moduleBase;
-    callHandler.binary_crc = binary_crc;
 
     g_ModuleBase = moduleBase;
     g_BinaryCRC = binary_crc;
@@ -136,7 +124,7 @@ void injected(BinaryCRC32 binary_crc)
         //MoveShipsFunction(0, ShipIdDelimiterPtr, &Coordinate);
 
         // Handle remote calls until we fail
-        while (HandleRemoteCall(socketHandler, callHandler));
+        WaitForSingleObject(UI::Get().ShutdownEvent, INFINITE);
     }
 
     UI::Get().DisableHook();

@@ -39,12 +39,6 @@
     <ClInclude Include="injected.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="serialization.gen.h">
-      <Filter>Source Files\Generated</Filter>
-    </ClInclude>
-    <ClInclude Include="remote_call_handler_base.gen.h">
-      <Filter>Source Files\Generated</Filter>
-    </ClInclude>
     <ClInclude Include="memory.h">
       <Filter>Source Files\Tools</Filter>
     </ClInclude>
@@ -57,15 +51,6 @@
     <ClInclude Include="tools.h">
       <Filter>Source Files\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="structs.gen.h">
-      <Filter>Source Files\Generated</Filter>
-    </ClInclude>
-    <ClInclude Include="remote_call_handler_anno.h">
-      <Filter>Source Files\anno</Filter>
-    </ClInclude>
-    <ClInclude Include="socket.h">
-      <Filter>Source Files\Tools</Filter>
-    </ClInclude>
     <ClInclude Include="anno_native.h">
       <Filter>Source Files\anno</Filter>
     </ClInclude>
@@ -73,9 +58,6 @@
       <Filter>Source Files\anno</Filter>
     </ClInclude>
     <ClInclude Include="testing.h">
-      <Filter>Source Files\Testing</Filter>
-    </ClInclude>
-    <ClInclude Include="remote_call_handler_test.h">
       <Filter>Source Files\Testing</Filter>
     </ClInclude>
     <ClInclude Include="log.h">
@@ -122,12 +104,6 @@
     <ClCompile Include="injected.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="serialization.gen.cpp">
-      <Filter>Source Files\Generated</Filter>
-    </ClCompile>
-    <ClCompile Include="remote_call_handler_base.gen.cpp">
-      <Filter>Source Files\Generated</Filter>
-    </ClCompile>
     <ClCompile Include="memory.cpp">
       <Filter>Source Files\Tools</Filter>
     </ClCompile>
@@ -137,12 +113,6 @@
     <ClCompile Include="tools.cpp">
       <Filter>Source Files\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="remote_call_handler_anno.cpp">
-      <Filter>Source Files\anno</Filter>
-    </ClCompile>
-    <ClCompile Include="socket.cpp">
-      <Filter>Source Files\Tools</Filter>
-    </ClCompile>
     <ClCompile Include="anno_native.cpp">
       <Filter>Source Files\anno</Filter>
     </ClCompile>
@@ -150,9 +120,6 @@
       <Filter>Source Files\anno</Filter>
     </ClCompile>
     <ClCompile Include="testing.cpp">
-      <Filter>Source Files\Testing</Filter>
-    </ClCompile>
-    <ClCompile Include="remote_call_handler_test.cpp">
       <Filter>Source Files\Testing</Filter>
     </ClCompile>
     <ClCompile Include="log.cpp">

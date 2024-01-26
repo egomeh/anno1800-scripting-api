@@ -32,6 +32,8 @@ public:
 	void RegsiterDebugWindow(DebugWindow* Window);
 	void UnregisterDebugWindow(DebugWindow* Window);
 
+	HANDLE ShutdownEvent;
+
 private:
 
 	struct DebugWindowInfo

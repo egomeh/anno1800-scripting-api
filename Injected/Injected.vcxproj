@@ -168,12 +168,6 @@
     <ClInclude Include="injected.h" />
     <ClInclude Include="log.h" />
     <ClInclude Include="memory.h" />
-    <ClInclude Include="remote_call_handler_anno.h" />
-    <ClInclude Include="remote_call_handler_base.gen.h" />
-    <ClInclude Include="remote_call_handler_test.h" />
-    <ClInclude Include="serialization.gen.h" />
-    <ClInclude Include="socket.h" />
-    <ClInclude Include="structs.gen.h" />
     <ClInclude Include="testing.h" />
     <ClInclude Include="tools.h" />
     <ClInclude Include="ui_area_view.h" />
@@ -202,11 +196,6 @@
     <ClCompile Include="injected.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="memory.cpp" />
-    <ClCompile Include="remote_call_handler_anno.cpp" />
-    <ClCompile Include="remote_call_handler_base.gen.cpp" />
-    <ClCompile Include="remote_call_handler_test.cpp" />
-    <ClCompile Include="serialization.gen.cpp" />
-    <ClCompile Include="socket.cpp" />
     <ClCompile Include="testing.cpp" />
     <ClCompile Include="tools.cpp" />
     <ClCompile Include="ui_area_view.cpp" />

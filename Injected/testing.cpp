@@ -1,9 +1,4 @@
 #include "testing.h"
-#include "serialization.gen.h"
-#include "structs.gen.h"
-#include "remote_call_handler_test.h"
-#include "remote_call_handler_base.gen.h"
-#include "serialization.gen.h"
 #include "hook.h"
 #include "process.h"
 #include "memory.h"
@@ -30,11 +25,6 @@ void Servicer()
 void testing()
 {
 	ANNO_LOG("Running teting code");
-
-	SocketHandler socketHandler;
-	RemoteCallHandlerTest callHandler;
-
-	socketHandler.Initialize();
 
 	HookManager::Get().Initialize();
 

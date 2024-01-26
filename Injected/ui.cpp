@@ -154,6 +154,8 @@ void UI::EnableHook()
         EIGHT_BYTES((uint64_t)&PresentHook)
     });
     PresentHookReplacement.Emplace((void*)(PresentFunctionVTableEntry));
+
+    ShutdownEvent = CreateEventA(NULL, FALSE, FALSE, "ui_shutdown_event");
 }
 
 void UI::DisableHook()
@@ -216,7 +218,8 @@ bool UI::OnWinProc(HWND WindowHandle, UINT uMsg, WPARAM WParam, LPARAM LParam)
 
 void UI::Render()
 {
-    ImGui::Begin("Anno Scriptig API debug menu");
+    bool bWindowOpen;
+    ImGui::Begin("Anno Scriptig API debug menu", &bWindowOpen);
 
     ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
 
@@ -235,6 +238,12 @@ void UI::Render()
         ImGui::EndTabBar();
     }
     ImGui::End();
+
+
+    if (!bWindowOpen)
+    {
+        SetEvent(ShutdownEvent);
+    }
 }
 
 DebugWindow::DebugWindow()
