@@ -25,6 +25,9 @@ public:
 	void OnPresentHook(uint64_t thisptr, UINT SyncInterval, UINT Flags);
 	bool OnWinProc(HWND WindowHandle, UINT uMsg, WPARAM WParam, LPARAM LParam);
 
+	void WriteConfig();
+	void ReadConfig();
+
 	void Render();
 
 	static UI& Get();

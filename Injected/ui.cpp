@@ -157,6 +157,8 @@ void UI::EnableHook()
 
     ShutdownEvent = CreateEventA(NULL, FALSE, FALSE, "ui_shutdown_event");
     ResetEvent(ShutdownEvent);
+
+    ReadConfig();
 }
 
 void UI::DisableHook()
@@ -217,6 +219,79 @@ bool UI::OnWinProc(HWND WindowHandle, UINT uMsg, WPARAM WParam, LPARAM LParam)
     return false;
 }
 
+void UI::WriteConfig()
+{
+    char logFilePath[MAX_PATH];
+    SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, logFilePath);
+    std::string strLogPath = logFilePath;
+    strLogPath.append("\\anno_api_config.txt");
+
+    HANDLE ConfigFileHandle = CreateFileA(strLogPath.c_str(), // name of the write
+        GENERIC_WRITE,          // open for writing
+        FILE_SHARE_READ | FILE_SHARE_WRITE,        // Allow others to read while open
+        NULL,                   // default security
+        CREATE_NEW,             // create file
+        FILE_ATTRIBUTE_NORMAL,  // normal file
+        NULL);                  // no attr. template
+
+    if (!ConfigFileHandle && ConfigFileHandle != INVALID_HANDLE_VALUE)
+    {
+        ANNO_LOG("Could not open config file for writing");
+        return;
+    }
+
+    std::string ConfigContent;
+
+    for (auto& DebugWindow : DebugWindows)
+    {
+        if (!DebugWindow.Enabled)
+            continue;
+        
+        ConfigContent.append(std::string(DebugWindow.Window->GetName()) + "\n");
+    }
+
+    WriteFile(ConfigFileHandle, ConfigContent.c_str(), ConfigContent.size(), NULL, NULL);
+
+    CloseHandle(ConfigFileHandle);
+}
+
+void UI::ReadConfig()
+{
+    char logFilePath[MAX_PATH];
+    SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, logFilePath);
+    std::string strLogPath = logFilePath;
+    strLogPath.append("\\anno_api_config.txt");
+
+    HANDLE ConfigFileHandle = CreateFileA(strLogPath.c_str(), // name of the write
+        GENERIC_READ,           // open for writing
+        FILE_SHARE_READ,        // Allow others to read while open
+        NULL,                   // default security
+        OPEN_EXISTING,          // open config file that is already there
+        FILE_ATTRIBUTE_NORMAL,  // normal file
+        NULL);                  // no attr. template
+
+    if (!ConfigFileHandle && ConfigFileHandle != INVALID_HANDLE_VALUE)
+    {
+        ANNO_LOG("Could not open config file for reading");
+        return;
+    }
+
+    std::string config_content;
+
+    char buffer[512] = { 0 };
+    DWORD bytesRead = 0;
+    while (ReadFile(ConfigFileHandle, buffer, sizeof(buffer) - 1, &bytesRead, NULL))
+    {
+        config_content += std::string(buffer);
+        memset(buffer, 0, sizeof(buffer));
+    }
+
+    ANNO_LOG("Read config content");
+    ANNO_LOG("%s", config_content.c_str());
+
+    CloseHandle(ConfigFileHandle);
+}
+
 void UI::Render()
 {
     bool bWindowOpen = true;
@@ -236,7 +311,8 @@ void UI::Render()
         }
 
         ImGui::PushID((void*)&DebugWindow);
-        ImGui::Checkbox("", &DebugWindow.Enabled);
+        if (ImGui::Checkbox("", &DebugWindow.Enabled))
+            WriteConfig();
         ImGui::PopID();
         ImGui::SameLine();
         ImGui::Text(DebugWindow.Window->GetName());
@@ -248,10 +324,14 @@ void UI::Render()
     {
         if (!DebugWindow.Enabled)
             continue;
-
+        
+        bool enabled_before = DebugWindow.Enabled;
         ImGui::Begin(DebugWindow.Window->GetName(), &DebugWindow.Enabled);
         DebugWindow.Window->Render();
         ImGui::End();
+
+        if (DebugWindow.Enabled != enabled_before)
+            WriteConfig();
     }
 
     if (!bWindowOpen)
