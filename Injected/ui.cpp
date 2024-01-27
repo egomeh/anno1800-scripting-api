@@ -156,6 +156,7 @@ void UI::EnableHook()
     PresentHookReplacement.Emplace((void*)(PresentFunctionVTableEntry));
 
     ShutdownEvent = CreateEventA(NULL, FALSE, FALSE, "ui_shutdown_event");
+    ResetEvent(ShutdownEvent);
 }
 
 void UI::DisableHook()
@@ -218,27 +219,40 @@ bool UI::OnWinProc(HWND WindowHandle, UINT uMsg, WPARAM WParam, LPARAM LParam)
 
 void UI::Render()
 {
-    bool bWindowOpen;
+    bool bWindowOpen = true;
     ImGui::Begin("Anno Scriptig API debug menu", &bWindowOpen);
 
-    ImGuiTabBarFlags tab_bar_flags = ImGuiTabBarFlags_None;
+    ImGui::Text("Filter: ");
+    ImGui::SameLine();
 
-    if (ImGui::BeginTabBar("Debug Views", tab_bar_flags))
+    static char filter_buffer[64] = "";
+    ImGui::InputText(" ", filter_buffer, 64);
+    for (auto& DebugWindow : DebugWindows)
     {
-        for (auto& DebugWindow : DebugWindows)
+        if (strlen(filter_buffer) > 0)
         {
-            ImGui::PushID((void*)&DebugWindow);
-            if (ImGui::BeginTabItem(DebugWindow.Window->GetName()))
-            {
-                DebugWindow.Window->Render();
-                ImGui::EndTabItem();
-            }
-            ImGui::PopID();
+            if (!strstr(DebugWindow.Window->GetName(), filter_buffer))
+                continue;
         }
-        ImGui::EndTabBar();
-    }
-    ImGui::End();
 
+        ImGui::PushID((void*)&DebugWindow);
+        ImGui::Checkbox("", &DebugWindow.Enabled);
+        ImGui::PopID();
+        ImGui::SameLine();
+        ImGui::Text(DebugWindow.Window->GetName());
+    }
+
+    ImGui::End(); // Main window
+
+    for (auto& DebugWindow : DebugWindows)
+    {
+        if (!DebugWindow.Enabled)
+            continue;
+
+        ImGui::Begin(DebugWindow.Window->GetName(), &DebugWindow.Enabled);
+        DebugWindow.Window->Render();
+        ImGui::End();
+    }
 
     if (!bWindowOpen)
     {
