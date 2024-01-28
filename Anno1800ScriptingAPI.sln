@@ -9,9 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Monocle", "Monocle\Monocle.
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Injected", "Injected\Injected.vcxproj", "{7987C399-7F4C-407D-86AC-E3B5A69A133C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B77C1EFC-3E7E-49C4-9760-CB89652A675B} = {B77C1EFC-3E7E-49C4-9760-CB89652A675B}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
